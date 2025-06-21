@@ -13,12 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('entidads', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre');
-            $table->string('descripcion')->nullable();
-            $table->string('tipo')->nullable();
-            $table->timestamps();
-        });
+            $table->id('idEntidad');
+            $table->integer('codigo')->unique();
+            $table->string('subSector');
+            $table->string('nivelGobierno');
+            $table->string('estado');
+            $table->date('fechaCreacion');
+            $table->string('fechaActualizacion')->nullable();
+            });
     }
 
     /**

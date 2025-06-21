@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class entidad extends Model
 {
-use HasFactory;
+protected $primaryKey='idEntidad';
+public $timestamps =false;
+
 protected $fillable = [
-    'nombre',
-    'descripcion',
-    'tipo'
+    'codigo',
+    'subSector',
+    'nivelGobierno',
+    'estado',
+    'fechaCreacion',
+    'fechaActualizacion',
 ];
 }
