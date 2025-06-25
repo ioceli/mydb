@@ -15,6 +15,7 @@
 
 <a href="{{route('entidad.create')}}"> + Nueva Entidad</a>
     {{--TABLA PARA LISTAR TODAS LAS ENTIDADES--}}
+
 <table style="background-color: #f8f8fa;">
 <thead>
 <tr>
@@ -30,7 +31,7 @@
 </tr>
 
 </thead>
-<tbody>
+<tbody> 
     @foreach($entidad as $entidad)
     <tr>
         <td style="border: 1px solid #ccc; padding: 8px">{{$entidad->idEntidad}}</td>
@@ -40,11 +41,21 @@
 <td style="border: 1px solid #ccc; padding: 8px">{{$entidad->estado}}</td>
 <td style="border: 1px solid #ccc; padding: 8px">{{$entidad->fechaCreacion}}</td>
 <td style="border: 1px solid #ccc; padding: 8px">{{$entidad->fechaActualizacion}}</td>
-<td style="border: 1px solid #ccc; padding: 8px">
-    
-<a href="{{route('entidad.edit', $entidad->idEntidad)}}">Editar</a></td>
+ <td style="border: 1px solid #ccc; padding: 8px">
 
+    {{-- Enlace para Editar --}}
+    <a href="{{ route('entidad.edit', $entidad->idEntidad) }}" style="margin-right: 10px;">✏️Editar</a>
 
+    {{-- Enlace para Eliminar --}}
+    <a href="{{ route('entidad.edit', $entidad->idEntidad) }}" onclick="event.preventDefault(); if(confirm('¿Estás seguro de eliminar esta entidad?')) { document.getElementById('form-eliminar-{{ $entidad->idEntidad }}').submit(); }" style="color: red;">🗑️ Eliminar</a>
+
+    {{-- Formulario oculto --}}
+    <form id="form-eliminar-{{ $entidad->idEntidad }}" action="{{ route('entidad.destroy', $entidad->idEntidad) }}" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+</td>
 </tr>
 
 @endforeach

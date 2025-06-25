@@ -70,7 +70,7 @@ class EntidadController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'codigo'=>'required|integer|unique:entidad,codigo', $id .'idEntidad',
+            'codigo'=>'required|integer|unique:entidad,codigo' , $id . 'idEntidad',
             'subSector'=>'required|string',
             'nivelGobierno'=>'required|string',
             'estado'=>'required|string',
@@ -78,7 +78,7 @@ class EntidadController extends Controller
             'fechaActualizacion'=>'nullable|date',
        ]);
        $entidad = entidad::findOrfail($id);
-       entidad::update($request->all());
+       $entidad->update($request->all());
     return redirect()->route('entidad.index')->with('success','Entidad Actualizada satisfactoriamente');
     }
     /**
