@@ -49,4 +49,5 @@
 <a href="{{route('entidad.index')}}">CANCELAR</a>
 </form>
 
+
 @endsection

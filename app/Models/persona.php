@@ -5,19 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class entidad extends Model
+class persona extends Model
 {
 use HasFactory;
-protected $table = 'entidad'; 
-protected $primaryKey='idEntidad';
+protected $table = 'persona'; 
+protected $primaryKey='idPersona';
 public $timestamps =false;
 
 protected $fillable = [
-    'codigo',
-    'subSector',
-    'nivelGobierno',
+    'cedula',
+    'nombres',
+    'apellidos',
+    'rol',
     'estado',
-    'fechaCreacion',
-    'fechaActualizacion',
+    'correo',
+    'genero',
+    'telefono',
+    'contraseña',
 ];
 }

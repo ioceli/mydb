@@ -12,13 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('entidads', function (Blueprint $table) {
+        Schema::create('entidad', function (Blueprint $table) {
             $table->id('idEntidad');
-            $table->integer('codigo')->unique();
-            $table->string('subSector');
-            $table->string('nivelGobierno');
-            $table->string('estado');
-            $table->date('fechaCreacion');
+            $table->integer('codigo')->unique()->nullable();
+            $table->string('subSector')->nullable();
+            $table->string('nivelGobierno')->nullable();
+            $table->string('estado')->nullable();
+            $table->date('fechaCreacion')->nullable();
             $table->string('fechaActualizacion')->nullable();
             });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('entidads');
+        Schema::dropIfExists('entidad');
     }
 };

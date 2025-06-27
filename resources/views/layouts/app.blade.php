@@ -1,85 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sitema Integrado de Planificación e Inversión Pública SIPeIP - @yield('title')</title>
-    {{-- Escribir Estilos --}}
-<!-- <link rel="stylesheet" href="{{ asset('css/estilos.css') }}"> {{--ESTILOS PERSONALIZADOS--}}     
+    <title>SIPeIP - @yield('title')</title>
 
-{{--FUENTE OPCIONAL--}} 
-<link href="https://fonts.googleapis.com/css2?family=Robot&display=swap" rel="stylesheet"> -->
-<style>
-            body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f2f2f2;
+    <!-- Fuente moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: #f9fafb;
             color: #333;
-        }
-
-        header, nav, footer {
-            padding: 15px;
         }
 
         header {
             background-color: #003366;
-            color: white;
+            color: #fff;
+            padding: 20px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
         }
 
         nav {
             background-color: #0055a5;
+            padding: 10px 40px;
+            display: flex;
+            gap: 20px;
         }
 
         nav a {
             color: white;
-            margin-right: 20px;
             text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s, border-bottom 0.3s;
+            padding-bottom: 5px;
         }
 
         nav a:hover {
-            text-decoration: underline;
+            color: #ffdd57;
+            border-bottom: 2px solid #ffdd57;
         }
 
         main {
-            padding: 20px;
+            padding: 30px 40px;
+            background-color: #fff;
+            min-height: 70vh;
         }
 
         footer {
-            background-color: #ddd;
+            background-color: #003366;
+            color: white;
             text-align: center;
+            padding: 15px;
         }
-</style>
+
+        footer small {
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
-{{-- Header --}}
-
+    {{-- Header --}}
     <header>
-<h1>Sitema Integrado de Planificación e Inversión Pública SIPeIP </h1>
-</header>
+        <h1>Sistema Integrado de Planificación e Inversión Pública - SIPeIP</h1>
+    </header>
 
-{{-- Barra de navegacion --}}
+    {{-- Barra de navegación --}}
+    <nav>
+        <a href="{{ url('/') }}">Inicio</a>
+        <a href="{{ route('entidad.index') }}">Entidades</a>
+        <a href="{{ route('persona.index') }}">Personas</a>
+    </nav>
 
-<nav>
+    {{-- Contenido principal --}}
+    <main>
+        @yield('content')
+    </main>
 
-    <a href="{{url('/')}}">Inicio</a>
-    <a href="{{route('entidad.index')}}"> Entidad</a>
-</nav>
-    
-{{-- Contenido Principal--}}
-
-<main>
-
-@yield('content')
-
-</main>
-
-<footer>
-
-<small>&copy;
-
-</small>
-
-</footer>
+    {{-- Pie de página --}}
+    <footer>
+        <small>&copy; {{ date('Y') }} Secretaría Nacional de Planificación. Todos los derechos reservados.</small>
+    </footer>
 
 </body>
 </html>
