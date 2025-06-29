@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\meta;
+use App\Models\metaPlanNacional;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class MetaController extends Controller
+class MetaPlanNacionalController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -35,7 +35,7 @@ class MetaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(meta $meta)
+    public function show(metaPlanNacional $metaPlanNacional)
     {
         //
     }
@@ -43,7 +43,7 @@ class MetaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(meta $meta)
+    public function edit(metaPlanNacional $metaPlanNacional)
     {
         //
     }
@@ -51,7 +51,7 @@ class MetaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, meta $meta)
+    public function update(Request $request, metaPlanNacional $metaPlanNacional)
     {
         //
     }
@@ -59,7 +59,7 @@ class MetaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(meta $meta)
+    public function destroy(metaPlanNacional $metaPlanNacional)
     {
         //
     }

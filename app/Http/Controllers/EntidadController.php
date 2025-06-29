@@ -43,7 +43,7 @@ class EntidadController extends Controller
             'nivelGobierno'=>'required|string',
              'estado'=>['required',Rule::in(EstadoEnum::values())],
             'fechaCreacion'=>'required|date',
-            'fechaActualizacion'=>'nullable|date',
+            'fechaActualizacion'=>'required|date',
        ]);
        entidad::create($request->all());
     return redirect()->route('entidad.index')->with('success','Entidad Creada satisfactoriamente');
@@ -80,7 +80,7 @@ class EntidadController extends Controller
             'nivelGobierno'=>'required|string',
              'estado'=>['required',Rule::in(EstadoEnum::values())],
             'fechaCreacion'=>'required|date',
-            'fechaActualizacion'=>'nullable|date',
+            'fechaActualizacion'=>'required|date',
        ]);
 
     // Asignar valores

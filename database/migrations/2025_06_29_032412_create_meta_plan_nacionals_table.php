@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('meta', function (Blueprint $table) {
-            $table->id();
+        Schema::create('meta_plan_nacional', function (Blueprint $table) {
+            $table->id('idMetaPlanNacional');
             $table->timestamps();
+            $table->string('nombre');
+            $table->string('descripcion');
+            $table->double('porcentajeAlineacion');
         });
     }
 
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('meta');
+        Schema::dropIfExists('meta_plan_nacional');
     }
 };

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\objetivo;
+use App\Models\objetivoDesarrolloSostenible;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ObjetivoController extends Controller
+class ObjetivoDesarrolloSostenibleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -35,7 +35,7 @@ class ObjetivoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(objetivo $objetivo)
+    public function show(objetivoDesarrolloSostenible $objetivoDesarrolloSostenible)
     {
         //
     }
@@ -43,7 +43,7 @@ class ObjetivoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(objetivo $objetivo)
+    public function edit(objetivoDesarrolloSostenible $objetivoDesarrolloSostenible)
     {
         //
     }
@@ -51,7 +51,7 @@ class ObjetivoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, objetivo $objetivo)
+    public function update(Request $request, objetivoDesarrolloSostenible $objetivoDesarrolloSostenible)
     {
         //
     }
@@ -59,7 +59,7 @@ class ObjetivoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(objetivo $objetivo)
+    public function destroy(objetivoDesarrolloSostenible $objetivoDesarrolloSostenible)
     {
         //
     }

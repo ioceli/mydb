@@ -18,7 +18,14 @@
 
 <li><a href="{{route('programa.index')}}">Programa</a></li>
 <li><a href="{{route('proyecto.index')}}">Proyecto</a></li>
-<li><a href="{{route('plan.index')}}">Objetivo</a></li>
+<li class="navbar2"><a> Objetivo </a>
+            <ul class="navbar-menu2">
+                <li><a href="{{ route('objetivoEstrategico.index') }}">Objetivo Estrategico</a></li>
+                <li><a href="{{ route('persona.index') }}">Objetivo Desarrollo Sostenible</a></li>
+                <li><a href="{{ route('persona.index') }}">Objetivo Plan Nacional de Desarrollo</a></li>
+            </ul>
+        </li>
+
 <li><a href="{{route('plan.index')}}">Meta</a></li>
 <li><a href="{{route('plan.index')}}">Indicador</a></li>
 <li><a href="{{route('plan.index')}}">Auditoria</a></li>

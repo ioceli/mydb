@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\plan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

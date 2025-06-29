@@ -35,7 +35,7 @@
         <li>|</li>
         <li class="navbar1"><a> Objetivo </a>
             <ul class="navbar-menu1">
-                <li><a href="{{ route('persona.index') }}">Objetivo Estrategico</a></li>
+                <li><a href="{{ route('objetivoEstrategico.index') }}">Objetivo Estrategico</a></li>
                 <li><a href="{{ route('persona.index') }}">Objetivo Desarrollo Sostenible</a></li>
                 <li><a href="{{ route('persona.index') }}">Objetivo Plan Nacional de Desarrollo</a></li>
             </ul>

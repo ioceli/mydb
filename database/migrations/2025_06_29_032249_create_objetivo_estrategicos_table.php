@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('objetivo', function (Blueprint $table) {
-            $table->id();
+        Schema::create('objetivo_estrategico', function (Blueprint $table) {
+            $table->id('idObjetivoEstrategico');
             $table->timestamps();
+            $table->string('descripcion');
+              $table->date('fechaRegistro');
+            $table->enum('estado',['Activo','Inactivo']);
         });
     }
 
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('objetivo');
+        Schema::dropIfExists('objetivo_estrategico');
     }
 };

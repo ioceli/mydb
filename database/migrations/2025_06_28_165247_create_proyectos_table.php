@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('proyecto', function (Blueprint $table) {
             $table->id('idProyecto');
-           $table->string('nombre')->nullable();
+           $table->string('nombre');
             $table->enum('estado',['Activo','Inactivo']);
             $table->timestamps();
             });

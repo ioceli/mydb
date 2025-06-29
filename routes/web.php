@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EntidadController;
+use App\Http\Controllers\ObjetivoEstrategicoController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProgramaController;
@@ -26,3 +27,5 @@ Route::resource('plan', PlanController::class);
 Route::resource('proyecto', ProyectoController::class);
 //RUTA PARA MODULO PROGRAMA
 Route::resource('programa', ProgramaController::class);
+//RUTA PARA MODULO OBJETIVO ESTRATEGICO
+Route::resource('objetivoEstrategico', ObjetivoEstrategicoController::class);
