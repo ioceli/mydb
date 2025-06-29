@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View as FacadesView;
 use Illuminate\Validation\Rules\Unique;
 use Ramsey\Uuid\Type\Integer;
+use App\Enums\EstadoEnum;
+use Illuminate\Validation\Rule;
 
 class EntidadController extends Controller
 {
@@ -39,7 +41,7 @@ class EntidadController extends Controller
             'codigo'=>'required|integer|unique:entidad,codigo',
             'subSector'=>'required|string',
             'nivelGobierno'=>'required|string',
-            'estado'=>'required|string',
+             'estado'=>['required',Rule::in(EstadoEnum::values())],
             'fechaCreacion'=>'required|date',
             'fechaActualizacion'=>'nullable|date',
        ]);
@@ -69,18 +71,32 @@ class EntidadController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'codigo'=>'required|integer|unique:entidad,codigo' , $id . 'idEntidad',
+          // Buscar la entidad por su ID
+    $entidad = Entidad::findOrFail($id);
+        //Validar Datos
+        $validatedData = $request->validate([
+            'codigo'=>['required','integer', Rule::unique('entidad','codigo')->ignore($entidad->idEntidad, 'idEntidad')],
             'subSector'=>'required|string',
             'nivelGobierno'=>'required|string',
-            'estado'=>'required|string',
+             'estado'=>['required',Rule::in(EstadoEnum::values())],
             'fechaCreacion'=>'required|date',
             'fechaActualizacion'=>'nullable|date',
        ]);
-       $entidad = entidad::findOrfail($id);
-       $entidad->update($request->all());
+
+    // Asignar valores
+    $entidad->codigo = $validatedData['codigo'];
+    $entidad->subSector = $validatedData['subSector'];
+    $entidad->nivelGobierno = $validatedData['nivelGobierno'];
+    $entidad->estado = $validatedData['estado'];
+    $entidad->fechaCreacion = $validatedData['fechaCreacion'];
+    $entidad->fechaActualizacion = $validatedData['fechaActualizacion'];
+    
+    // Guardar cambios
+    $entidad->save();
+       
     return redirect()->route('entidad.index')->with('success','Entidad Actualizada satisfactoriamente');
     }
+
     /**
      * Remove the specified resource from storage.
      */

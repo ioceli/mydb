@@ -3,6 +3,8 @@
 @section('title','Inicio')
 
 @section('content')
+
+
 <h2 class="text-2x1 font-bold mb-4"> Listado de entidades   </h2>
 
 {{--VALIDACION--}}

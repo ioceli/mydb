@@ -4,6 +4,10 @@
 
 @section('content')
 
+@php
+    use App\Enums\EstadoEnum;
+@endphp
+
 @if ($errors->any())
 <div>
     <ul>
@@ -31,8 +35,15 @@
     <input type="text" name="nivelGobierno" required>
 </div>
 <div>
-    <label class="block">Estado</label>
-    <input type="text" name="estado" required>
+    <label class="block">ESTADO</label>
+     <select name="estado" required>
+ <option value="">Seleccione un estado</option>
+        @foreach (EstadoEnum::cases() as $estado)
+            <option value="{{ $estado->value }}" {{ old('estado') === $estado->value ? 'selected' : '' }}>
+                {{ $estado->value }}
+            </option>
+        @endforeach
+    </select>
 </div>
 <div>
     <label class="block">Fecha de Creacion</label>

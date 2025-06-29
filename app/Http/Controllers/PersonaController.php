@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\RolEnum;
+use App\Enums\EstadoEnum;
+use App\Enums\GeneroEnum;
 
 class PersonaController extends Controller
 {
@@ -37,27 +40,10 @@ class PersonaController extends Controller
             'cedula'=>['required', 'string', 'size:10', 'regex:/^[0-9]+$/', 'unique:persona,cedula'],
             'nombres'=>'required|string',
             'apellidos'=>'required|string',
-            'rol'=>[
-            'required',
-            Rule::in([
-                'Administrador del Sistema',
-                'Técnico de Planificación',
-                'Revisor Institucional',
-                'Autoridad Validante',
-                'Usuario Externo',
-                'Auditor',
-                'Desarrollador'
-            ]),
-        ],
-            'estado'=>[
-            'required',
-            Rule::in(['Activo', 'Inactivo']), 
-        ],
+            'rol'=> ['required', Rule::in(RolEnum::values())],
+            'estado'=>['required',Rule::in(EstadoEnum::values())],
             'correo'=>['required', 'email', 'unique:persona,correo'],
-            'genero'=>[
-            'required',
-            Rule::in(['Masculino', 'Femenino', 'Otro']),
-        ],
+            'genero'=>['required',Rule::in(GeneroEnum::values())],
             'telefono'=>['required', 'string', 'regex:/^[0-9]+$/', 'min:9', 'max:15'],
             'contraseña'=>['required', 'string', 'min:8'],
        ]);
@@ -92,40 +78,15 @@ class PersonaController extends Controller
 
     // Validar datos
     $validatedData = $request->validate([
-        'cedula' => [
-            'required',
-            'string',
-            'size:10',
-            'regex:/^[0-9]+$/',
-            Rule::unique('persona', 'cedula')->ignore($persona->idPersona, 'idPersona'),
-        ],
+        'cedula' => ['required','string','size:10','regex:/^[0-9]+$/',
+        Rule::unique('persona', 'cedula')->ignore($persona->idPersona, 'idPersona'),],
         'nombres' => ['required', 'string'],
         'apellidos' => ['required', 'string'],
-        'rol' => [
-            'required',
-            Rule::in([
-                'Administrador del Sistema',
-                'Técnico de Planificación',
-                'Revisor Institucional',
-                'Autoridad Validante',
-                'Usuario Externo',
-                'Auditor',
-                'Desarrollador'
-            ]),
-        ],
-        'estado' => [
-            'required',
-            Rule::in(['Activo', 'Inactivo']),
-        ],
-        'correo' => [
-            'required',
-            'email',
-            Rule::unique('persona', 'correo')->ignore($persona->idPersona, 'idPersona'),
-        ],
-        'genero' => [
-            'required',
-            Rule::in(['Masculino', 'Femenino', 'Otro']),
-        ],
+         'rol'=> ['required', Rule::in(RolEnum::values())],
+        'estado'=>['required',Rule::in(EstadoEnum::values())],
+            'correo' => ['required','email',
+            Rule::unique('persona', 'correo')->ignore($persona->idPersona, 'idPersona'),],
+        'genero'=>['required',Rule::in(GeneroEnum::values())],
         'telefono' => ['required', 'string', 'regex:/^[0-9]{9,15}$/'],
         'contraseña' => ['nullable', 'string', 'min:8'],
     ]);

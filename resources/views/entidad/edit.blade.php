@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title','Editar Entidad')
+@php
+    use App\Enums\EstadoEnum;
+@endphp
 
 @section('content')
 @if ($errors->any())
@@ -32,8 +35,15 @@
     <input type="text" name="nivelGobierno" required value="{{old('nivelGobierno', $entidad->nivelGobierno)}}">
 </div>
 <div>
-    <label class="block">Estado</label>
-    <input type="text" name="estado" required value="{{old('estado', $entidad->estado)}}">
+    <label class="block font-semibold">ESTADO</label>
+    <select name="estado" required>
+        <option value="">Seleccione un estado</option>
+        @foreach (EstadoEnum::cases() as $estado)
+            <option value="{{ $estado->value }}" {{ old('estado',  $persona->estado ??'') === $estado->value? 'selected' : '' }}>
+                {{ $estado->value }}
+            </option>
+        @endforeach
+    </select>
 </div>
 <div>
     <label class="block">Fecha de Creacion</label>

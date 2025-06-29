@@ -4,6 +4,12 @@
 
 @section('content')
 
+@php
+    use App\Enums\RolEnum;
+    use App\Enums\EstadoEnum;
+    use App\Enums\GeneroEnum;
+@endphp
+
 @if ($errors->any())
 <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
     <ul>
@@ -32,24 +38,25 @@
 </div>
 <div>
     <label class="block">ROL</label>
-     <select name="rol" required>
-            <option value="">Seleccione un rol</option>
-            <option value="Administrador del Sistema">Administrador del Sistema</option>
-            <option value="Técnico de Planificación">Técnico de Planificación</option>
-            <option value="Revisor Institucional">Revisor Institucional</option>
-            <option value="Autoridad Validante">Autoridad Validante</option>
-            <option value="Usuario Externo">Usuario Externo</option>
-            <option value="Auditor">Auditor</option>
-            <option value="Desarrollador">Desarrollador</option>
-        </select>
+    <select name="rol" required>
+        <option value="">Seleccione un rol</option>
+        @foreach (RolEnum::cases() as $rol)
+            <option value="{{ $rol->value }}" {{ old('rol') === $rol->value ? 'selected' : '' }}>
+                {{ $rol->value }}
+            </option>
+        @endforeach
+    </select>
 </div>
 <div>
     <label class="block">ESTADO</label>
      <select name="estado" required>
-            <option value="">Seleccione un estado</option>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-        </select>
+ <option value="">Seleccione un estado</option>
+        @foreach (EstadoEnum::cases() as $estado)
+            <option value="{{ $estado->value }}" {{ old('estado') === $estado->value ? 'selected' : '' }}>
+                {{ $estado->value }}
+            </option>
+        @endforeach
+    </select>
 </div>
 <div>
     <label class="block">CORREO</label>
@@ -58,11 +65,13 @@
 <div>
     <label class="block">GENERO</label>
     <select name="genero" required>
-            <option value="">Seleccione un género</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
-        </select>
+            <option value="">Seleccione un genero</option>
+        @foreach (GeneroEnum::cases() as $genero)
+            <option value="{{ $genero->value }}" {{ old('genero') === $genero->value ? 'selected' : '' }}>
+                {{ $genero->value }}
+            </option>
+        @endforeach
+    </select>
 </div>
 <div>
     <label class="block">TELEFONO</label>
