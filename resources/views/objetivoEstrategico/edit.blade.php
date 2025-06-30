@@ -26,16 +26,17 @@
 <div>
     <label class="block">DESCRIPCION</label>
     <input type="text" name="descripcion" required value="{{old('descripcion', $objetivoEstrategico->descripcion)}}">
-<div>
+</div>
 <div>
     <label class="block">FECHA REGISTRO</label>AA
     <input type="date" name="fechaRegistro" required value="{{old('fechaRegistro', $objetivoEstrategico->fechaRegistro)}}">>
 </div>
+<div>
     <label class="block font-semibold">ESTADO</label>
     <select name="estado" required>
         <option value="">Seleccione un estado</option>
         @foreach (EstadoEnum::cases() as $estado)
-            <option value="{{ $estado->value }}" {{ old('estado',  $persona->estado ??'') === $estado->value? 'selected' : '' }}>
+            <option value="{{ $estado->value }}" {{ old('estado',  $objetivoEstrategico->estado ??'') === $estado->value? 'selected' : '' }}>
                 {{ $estado->value }}
             </option>
         @endforeach

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->integer('codigo')->unique();
             $table->string('nombre');
             $table->string('descripcion');
-           $table->enum('ejePnd',['social','desarrollo','infraestructura','institucional','gestion']);
-            });
+           $table->enum('ejePnd',['EJE SOCIAL','EJE DESARROLLO ECONOMICO','EJE INFRAESTRUCTURA ENERCIA MEDIO AMBIENTE','EJE INSTITUCIONAL','EJE GESTION RIESGOS']);
+ 
+        });
     }
 
     /**

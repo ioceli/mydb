@@ -36,12 +36,12 @@
         <li class="navbar1"><a> Objetivo </a>
             <ul class="navbar-menu1">
                 <li><a href="{{ route('objetivoEstrategico.index') }}">Objetivo Estrategico</a></li>
-                <li><a href="{{ route('persona.index') }}">Objetivo Desarrollo Sostenible</a></li>
-                <li><a href="{{ route('persona.index') }}">Objetivo Plan Nacional de Desarrollo</a></li>
+                <li><a href="{{ route('objetivoDesarrolloSostenible.index') }}">Objetivo Desarrollo Sostenible</a></li>
+                <li><a href="{{ route('objetivoPlanNacional.index') }}">Objetivo Plan Nacional de Desarrollo</a></li>
             </ul>
         </li>
         <li>|</li>
-        <li><a href="{{ route('persona.index') }}">Meta</a></li>
+        <li><a href="{{ route('metaEstrategica.index') }}">Meta Estrategica</a></li>
         <li>|</li>
         <li><a href="{{ route('persona.index') }}">Indicador</a></li>
         <li>|</li>
