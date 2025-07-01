@@ -12,8 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('indicador', function (Blueprint $table) {
-            $table->id();
+            $table->id('idIndicador');
             $table->timestamps();
+            $table->string('nombre');
+            $table->string('descripcion');
+            $table->date('fechaMedicion');
+            $table->string('formula');
+            $table->string('tipo');
+            $table->string('unidadMedida');
+            $table->decimal('valorActual');
+            $table->decimal('valorBase');
+            $table->decimal('valorMeta');
         });
     }
 

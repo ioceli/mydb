@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\programa;
+use App\Models\entidad;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,8 @@ class ProgramaController extends Controller
      */
     public function create()
     {
-       return view('programa.create');
+        $entidad = entidad::all();
+       return view('programa.create', compact('entidad'));
     }
 
     /**
@@ -33,6 +35,7 @@ class ProgramaController extends Controller
     public function store(Request $request)
      {
           $request->validate([
+            'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
       ]);
@@ -54,7 +57,8 @@ class ProgramaController extends Controller
     public function edit($id)
     {
          $programa = programa::findOrfail($id);
-        return view('programa.edit',compact('programa'));
+         $entidad = entidad::all();
+        return view('programa.edit',compact('programa','entidad'));
     }
 
     /**
@@ -63,7 +67,8 @@ class ProgramaController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nombre'=>'required|string', $id . 'idPrograma',
+            'idEntidad'=>'required|exists:entidad,idEntidad',
+            'nombre'=>'required|string',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
         ]);
        $programa = programa::findOrfail($id);

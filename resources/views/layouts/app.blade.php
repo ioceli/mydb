@@ -48,9 +48,9 @@
             </ul>
         </li>
         <li>|</li>
-        <li><a href="{{ route('persona.index') }}">Indicador</a></li>
+        <li><a href="{{ route('indicador.index') }}">Indicador</a></li>
         <li>|</li>
-        <li><a href="{{ route('persona.index') }}">Auditoria</a></li>
+        <li><a href="{{ route('auditoria.index') }}">Auditoria</a></li>
     </ul>
 </nav>
 

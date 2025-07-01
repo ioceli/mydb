@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h2 class="text-2x1 font-bold mb-4"> Bienvenido al modulo de Planificacion -SIPeIP>   </h2>
+<h2 class="text-2x1 font-bold mb-4"> Bienvenido al modulo de Planificacion -SIPeIP   </h2>
 
 <p class="mb-4"> Seleccione la opcion del menu para comenzar: </p> 
 
@@ -31,7 +31,7 @@
                 <li><a href="{{ route('metaPlanNacional.index') }}">Meta Plan Nacional</a></li>
             </ul>
 </li>
-<li><a href="{{route('inicador.index')}}">Indicador</a></li>
-<li><a href="{{route('plan.index')}}">Auditoria</a></li>
+<li><a href="{{route('indicador.index')}}">Indicador</a></li>
+<li><a href="{{route('auditoria.index')}}">Auditoria</a></li>
 
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 
 class entidad extends Model
@@ -20,4 +21,9 @@ protected $fillable = [
     'fechaCreacion',
     'fechaActualizacion',
 ];
+/* RELACION 1:N UNA ENTIDAD TIENE MUCHOS PROGRAMAS*/
+public function programa ():HasMany
+{
+    return $this->hasMany(programa::class,'idEntidad','idEntidad');
+}
 }
