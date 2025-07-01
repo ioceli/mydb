@@ -123,3 +123,34 @@
 .navbar1:hover .navbar-menu1 {
     display: block;
 }
+.navbar4 {
+    position: relative;
+}
+
+.navbar-menu4 {
+    display: none;
+    position: absolute;
+    background-color: #0055a5;
+    list-style: none;
+    margin-top: 10px;
+    padding: 0;
+    border-radius: 5px;
+    min-width: 180px;
+    z-index: 1000;
+}
+
+.navbar-menu4 li a {
+    display: block;
+    padding: 10px 15px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.navbar-menu4 li a:hover {
+    background-color: #003d7a;
+}
+
+.navbar4:hover .navbar-menu4 {
+    display: block;
+}

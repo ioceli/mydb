@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('nombre');
             $table->string('descripcion');
-            $table->double('porcentajeAlineacion');
+            $table->decimal('porcentajeAlineacion');
         });
     }
 

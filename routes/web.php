@@ -6,6 +6,8 @@ use App\Http\Controllers\ObjetivoPlanNacionalController;
 use App\Http\Controllers\MetaEstrategicaController;
 use App\Http\Controllers\MetaPlanNacionalController;
 use App\Http\Controllers\ObjetivoEstrategicoController;
+use App\Http\Controllers\IndicadorController;
+use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProgramaController;
@@ -41,3 +43,7 @@ Route::resource('objetivoPlanNacional', ObjetivoPlanNacionalController::class);
 Route::resource('metaEstrategica', MetaEstrategicaController::class);
 //RUTA PARA MODULO META PLAN NACIONAL
 Route::resource('metaPlanNacional', MetaPlanNacionalController::class);
+//RUTA PARA MODULO INDICADOR
+Route::resource('indicador', IndicadorController::class);
+//RUTA PARA MODULO AUDITORIA
+Route::resource('auditoria', AuditoriaController::class);

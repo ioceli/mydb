@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\metaPlanNacional;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,7 +11,8 @@ class MetaPlanNacionalController extends Controller
      */
     public function index()
     {
-        //
+         $metaPlanNacional =metaPlanNacional::all(); 
+        return view('metaPlanNacional.index',compact('metaPlanNacional'));
     }
 
     /**
@@ -21,7 +20,7 @@ class MetaPlanNacionalController extends Controller
      */
     public function create()
     {
-        //
+       return view('metaPlanNacional.create');
     }
 
     /**
@@ -29,7 +28,13 @@ class MetaPlanNacionalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+          $request->validate([
+            'nombre'=>'required|string',
+            'descripcion'=>'required|string',
+            'porcentajeAlineacion'=>'required|numeric',
+        ]);
+       metaPlanNacional::create($request->all());
+    return redirect()->route('metaPlanNacional.index')->with('success','Meta del Plan Nacional Creada satisfactoriamente');
     }
 
     /**
@@ -43,24 +48,35 @@ class MetaPlanNacionalController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(metaPlanNacional $metaPlanNacional)
+    public function edit( $id)
     {
-        //
+         $metaPlanNacional = metaPlanNacional::findOrfail($id);
+        return view('metaPlanNacional.edit',compact('metaPlanNacional'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, metaPlanNacional $metaPlanNacional)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nombre'=>'required|string', $id . 'idMetaPlanNacional',
+            'descripcion'=>'required|string',
+            'porcentajeAlineacion'=>'required|numeric',
+            
+        ]);
+       $metaPlanNacional = metaPlanNacional::findOrfail($id);
+       $metaPlanNacional->update($request->all());
+    return redirect()->route('metaPlanNacional.index')->with('success','Meta del Plan Nacional Actualizada satisfactoriamente');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(metaPlanNacional $metaPlanNacional)
+    public function destroy($id)
     {
-        //
+        $metaPlanNacional = metaPlanNacional::findOrfail($id);
+        $metaPlanNacional->delete();
+return redirect()->route('metaPlanNacional.index')->with('success','Meta del Plan Nacional Eliminada satisfactoriamente');
     }
 }

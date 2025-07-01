@@ -39,9 +39,14 @@
                 <li><a href="{{ route('objetivoDesarrolloSostenible.index') }}">Objetivo Desarrollo Sostenible</a></li>
                 <li><a href="{{ route('objetivoPlanNacional.index') }}">Objetivo Plan Nacional de Desarrollo</a></li>
             </ul>
+            <li>|</li>
         </li>
-        <li>|</li>
-        <li><a href="{{ route('metaEstrategica.index') }}">Meta Estrategica</a></li>
+          <li class="navbar4"><a> Meta </a>
+            <ul class="navbar-menu4">
+                <li><a href="{{ route('metaEstrategica.index') }}">Meta Estrategica</a></li>
+                <li><a href="{{ route('metaPlanNacional.index') }}">Meta Plan Nacional</a></li>
+            </ul>
+        </li>
         <li>|</li>
         <li><a href="{{ route('persona.index') }}">Indicador</a></li>
         <li>|</li>

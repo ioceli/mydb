@@ -11,8 +11,8 @@ protected $table = 'meta_plan_nacional';
 protected $primaryKey='idMetaPlanNacional';
 public $timestamps =false;
 protected $fillable = [
-    'numero',
     'nombre',
+    'descripcion',
     'porcentajeAlineacion',
 ];
 }

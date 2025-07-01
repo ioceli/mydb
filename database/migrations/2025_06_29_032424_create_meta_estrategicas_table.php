@@ -16,11 +16,11 @@ return new class extends Migration
             $table->timestamps();
             $table->string('nombre');
             $table->string('descripcion');
-            $table->string('fechaInicio');
-            $table->string('fechaFin');
+            $table->date('fechaInicio');
+            $table->date('fechaFin');
             $table->string('formulaIndicador');
-            $table->double('metaEsperada');
-            $table->double('progresoActual');
+            $table->decimal('metaEsperada');
+            $table->decimal('progresoActual');
             $table->integer('tipoIndicador');
             $table->string('unidadMedida');
         });
