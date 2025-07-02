@@ -19,9 +19,19 @@
 </div>
 @endif
 
-{{--FORMULAIO PARA LA CREACION DE OBJETIVO ESTRATEGICO--}}
+{{--FORMULARIO PARA LA CREACION DE OBJETIVO ESTRATEGICO--}}
 <form action="{{ route ('objetivoEstrategico.store')}} "method="POST" class="space-y-4">
     @csrf
+<div>
+    <label class="block">PLAN</label>
+    <select name="idPlan" required>
+        @foreach ($plan as $plan)
+        <option value="{{$plan->idPlan}}">{{$plan->nombre}}
+
+        </option>
+        @endforeach
+    </select>
+ </div>
 <div>
     <label class="block">DESCRIPCION</label>
     <input type="text" name="descripcion" required>

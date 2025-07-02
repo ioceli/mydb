@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\objetivoEstrategico;
+use App\Models\plan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,7 +23,8 @@ class ObjetivoEstrategicoController extends Controller
      */
     public function create()
     {
-       return view('objetivoEstrategico.create');
+          $plan = plan::all();
+       return view('objetivoEstrategico.create', compact('plan'));
     }
 
     /**
@@ -31,6 +33,7 @@ class ObjetivoEstrategicoController extends Controller
     public function store(Request $request)
     {
           $request->validate([
+            'idPlan'=>'required|exists:plan,idPlan',
             'descripcion'=>'required|string',
             'fechaRegistro'=>'required|date',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
@@ -53,7 +56,8 @@ class ObjetivoEstrategicoController extends Controller
     public function edit($id)
     {
          $objetivoEstrategico = objetivoEstrategico::findOrfail($id);
-        return view('objetivoEstrategico.edit',compact('objetivoEstrategico'));
+          $plan = plan::all();
+        return view('objetivoEstrategico.edit',compact('objetivoEstrategico','plan'));
     }
 
     /**
@@ -62,6 +66,7 @@ class ObjetivoEstrategicoController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'idPlan'=>'required|exists:plan,idPlan',
             'descripcion'=>'required|string', $id . 'idObjetivoEstrategico',
             'fechaRegistro'=>'required|date',
             'estado'=>['required',Rule::in(EstadoEnum::values())],

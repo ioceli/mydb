@@ -74,7 +74,7 @@ class EntidadController extends Controller
           // Buscar la entidad por su ID
     $entidad = Entidad::findOrFail($id);
         //Validar Datos
-        $validatedData = $request->validate([
+            $request->validate([
             'codigo'=>['required','integer', Rule::unique('entidad','codigo')->ignore($entidad->idEntidad, 'idEntidad')],
             'subSector'=>'required|string',
             'nivelGobierno'=>'required|string',
@@ -82,18 +82,7 @@ class EntidadController extends Controller
             'fechaCreacion'=>'required|date',
             'fechaActualizacion'=>'required|date',
        ]);
-
-    // Asignar valores
-    $entidad->codigo = $validatedData['codigo'];
-    $entidad->subSector = $validatedData['subSector'];
-    $entidad->nivelGobierno = $validatedData['nivelGobierno'];
-    $entidad->estado = $validatedData['estado'];
-    $entidad->fechaCreacion = $validatedData['fechaCreacion'];
-    $entidad->fechaActualizacion = $validatedData['fechaActualizacion'];
-    
-    // Guardar cambios
-    $entidad->save();
-       
+     
     return redirect()->route('entidad.index')->with('success','Entidad Actualizada satisfactoriamente');
     }
 

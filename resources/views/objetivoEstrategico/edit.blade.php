@@ -22,7 +22,16 @@
 <form action="{{route ('objetivoEstrategico.update', $objetivoEstrategico->idObjetivoEstrategico )}}"method="POST" class="space-y-4">
 @csrf
 @method('PUT')
+<div>
+    <label class="block">PLAN</label>
+    <select name="idPlan" required>
+        @foreach ($plan as $plan)
+        <option value="{{$plan->idPlan}}">{{$plan->nombre}}
 
+        </option>
+        @endforeach
+    </select>
+ </div>
 <div>
     <label class="block">DESCRIPCION</label>
     <input type="text" name="descripcion" required value="{{old('descripcion', $objetivoEstrategico->descripcion)}}">
