@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\entidad;
 use App\Models\proyecto;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -24,7 +24,8 @@ class ProyectoController extends Controller
      */
     public function create()
     {
-       return view('proyecto.create');
+        $entidad = entidad::all();
+       return view('proyecto.create', compact('entidad'));
     }
 
     /**
@@ -33,6 +34,7 @@ class ProyectoController extends Controller
     public function store(Request $request)
      {
           $request->validate([
+            'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
       ]);
@@ -54,7 +56,8 @@ class ProyectoController extends Controller
     public function edit($id)
     {
          $proyecto = proyecto::findOrfail($id);
-        return view('proyecto.edit',compact('proyecto'));
+        $entidad = entidad::all();
+        return view('proyecto.edit',compact('proyecto','entidad'));
     }
 
     /**
@@ -63,6 +66,7 @@ class ProyectoController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string', $id . 'idProyecto',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
         ]);

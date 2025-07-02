@@ -22,6 +22,16 @@
 {{--FORMULAIO PARA LA CREACION DE PROYECTOS--}}
 <form action="{{ route ('proyecto.store')}} "method="POST" class="space-y-4">
     @csrf
+    <div>
+    <label class="block">ENTIDAD</label>
+    <select name="idEntidad" required>
+        @foreach ($entidad as $entidad)
+        <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}
+
+        </option>
+        @endforeach
+    </select>
+ </div>
 <div>
     <label class="block">NOMBRE</label>
     <input type="text" name="nombre" required>

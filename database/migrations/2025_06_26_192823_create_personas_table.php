@@ -14,6 +14,8 @@ return new class extends Migration
     {
         Schema::create('persona', function (Blueprint $table) {
             $table->id('idPersona');
+            $table->unsignedBigInteger('idEntidad');
+            $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
             $table->string('cedula',10)->unique();
             $table->string('nombres');
             $table->string('apellidos');

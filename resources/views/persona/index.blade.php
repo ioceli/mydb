@@ -20,6 +20,7 @@
 <thead>
 <tr>
 <th style="border: 1px solid #ccc; padding: 8px">ID</th>
+<th style="border: 1px solid #ccc; padding: 8px">ENTIDAD</th>
 <th style="border: 1px solid #ccc; padding: 8px">CEDULA</th>
 <th style="border: 1px solid #ccc; padding: 8px">NOMBRES</th>
 <th style="border: 1px solid #ccc; padding: 8px">APELLIDOS</th>
@@ -37,7 +38,8 @@
 <tbody> 
     @foreach($persona as $persona)
     <tr>
-        <td style="border: 1px solid #ccc; padding: 8px">{{$persona->idPersona}}</td>
+<td style="border: 1px solid #ccc; padding: 8px">{{$persona->idPersona}}</td>
+<td style="border: 1px solid #ccc; padding: 8px">{{$persona->entidad->subSector}}</td>
 <td style="border: 1px solid #ccc; padding: 8px">{{$persona->cedula}}</td>
 <td style="border: 1px solid #ccc; padding: 8px">{{$persona->nombres}}</td>
 <td style="border: 1px solid #ccc; padding: 8px">{{$persona->apellidos}}</td>

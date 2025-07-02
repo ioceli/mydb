@@ -26,4 +26,19 @@ public function programa ():HasMany
 {
     return $this->hasMany(programa::class,'idEntidad','idEntidad');
 }
+/* RELACION 1:N UNA ENTIDAD TIENE MUCHAS PERSONAS*/
+public function persona ():HasMany
+{
+    return $this->hasMany(persona::class,'idEntidad','idEntidad');
+}
+/* RELACION 1:N UNA ENTIDAD TIENE MUCHOS PLANES*/
+public function plan ():HasMany
+{
+    return $this->hasMany(plan::class,'idEntidad','idEntidad');
+}
+/* RELACION 1:N UNA ENTIDAD TIENE MUCHOS PROYECTOS*/
+public function proyecto ():HasMany
+{
+    return $this->hasMany(proyecto::class,'idEntidad','idEntidad');
+}
 }

@@ -11,6 +11,8 @@ return new class extends Migration
     {
         Schema::create('plan', function (Blueprint $table) {
             $table->id('idPlan');
+            $table->unsignedBigInteger('idEntidad');
+            $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
             $table->string('nombre');
             $table->enum('estado',['Activo','Inactivo']);
             $table->timestamps();

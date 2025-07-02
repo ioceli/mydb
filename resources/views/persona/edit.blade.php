@@ -24,7 +24,15 @@
 <form action="{{route ('persona.update', $persona->idPersona )}}"method="POST" class="space-y-4">
 @csrf
 @method('PUT')
-
+<div>
+    <label class="block">ENTIDAD</label>
+    <select name="idEntidad" required>
+        @foreach ($entidad as $entidad)
+        <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}
+        </option>
+        @endforeach
+    </select>
+ </div>
 <div>
         <label class="block font-semibold">CÉDULA</label>
         <input type="text" name="cedula" value="{{ old('cedula', $persona->cedula) }}" maxlength="10" pattern="[0-9]{10}" required>

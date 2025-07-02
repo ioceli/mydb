@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\entidad;
 use App\Models\plan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -22,7 +23,8 @@ class PlanController extends Controller
      */
     public function create()
     {
-       return view('plan.create');
+        $entidad = entidad::all();
+       return view('plan.create', compact('entidad'));
     }
 
     /**
@@ -31,6 +33,7 @@ class PlanController extends Controller
     public function store(Request $request)
      {
           $request->validate([
+            'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
       ]);
@@ -52,7 +55,8 @@ class PlanController extends Controller
     public function edit($id)
     {
          $plan = plan::findOrfail($id);
-        return view('plan.edit',compact('plan'));
+        $entidad = entidad::all();
+        return view('plan.edit',compact('plan','entidad'));
     }
 
     /**
@@ -61,6 +65,7 @@ class PlanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string', $id . 'idPLan',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
         ]);

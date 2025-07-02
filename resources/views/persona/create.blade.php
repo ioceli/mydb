@@ -24,6 +24,16 @@
 {{--FORMULARIO PARA LA CREACION DE PERSONA--}}
 <form action="{{ route ('persona.store')}} "method="POST" class="space-y-4">
     @csrf
+    <div>
+    <label class="block">ENTIDAD</label>
+    <select name="idEntidad" required>
+        @foreach ($entidad as $entidad)
+        <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}
+
+        </option>
+        @endforeach
+    </select>
+ </div>
 <div>
     <label class="block">CEDULA</label>
     <input type="text" name="cedula"  maxlength="10" pattern="[0-9]{10}" required>

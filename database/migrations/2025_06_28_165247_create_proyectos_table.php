@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('proyecto', function (Blueprint $table) {
             $table->id('idProyecto');
+            $table->unsignedBigInteger('idEntidad');
+            $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
            $table->string('nombre');
             $table->enum('estado',['Activo','Inactivo']);
             $table->timestamps();

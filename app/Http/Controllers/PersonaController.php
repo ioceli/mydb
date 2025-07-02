@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\entidad;
 use App\Models\persona;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -28,7 +28,8 @@ class PersonaController extends Controller
      */
     public function create()
     {
-        return view('persona.create');
+        $entidad = entidad::all();
+       return view('persona.create', compact('entidad'));
     }
 
     /**
@@ -37,6 +38,7 @@ class PersonaController extends Controller
     public function store(Request $request)
     {
           $request->validate([
+            'idEntidad'=>'required|exists:entidad,idEntidad',
             'cedula'=>['required', 'string', 'size:10', 'regex:/^[0-9]+$/', 'unique:persona,cedula'],
             'nombres'=>'required|string',
             'apellidos'=>'required|string',
@@ -65,7 +67,8 @@ class PersonaController extends Controller
     public function edit($id)
     {
         $persona = persona::findOrfail($id);
-        return view('persona.edit',compact('persona'));
+        $entidad = entidad::all();
+        return view('persona.edit',compact('persona','entidad'));
     }
 
     /**
@@ -74,10 +77,11 @@ class PersonaController extends Controller
     public function update(Request $request, $id)
 {
     // Buscar la persona por su ID
-    $persona = Persona::findOrFail($id);
+    $persona = persona::findOrFail($id);
 
     // Validar datos
-    $validatedData = $request->validate([
+    $request->validate([
+        'idEntidad'=>'required|exists:entidad,idEntidad',
         'cedula' => ['required','string','size:10','regex:/^[0-9]+$/',
         Rule::unique('persona', 'cedula')->ignore($persona->idPersona, 'idPersona'),],
         'nombres' => ['required', 'string'],
@@ -90,22 +94,7 @@ class PersonaController extends Controller
         'telefono' => ['required', 'string', 'regex:/^[0-9]{9,15}$/'],
         'contraseña' => ['nullable', 'string', 'min:8'],
     ]);
-
-    // Asignar valores
-    $persona->cedula = $validatedData['cedula'];
-    $persona->nombres = $validatedData['nombres'];
-    $persona->apellidos = $validatedData['apellidos'];
-    $persona->rol = $validatedData['rol'];
-    $persona->estado = $validatedData['estado'];
-    $persona->correo = $validatedData['correo'];
-    $persona->genero = $validatedData['genero'];
-    $persona->telefono = $validatedData['telefono'];
-    $persona->contraseña = $validatedData['contraseña'];
-
-    // Guardar cambios
-    $persona->save();
-
-    return redirect()->route('persona.index')->with('success', 'Persona actualizada correctamente.');
+   return redirect()->route('persona.index')->with('success', 'Persona actualizada correctamente.');
 }
 
     /**
