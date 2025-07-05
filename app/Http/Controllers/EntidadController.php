@@ -82,7 +82,8 @@ class EntidadController extends Controller
             'fechaCreacion'=>'required|date',
             'fechaActualizacion'=>'required|date',
        ]);
-     
+      $entidad = entidad::findOrfail($id);
+       $entidad->update($request->all());
     return redirect()->route('entidad.index')->with('success','Entidad Actualizada satisfactoriamente');
     }
 

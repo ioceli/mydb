@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\EntidadController;
 use App\Http\Controllers\ObjetivoDesarrolloSostenibleController;
 use App\Http\Controllers\ObjetivoPlanNacionalController;
@@ -12,21 +11,39 @@ use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProgramaController;
 use App\Http\Controllers\ProyectoController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('inicio');
-})->name('inicio');
-
-//  REDIRECCION AL INICIO
-Route::get('/home', function () {
-    return view('inicio');
+    return view('welcome');
 });
 
-//RUTA PARA MODULO ENTIDAD
-Route::resource('entidad', EntidadController::class);
+/* Route::get('/', function () {
+    return view('home');
+}); */ 
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+      Route::get('/dashboard/admin', fn() => view('dashboard.admin'))->name('dashboard.admin');
+    Route::get('/dashboard/tecnico', fn() => view('dashboard.tecnico'))->name('dashboard.tecnico');
+    Route::get('/dashboard/revisor', fn() => view('dashboard.revisor'))->name('dashboard.revisor');
+    Route::get('/dashboard/autoridad', fn() => view('dashboard.autoridad'))->name('dashboard.autoridad');
+    Route::get('/dashboard/externo', fn() => view('dashboard.externo'))->name('dashboard.externo');
+    Route::get('/dashboard/auditor', fn() => view('dashboard.auditor'))->name('dashboard.auditor');
+    Route::get('/dashboard/desarrollador', fn() => view('dashboard.desarrollador'))->name('dashboard.desarrollador');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
 //RUTA PARA MODULO PERSONA
 Route::resource('persona', PersonaController::class);
+//RUTA PARA MODULO ENTIDAD
+Route::resource('entidad', EntidadController::class);
 //RUTA PARA MODULO PLAN
 Route::resource('plan', PlanController::class);
 //RUTA PARA MODULO PROYECTO

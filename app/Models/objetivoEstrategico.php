@@ -2,7 +2,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 class objetivoEstrategico extends Model
 {
     use HasFactory;
@@ -15,9 +15,8 @@ protected $fillable = [
     'fechaRegistro',
     'estado',
 ];
-/* RELACION 1:N UN OBJETIVO ESTRATEGICO PERTENECE A UN PLAN*/
-public function plan ():BelongsTo
+public function plan()
 {
-    return $this->belongsTo(plan::class,'idPlan','idPlan');
+    return $this->hasMany(Plan::class, 'idObjetivoEstrategico');
 }
 }

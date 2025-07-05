@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('objetivo_estrategico', function (Blueprint $table) {
             $table->id('idObjetivoEstrategico');
-            $table->unsignedBigInteger('idPlan');
-            $table->foreign('idPlan')->references('idPlan')->on('plan')->onDelete('cascade');
             $table->string('descripcion');
             $table->date('fechaRegistro');
             $table->enum('estado',['Activo','Inactivo']);

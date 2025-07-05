@@ -20,7 +20,7 @@
 <thead>
 <tr>
 <th style="border: 1px solid #ccc; padding: 8px">ID</th>
-<th style="border: 1px solid #ccc; padding: 8px">PLAN</th>
+
 <th style="border: 1px solid #ccc; padding: 8px">DESCRIPCION</th>
 <th style="border: 1px solid #ccc; padding: 8px">FECHA REGISTRO</th>
 <th style="border: 1px solid #ccc; padding: 8px">ESTADO</th>
@@ -33,7 +33,6 @@
     @foreach($objetivoEstrategico as $objetivoEstrategico)
     <tr>
         <td style="border: 1px solid #ccc; padding: 8px">{{$objetivoEstrategico->idObjetivoEstrategico}}</td>
-        <td style="border: 1px solid #ccc; padding: 8px">{{$objetivoEstrategico->plan->nombre}}</td>
         <td style="border: 1px solid #ccc; padding: 8px">{{$objetivoEstrategico->descripcion}}</td>
         <td style="border: 1px solid #ccc; padding: 8px">{{$objetivoEstrategico->fechaRegistro}}</td>
         <td style="border: 1px solid #ccc; padding: 8px">{{$objetivoEstrategico->estado}}</td>
