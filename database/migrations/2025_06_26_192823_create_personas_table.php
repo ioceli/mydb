@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('idEntidad');
             $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
             $table->string('cedula',10)->unique();
-            $table->string('nombres');
+            $table->string('name');
             $table->string('apellidos');
             $table->enum('rol',['Administrador del Sistema',
                 'Técnico de Planificación',

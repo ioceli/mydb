@@ -1,5 +1,6 @@
 @extends('layouts.master')
-
+@section('title', 'Panel del Desarrollador')
+@section('content')
 <x-slot name="header">Panel del Desarrollador</x-slot>
 
 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -11,3 +12,4 @@
         <li><a href="{{ route('logs.index') }}">Desarrollar Funcionalidades</a></li>
     </ul>
 </div>
+@endsection

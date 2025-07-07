@@ -29,39 +29,9 @@
     </header>
 
     {{-- Barra de navegación --}}
-    <nav class="navbar navbar-expand-lg navbar-secondary bg-light border-bottom px-4">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{{ url('/') }}">Inicio</a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('entidad.index') }}">Entidad</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('plan.index') }}">Plan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('programa.index') }}">Programa</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('proyecto.index') }}">Proyecto</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Objetivo</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('objetivoEstrategico.index') }}">Objetivo Estratégico</a></li>
-                            <li><a class="dropdown-item" href="{{ route('objetivoDesarrolloSostenible.index') }}">Objetivo ODS</a></li>
-                            <li><a class="dropdown-item" href="{{ route('objetivoPlanNacional.index') }}">Objetivo PND</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Meta</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('metaEstrategica.index') }}">Meta Estratégica</a></li>
-                            <li><a class="dropdown-item" href="{{ route('metaPlanNacional.index') }}">Meta PND</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('indicador.index') }}">Indicador</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('auditoria.index') }}">Auditoría</a></li>
-                </ul>
-
+<nav class="bg-blue-600 text-white border-b border-blue-800 px-4 py-2 shadow">
+    <div class="container mx-auto flex items-center justify-between">
+        <a href="{{ url('/') }}" class="text-xl font-semibold">Inicio</a>          
                 {{-- Sesión del usuario --}}
                 <div class="d-flex align-items-center">
                     @guest
@@ -94,7 +64,7 @@
     </main>
 
     {{-- Pie de página --}}
-    <footer class="text-center mt-4 py-3 bg-light">
+    <footer class="text-center mt-4 py-3 bg-gray-200">
         <small>&copy; {{ date('Y') }} Secretaría Nacional de Planificación. Todos los derechos reservados.</small>
     </footer>
 

@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Panel del Administrador')
+@section('title', 'Panel del Tecnico')
 @section('content')
 <x-slot name="header">Panel del Técnico de Planificación</x-slot>
 

@@ -8,7 +8,7 @@
     <p class="mb-4">Usted puede gestionar los usuarios y entidades del sistema.</p>
 
     <ul class="list-disc ml-6 text-blue-700 space-y-2">
-        <li><a href="{{ route('profile.edit') }}">Gestión de Usuarios</a></li>
+        <li><a href="{{ route('persona.index') }}">Gestión de Usuarios</a></li>
         <li><a href="{{ route('entidad.index') }}">Gestión de Entidades</a></li>
     </ul>
 </div>

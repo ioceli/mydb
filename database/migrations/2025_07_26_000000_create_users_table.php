@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id('idUser');
+            $table->unsignedBigInteger('idEntidad')->nullable();
+            $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
             $table->string('cedula',10)->unique();
             $table->string('name');
             $table->string('apellidos');

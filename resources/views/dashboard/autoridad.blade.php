@@ -1,5 +1,6 @@
 @extends('layouts.master')
-
+@section('title', 'Panel del Autoridad')
+@section('content')
 <x-slot name="header">Panel de la Autoridad Validante</x-slot>
 
 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -10,3 +11,4 @@
         <li><a href="{{ route('plan.index') }}">Registrar Observaciones</a></li>
     </ul>
 </div>
+@endsection

@@ -1,109 +1,110 @@
 <?php
-
 namespace App\Http\Controllers;
-use App\Models\entidad;
-use App\Models\persona;
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Persona;
+use App\Models\Entidad;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-use App\Enums\RolEnum;
+use Illuminate\Validation\Rule;
 use App\Enums\EstadoEnum;
+use App\Enums\RolEnum;
 use App\Enums\GeneroEnum;
-
 class PersonaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-     public function index()
-    {
-        $persona =persona::all(); 
-        return view('persona.index',compact('persona'));
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $entidad = entidad::all();
-       return view('persona.create', compact('entidad'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-          $request->validate([
-            'idEntidad'=>'required|exists:entidad,idEntidad',
-            'cedula'=>['required', 'string', 'size:10', 'regex:/^[0-9]+$/', 'unique:persona,cedula'],
-            'nombres'=>'required|string',
-            'apellidos'=>'required|string',
-            'rol'=> ['required', Rule::in(RolEnum::values())],
-            'estado'=>['required',Rule::in(EstadoEnum::values())],
-            'correo'=>['required', 'email', 'unique:persona,correo'],
-            'genero'=>['required',Rule::in(GeneroEnum::values())],
-            'telefono'=>['required', 'string', 'regex:/^[0-9]+$/', 'min:9', 'max:15'],
-            'contraseña'=>['required', 'string', 'min:8'],
-       ]);
-       persona::create($request->all());
-    return redirect()->route('persona.index')->with('success','Persona Creada satisfactoriamente');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(persona $persona)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        $persona = persona::findOrfail($id);
-        $entidad = entidad::all();
-        return view('persona.edit',compact('persona','entidad'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
+public function index()
 {
-    // Buscar la persona por su ID
-    $persona = persona::findOrFail($id);
+    $usuarios = User::all();
+    return view('persona.index', compact('usuarios'));
+}
+    public function create()
+{
+    $entidades = Entidad::all();
+    return view('persona.create', compact('entidades'));
+}
 
+public function store(Request $request)
+{
+    $request->validate([
+        'idEntidad' => 'required|exists:entidad,idEntidad',
+        'cedula' => 'required|string|size:10|unique:users',
+        'name' => 'required|string|max:255',
+        'apellidos' => 'required|string|max:255',
+        'rol' => 'required|string',
+        'estado' => 'required|string',
+        'email' => 'required|email|unique:users,email',
+        'genero' => 'required|string',
+        'telefono' => 'required|string|max:15',
+        'password' => 'required|string|confirmed|min:8',
+    ]);
+
+    User::create([
+        'idEntidad' => $request->idEntidad,
+        'cedula' => $request->cedula,
+        'name' => $request->name,
+        'apellidos' => $request->apellidos,
+        'rol' => $request->rol,
+        'estado' => $request->estado,
+        'email' => $request->email,
+        'genero' => $request->genero,
+        'telefono' => $request->telefono,
+        'password' => Hash::make($request->password),
+    ]);
+
+    return redirect()->route('persona.index')->with('success', 'Usuario creado correctamente.');
+}
+
+public function edit($id)
+{
+    $usuario = User ::findOrfail($id);
+    $entidades = Entidad::all();
+    return view('persona.edit', compact('usuario', 'entidades'));
+}
+
+public function update(Request $request, $id)
+{
+       // Buscar la persona por su ID
+    $usuario = User::findOrFail($id);
+ 
     // Validar datos
     $request->validate([
         'idEntidad'=>'required|exists:entidad,idEntidad',
         'cedula' => ['required','string','size:10','regex:/^[0-9]+$/',
-        Rule::unique('persona', 'cedula')->ignore($persona->idPersona, 'idPersona'),],
-        'nombres' => ['required', 'string'],
+        Rule::unique('users', 'cedula')->ignore($usuario->idUser, 'idUser'),],
+        'name' => ['required', 'string'],
         'apellidos' => ['required', 'string'],
          'rol'=> ['required', Rule::in(RolEnum::values())],
         'estado'=>['required',Rule::in(EstadoEnum::values())],
-            'correo' => ['required','email',
-            Rule::unique('persona', 'correo')->ignore($persona->idPersona, 'idPersona'),],
+            'email' => ['required','email',
+            Rule::unique('users', 'email')->ignore($usuario->idUser, 'idUser'),],
         'genero'=>['required',Rule::in(GeneroEnum::values())],
         'telefono' => ['required', 'string', 'regex:/^[0-9]{9,15}$/'],
-        'contraseña' => ['nullable', 'string', 'min:8'],
+        'password' => ['required', 'string', 'min:8'],
     ]);
+ // Actualizar campos
+    $usuario->idEntidad = $request->idEntidad;
+    $usuario->cedula = $request->cedula;
+    $usuario->name = $request->name; 
+    $usuario->apellidos = $request->apellidos;
+    $usuario->rol = $request->rol;
+    $usuario->estado = $request->estado;
+    $usuario->email = $request->email;
+    $usuario->genero = $request->genero;
+    $usuario->telefono = $request->telefono;
+
+    if ($request->filled('password')) {
+        $usuario->password = Hash::make($request->password);
+    }
+
+    $usuario->save(); 
+
+
    return redirect()->route('persona.index')->with('success', 'Persona actualizada correctamente.');
 }
+public function destroy($id)
+{
+    $usuario = User::findOrFail($id);
+    $usuario->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-       $persona = persona::findOrfail($id);
-        $persona->delete();
-return redirect()->route('persona.index')->with('success','Persona Eliminada satisfactoriamente');
-    }
+    return redirect()->route('persona.index')->with('success', 'Usuario eliminado correctamente.');
+}
 }

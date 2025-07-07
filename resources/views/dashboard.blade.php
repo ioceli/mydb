@@ -23,7 +23,7 @@
                     @endif
 
                     @if(Auth::user()->rol === 'Revisor Institucional')
-                        <li><a href="{{ route('revision.index') }}">Revisión de Proyectos</a></li>
+                        <li><a href="{{ route('plan.index') }}">Revisión de Proyectos</a></li>
                     @endif
 
                     @if(Auth::user()->rol === 'Autoridad Validante')
@@ -39,8 +39,8 @@
                     @endif
 
                     @if(Auth::user()->rol === 'Desarrollador')
-                        <li><a href="{{ route('api.docs') }}">Documentación de la API</a></li>
-                        <li><a href="{{ route('logs.index') }}">Ver Logs del Sistema</a></li>
+                        <li><a href="{{ route('plan.index') }}">Documentación de la API</a></li>
+                        <li><a href="{{ route('plan.index') }}">Ver Logs del Sistema</a></li>
                     @endif
                 </ul>
             </div>

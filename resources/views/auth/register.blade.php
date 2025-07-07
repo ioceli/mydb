@@ -3,12 +3,24 @@
         use App\Enums\EstadoEnum;
         use App\Enums\GeneroEnum;
     @endphp
+
+
 <x-guest-layout>
 
     <form method="POST" action="{{ route('register') }}">
 
         @csrf
+<div>
+   <label for="idEntidad" class="block text-sm font-medium text-gray-700 mb-1">ENTIDAD</label>
 
+<select name="idEntidad" id="idEntidad" 
+    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+    <option value="">Seleccione una entidad</option>
+    @foreach ($entidad as $entidad)
+        <option value="{{ $entidad->idEntidad }}">{{ $entidad->subSector }}</option>
+    @endforeach
+</select>
+ </div>
         <!-- CEDULA -->
         <div>
             <x-input-label for="cedula" :value="__('Cedula')" />

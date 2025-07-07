@@ -1,5 +1,6 @@
 @extends('layouts.master')
-
+@section('title', 'Panel del Revisor')
+@section('content')
 <x-slot name="header">Panel del Revisor Institucional</x-slot>
 
 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -10,3 +11,4 @@
         <li><a href="{{ route('plan.index') }}">Aprobar o Devolver Planes para Revisión</a></li>
     </ul>
 </div>
+@endsection

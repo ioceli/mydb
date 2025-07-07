@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\entidad;
 use App\Enums\RolEnum;
 use App\Enums\EstadoEnum;
 use App\Enums\GeneroEnum;
@@ -23,7 +24,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+              $entidad = entidad::all();
+        return view('auth.register',compact('entidad'));
     }
 
     /**
@@ -34,6 +36,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
+            'idEntidad'=>'nullable|exists:entidad,idEntidad',
             'cedula'=>['required', 'string', 'size:10', 'regex:/^[0-9]+$/', 'unique:users,cedula'],
             'name' => ['required', 'string', 'max:255'],
            'apellidos'=>'required|string',

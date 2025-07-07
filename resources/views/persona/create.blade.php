@@ -1,7 +1,5 @@
-@extends('layouts.master')
-
-@section('title','Nueva Persona')
-
+@extends('layouts.master') 
+@section('title', 'Nueva Persona')
 @section('content')
 
 @php
@@ -10,92 +8,52 @@
     use App\Enums\GeneroEnum;
 @endphp
 
-@if ($errors->any())
-<div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-    <ul>
-        @foreach($errors->all() as $error )
-        <li>-{{$error}}</li>
-@endforeach
-        
-    </ul>
-</div>
-@endif
+<h2 class="text-xl font-bold mb-4">Registrar nuevo usuario</h2>
 
-{{--FORMULARIO PARA LA CREACION DE PERSONA--}}
-<form action="{{ route ('persona.store')}} "method="POST" class="space-y-4">
-    @csrf
-    <div>
-    <label class="block">ENTIDAD</label>
-    <select name="idEntidad" required>
-        @foreach ($entidad as $entidad)
-        <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <form method="POST" action="{{ route('persona.store') }}">
+        @csrf
 
-        </option>
-        @endforeach
-    </select>
- </div>
-<div>
-    <label class="block">CEDULA</label>
-    <input type="text" name="cedula"  maxlength="10" pattern="[0-9]{10}" required>
-</div>
-<div>
-    <label class="block">NOMBRES</label>
-    <input type="text" name="nombres" required>
-</div>
-<div>
-    <label class="block">APELLIDOS</label>
-    <input type="text" name="apellidos" required>
-</div>
-<div>
-    <label class="block">ROL</label>
-    <select name="rol" required>
-        <option value="">Seleccione un rol</option>
-        @foreach (RolEnum::cases() as $rol)
-            <option value="{{ $rol->value }}" {{ old('rol') === $rol->value ? 'selected' : '' }}>
-                {{ $rol->value }}
-            </option>
-        @endforeach
-    </select>
-</div>
-<div>
-    <label class="block">ESTADO</label>
-     <select name="estado" required>
- <option value="">Seleccione un estado</option>
-        @foreach (EstadoEnum::cases() as $estado)
-            <option value="{{ $estado->value }}" {{ old('estado') === $estado->value ? 'selected' : '' }}>
-                {{ $estado->value }}
-            </option>
-        @endforeach
-    </select>
-</div>
-<div>
-    <label class="block">CORREO</label>
-   <input type="email" name="correo" required>
-</div>
-<div>
-    <label class="block">GENERO</label>
-    <select name="genero" required>
-            <option value="">Seleccione un genero</option>
-        @foreach (GeneroEnum::cases() as $genero)
-            <option value="{{ $genero->value }}" {{ old('genero') === $genero->value ? 'selected' : '' }}>
-                {{ $genero->value }}
-            </option>
-        @endforeach
-    </select>
-</div>
-<div>
-    <label class="block">TELEFONO</label>
-     <input type="text" name="telefono" value="{{ old('telefono') }}" pattern="[0-9]{9,15}" required>
-</div>
-<div>
-    <label class="block">CONTRASEÑA</label>
-    <input type="password" name="contraseña" required>
-</div>
+        <div class="mb-4">
+            <label class="block mb-1">Entidad</label>
+            <select name="idEntidad" class="w-full max-w-xl border rounded p-2">
+                @foreach ($entidades as $entidad)
+                    <option value="{{ $entidad->idEntidad }}">{{ $entidad->subSector }}</option>
+                @endforeach
+            </select>
+        </div>
 
+        <input class="w-full mb-2 border rounded p-2" name="cedula" placeholder="Cédula" required>
+        <input class="w-full mb-2 border rounded p-2" name="name" placeholder="Nombre" required>
+        <input class="w-full mb-2 border rounded p-2" name="apellidos" placeholder="Apellidos" required>
+        <input class="w-full mb-2 border rounded p-2" name="email" placeholder="Correo" required type="email">
+        <input class="w-full mb-2 border rounded p-2" name="telefono" placeholder="Teléfono" required>
 
-<button type="submit">GUARDAR</button>
+        <select name="genero" class="w-full mb-2 border rounded p-2">
+            @foreach (GeneroEnum::values() as $genero)
+                <option value="{{ $genero }}">{{ $genero }}</option>
+            @endforeach
+        </select>
 
-<a href="{{route('persona.index')}}">VOLVER</a>
-</form>
+        <select name="rol" class="w-full mb-2 border rounded p-2">
+            @foreach (RolEnum::values() as $rol)
+                <option value="{{ $rol }}">{{ $rol }}</option>
+            @endforeach
+        </select>
 
+        <select name="estado" class="w-full mb-2 border rounded p-2">
+            @foreach (EstadoEnum::values() as $estado)
+                <option value="{{ $estado }}">{{ $estado }}</option>
+            @endforeach
+        </select>
+
+        <input type="password" name="password" class="w-full mb-2 border rounded p-2" placeholder="Contraseña" required>
+        <input type="password" name="password_confirmation" class="w-full mb-4 border rounded p-2" placeholder="Confirmar contraseña" required>
+
+        <div class="flex justify-end space-x-2">
+            <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">GUARDAR</button>
+            <a href="{{ route('persona.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">VOLVER</a>
+        </div>
+    </form>
+</div>
 @endsection

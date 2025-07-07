@@ -47,8 +47,12 @@
         @endforeach
     </select>
 </div>
-<button type="submit">GUARDAR</button>
-<a href="{{route('plan.index')}}">VOLVER</a>
+<button type="submit" class="btn btn-success">
+    GUARDAR
+</button>
+<a href="{{ route('plan.index') }}" class="btn btn-secondary text-white">
+    VOLVER
+</a>
 </form>
 
 @endsection

@@ -9,6 +9,7 @@ use App\Http\Controllers\IndicadorController;
 use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PlanController;
+
 use App\Http\Controllers\ProgramaController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\ProfileController;
@@ -27,22 +28,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-      Route::get('/dashboard/admin', fn() => view('dashboard.admin'))->name('dashboard.admin');
-    Route::get('/dashboard/tecnico', fn() => view('dashboard.tecnico'))->name('dashboard.tecnico');
-    Route::get('/dashboard/revisor', fn() => view('dashboard.revisor'))->name('dashboard.revisor');
-    Route::get('/dashboard/autoridad', fn() => view('dashboard.autoridad'))->name('dashboard.autoridad');
-    Route::get('/dashboard/externo', fn() => view('dashboard.externo'))->name('dashboard.externo');
-    Route::get('/dashboard/auditor', fn() => view('dashboard.auditor'))->name('dashboard.auditor');
-    Route::get('/dashboard/desarrollador', fn() => view('dashboard.desarrollador'))->name('dashboard.desarrollador');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
 //RUTA PARA MODULO PERSONA
 Route::resource('persona', PersonaController::class);
-//RUTA PARA MODULO ENTIDAD
 Route::resource('entidad', EntidadController::class);
 //RUTA PARA MODULO PLAN
 Route::resource('plan', PlanController::class);
@@ -64,3 +51,19 @@ Route::resource('metaPlanNacional', MetaPlanNacionalController::class);
 Route::resource('indicador', IndicadorController::class);
 //RUTA PARA MODULO AUDITORIA
 Route::resource('auditoria', AuditoriaController::class);
+    Route::get('/dashboard/admin', fn() => view('dashboard.admin'))->name('dashboard.admin');
+    Route::get('/dashboard/tecnico', fn() => view('dashboard.tecnico'))->name('dashboard.tecnico');
+    Route::get('/dashboard/revisor', fn() => view('dashboard.revisor'))->name('dashboard.revisor');
+    Route::get('/dashboard/autoridad', fn() => view('dashboard.autoridad'))->name('dashboard.autoridad');
+    Route::get('/dashboard/externo', fn() => view('dashboard.externo'))->name('dashboard.externo');
+    Route::get('/dashboard/auditor', fn() => view('dashboard.auditor'))->name('dashboard.auditor');
+    Route::get('/dashboard/desarrollador', fn() => view('dashboard.desarrollador'))->name('dashboard.desarrollador');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
+
+
+

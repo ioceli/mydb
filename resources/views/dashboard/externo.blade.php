@@ -1,5 +1,6 @@
 @extends('layouts.master')
-
+@section('title', 'Panel del Externo')
+@section('content')
 <x-slot name="header">Panel del Usuario Externo</x-slot>
 
 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -11,3 +12,4 @@
         <li><a href="{{ route('proyecto.index') }}">Descargar Reportes</a></li>
     </ul>
 </div>
+@endsection

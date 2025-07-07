@@ -15,14 +15,14 @@ public $timestamps =false;
 protected $fillable = [
     'idEntidad',
     'cedula',
-    'nombres',
+    'name',
     'apellidos',
     'rol',
     'estado',
     'correo',
     'genero',
     'telefono',
-    'contraseña',
+    'password',
 ];
 /* RELACION 1:N UNA PERTENECE PERTENECE A UNA ENTIDAD*/
 public function entidad ():BelongsTo
