@@ -1,10 +1,11 @@
+@extends('layouts.master')
+@section('title', 'Register')
+@section('content')
     @php
         use App\Enums\RolEnum;
         use App\Enums\EstadoEnum;
         use App\Enums\GeneroEnum;
     @endphp
-
-
 <x-guest-layout>
 
     <form method="POST" action="{{ route('register') }}">
@@ -119,3 +120,4 @@
         </div>
     </form>
 </x-guest-layout>
+@endsection

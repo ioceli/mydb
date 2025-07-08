@@ -10,7 +10,7 @@
     </div>
 @endif
 
-<a href="{{ route('persona.create') }}" class="mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Nuevo Usuario</a>
+<a href="{{ route('persona.create') }}" class="font-bold mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Nuevo Usuario</a>
 
 <div class="overflow-x-auto bg-white rounded shadow">
     <table class="min-w-full table-auto border-collapse">
@@ -58,6 +58,6 @@
     </table>
 </div>
 <div class="mt-4">
-<a href="{{ route('dashboard.admin') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
+<a href="{{ route('dashboard.admin') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
 </div>
 @endsection

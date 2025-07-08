@@ -22,9 +22,7 @@
     {{-- Encabezado institucional --}}
     <header class="bg-blue-900 text-white shadow">
         <div class="container mx-auto px-4 py-4 text-center">
-            <h1 class="text-2xl font-bold">
-                Sistema Integrado de Planificación e Inversión Pública - <span class="text-blue-200">SIPeIP</span>
-            </h1>
+            <h1 class="text-2xl font-bold">Sistema Integrado de Planificación e Inversión Pública - SIPeIP</h1>
         </div>
     </header>
 
@@ -35,15 +33,14 @@
                 {{-- Sesión del usuario --}}
                 <div class="d-flex align-items-center">
                     @guest
-                        <a class="btn btn-outline-primary me-2" href="{{ route('login') }}">Login</a>
-                        <a class="btn btn-primary" href="{{ route('register') }}">Registrarse</a>
+                        <a class="btn btn-light text-2xl font-bold me-2" href="{{ route('login') }}">Login</a>
+                        <a class="btn btn-light text-2xl font-bold" href="{{ route('register') }}">Registrarse</a>
                     @else
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                 {{ Auth::user()->name }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Perfil</a></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf

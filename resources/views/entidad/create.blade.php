@@ -24,19 +24,19 @@
 <form method="POST" action="{{ route ('entidad.store')}}">
     @csrf
 <div class="mb-4">
-    <label class="w-full max-w-xl mb-2 "></label>
+    <label class="font-bold w-full max-w-xl mb-2 ">Codigo</label>
      <input class="w-full max-w-xl mb-2 border rounded p-2" type="number" name="codigo" placeholder="Código" required>
 </div>
 <div>
-    <label class="w-full max-w-xl mb-2 ">SubSector</label>
+    <label class="font-bold w-full max-w-xl mb-2 ">SubSector</label>
     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="subSector" required>
 </div>
 <div>
-    <label class="w-full max-w-xl mb-2 ">Nivel de Gobierno</label>
+    <label class="font-bold w-full max-w-xl mb-2 ">Nivel de Gobierno</label>
     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nivelGobierno" required>
 </div>
 <div>
-    <label class="w-full max-w-xl mb-2 ">ESTADO</label>
+    <label class="font-bold w-full max-w-xl mb-2 ">ESTADO</label>
      <select class="w-full max-w-xl mb-2 border rounded p-2" name="estado" required>
  <option value="">Seleccione un estado</option>
         @foreach (EstadoEnum::cases() as $estado)
@@ -47,18 +47,16 @@
     </select>
 </div>
 <div>
-    <label class="w-full max-w-xl mb-2 ">Fecha de Creacion</label>
+    <label class="font-bold w-full max-w-xl mb-2 ">Fecha de Creacion</label>
     <input class="w-full max-w-xl mb-2 border rounded p-2" type="date" name="fechaCreacion" required>
 </div>
 <div>
-    <label class="w-full max-w-xl mb-2 ">Fecha de Actualizacion</label>
+    <label class="font-bold w-full max-w-xl mb-2 ">Fecha de Actualizacion</label>
     <input class="w-full max-w-xl mb-2 border rounded p-2" type="date" name="fechaActualizacion" required>
 </div>
 <div class="flex justify-end space-x-2">
-<button type="submit" class="btn btn-success">
-    GUARDAR
-</button>
-<a href="{{ route('entidad.index') }}" class="btn btn-secondary text-white">VOLVER</a>
+<button type="submit" class="font-bold btn btn-success">GUARDAR</button>
+<a href="{{ route('entidad.index') }}" class="font-bold btn btn-secondary text-white">VOLVER</a>
 </div>
 </form>
 </div>

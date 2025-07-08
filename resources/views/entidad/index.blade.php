@@ -6,7 +6,11 @@
 
 
 <h2 class="text-2x1 font-bold mb-4"> Listado de entidades   </h2>
-
+@if (session('success'))
+    <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+        {{ session('success') }}
+    </div>
+@endif
 {{--VALIDACION--}}
     @if (session ('success'))
         <div>
@@ -15,7 +19,7 @@
     @endif
     {{--BOTON PARA LLAMAR AL FORMULARIO CREAR ENTIDADES--}}
 
-<a href="{{route('entidad.create')}}"class="mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Nueva Entidad</a>
+<a href="{{route('entidad.create')}}"class="font-bold mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Nueva Entidad</a>
     {{--TABLA PARA LISTAR TODAS LAS ENTIDADES--}}
 
 <div class="overflow-x-auto bg-white rounded shadow">
@@ -49,10 +53,10 @@
     <a href="{{ route('entidad.edit', $entidad->idEntidad) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
  {{-- Enlace para Eliminar --}}
     <form method="POST" action="{{ route('entidad.destroy', $entidad->idEntidad) }}" onsubmit="return confirm('¿Está seguro de eliminar esta entidad?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
-                        </form>
+        @csrf
+        @method('DELETE')
+        <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
+    </form>
 </td>
 </tr>
 
@@ -61,6 +65,6 @@
 </table>
 </div>
 <div class="mt-4">
-<a href="{{ route('dashboard.admin') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
+<a href="{{ route('dashboard.admin') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
 </div>
 @endsection

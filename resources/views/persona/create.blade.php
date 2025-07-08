@@ -15,7 +15,7 @@
         @csrf
 
         <div class="mb-4">
-            <label class="block mb-1">Entidad</label>
+            <label class="font-bold block mb-1">Entidad</label>
             <select name="idEntidad" class="w-full max-w-xl border rounded p-2">
                 @foreach ($entidades as $entidad)
                     <option value="{{ $entidad->idEntidad }}">{{ $entidad->subSector }}</option>
@@ -23,36 +23,36 @@
             </select>
         </div>
 
-        <input class="w-full mb-2 border rounded p-2" name="cedula" placeholder="Cédula" required>
-        <input class="w-full mb-2 border rounded p-2" name="name" placeholder="Nombre" required>
-        <input class="w-full mb-2 border rounded p-2" name="apellidos" placeholder="Apellidos" required>
-        <input class="w-full mb-2 border rounded p-2" name="email" placeholder="Correo" required type="email">
-        <input class="w-full mb-2 border rounded p-2" name="telefono" placeholder="Teléfono" required>
+        <input class="font-bold w-full mb-2 border rounded p-2" name="cedula" placeholder="Cédula" required>
+        <input class="font-bold w-full mb-2 border rounded p-2" name="name" placeholder="Nombre" required>
+        <input class="font-bold w-full mb-2 border rounded p-2" name="apellidos" placeholder="Apellidos" required>
+        <input class="font-bold w-full mb-2 border rounded p-2" name="email" placeholder="Correo" required type="email">
+        <input class="font-bold w-full mb-2 border rounded p-2" name="telefono" placeholder="Teléfono" required>
 
-        <select name="genero" class="w-full mb-2 border rounded p-2">
+        <select name="genero" class="font-bold w-full mb-2 border rounded p-2">
             @foreach (GeneroEnum::values() as $genero)
                 <option value="{{ $genero }}">{{ $genero }}</option>
             @endforeach
         </select>
 
-        <select name="rol" class="w-full mb-2 border rounded p-2">
+        <select name="rol" class="font-bold w-full mb-2 border rounded p-2">
             @foreach (RolEnum::values() as $rol)
                 <option value="{{ $rol }}">{{ $rol }}</option>
             @endforeach
         </select>
 
-        <select name="estado" class="w-full mb-2 border rounded p-2">
+        <select name="estado" class="font-bold w-full mb-2 border rounded p-2">
             @foreach (EstadoEnum::values() as $estado)
                 <option value="{{ $estado }}">{{ $estado }}</option>
             @endforeach
         </select>
 
-        <input type="password" name="password" class="w-full mb-2 border rounded p-2" placeholder="Contraseña" required>
-        <input type="password" name="password_confirmation" class="w-full mb-4 border rounded p-2" placeholder="Confirmar contraseña" required>
+        <input type="password" name="password" class="font-bold w-full mb-2 border rounded p-2" placeholder="Contraseña" required>
+        <input type="password" name="password_confirmation" class="font-bold w-full mb-4 border rounded p-2" placeholder="Confirmar contraseña" required>
 
         <div class="flex justify-end space-x-2">
-            <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">GUARDAR</button>
-            <a href="{{ route('persona.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">VOLVER</a>
+            <button class="font-bold bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">GUARDAR</button>
+            <a href="{{ route('persona.index') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">VOLVER</a>
         </div>
     </form>
 </div>

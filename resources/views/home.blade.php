@@ -1,4 +1,6 @@
 @extends('layouts.master')
+@section('title', 'Inicio')
+@section('content')
     <x-slot name="header">
         Bienvenido al Módulo de Planificación
     </x-slot>
@@ -9,3 +11,4 @@
         <p class="mb-4 text-gray-700">Inicia Sesion o Registrate para utilizar nuestros servicios</p> 
 
        </div>
+@endsection

@@ -10,6 +10,8 @@
     <ul class="list-disc ml-6 text-blue-700 space-y-2">
         <li><a href="{{ route('persona.index') }}">Gestión de Usuarios</a></li>
         <li><a href="{{ route('entidad.index') }}">Gestión de Entidades</a></li>
+        <li><a href="{{ route('objetivoDesarrolloSostenible.index') }}">Gestión de Objetivos ODS</a></li>
+        <li><a href="{{ route('objetivoPlanNacional.index') }}">Gestión de Objetivos PND</a></li>
     </ul>
 </div>
 @endsection
