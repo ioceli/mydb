@@ -18,13 +18,14 @@
     </ul>
 </div>
 @endif
-
+<h2 class="text-xl font-bold mb-4">Registrar nuevo Proyecto </h2>
+    <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
 {{--FORMULAIO PARA LA CREACION DE PROYECTOS--}}
 <form action="{{ route ('proyecto.store')}} "method="POST" class="space-y-4">
     @csrf
-    <div>
-    <label class="block">ENTIDAD</label>
-    <select name="idEntidad" required>
+    <div class="mb-4">
+    <label class="w-full max-w-xl mb-2 font-bold">ENTIDAD</label>
+    <select name="idEntidad" class="w-full max-w-xl mb-2 border rounded p-2" required>
         @foreach ($entidad as $entidad)
         <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}
 
@@ -33,12 +34,12 @@
     </select>
  </div>
 <div>
-    <label class="block">NOMBRE</label>
-    <input type="text" name="nombre" required>
+    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE</label>
+    <input type="text" class="w-full max-w-xl mb-2 border rounded p-2" name="nombre" required>
 </div>
 <div>
-    <label class="block">ESTADO</label>
-     <select name="estado" required>
+    <label class="w-full max-w-xl mb-2 font-bold">ESTADO</label>
+     <select name="estado" class="w-full max-w-xl mb-2 border rounded p-2" required>
  <option value="">Seleccione un estado</option>
         @foreach (EstadoEnum::cases() as $estado)
             <option value="{{ $estado->value }}" {{ old('estado') === $estado->value ? 'selected' : '' }}>
@@ -47,8 +48,8 @@
         @endforeach
     </select>
 </div>
-<button type="submit">GUARDAR</button>
-<a href="{{route('proyecto.index')}}">VOLVER</a>
+<button type="submit" class="font-bold btn btn-success">GUARDAR</button>
+<a href="{{route('proyecto.index')}}" class="font-bold btn btn-secondary text-white">VOLVER</a>
 </form>
 
 @endsection

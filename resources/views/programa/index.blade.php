@@ -6,48 +6,46 @@
 <h2 class="text-2x1 font-bold mb-4"> Listado de programa   </h2>
 
 {{--VALIDACION--}}
-    @if (session ('success'))
-        <div>
+     @if (session ('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
             {{session('success')}}
         </div>
     @endif
     {{--BOTON PARA LLAMAR AL FORMULARIO CREAR PROGRAMA--}}
 
-<a href="{{route('programa.create')}}"> + Nuevo Programa</a>
+<a href="{{route('programa.create')}}" class="font-bold mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Nuevo Programa</a>
     {{--TABLA PARA LISTAR TODOS LOS PROGRAMAS--}}
+<div class="overflow-x-auto bg-white rounded shadow">
+    <table class="min-w-full table-auto border-collapse">
+        <thead class="bg-gray-200 text-gray-700 text-left">
+            <tr>
+                <th style="border: 1px solid #ccc; padding: 8px">ID</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ENTIDAD</th>
+                <th style="border: 1px solid #ccc; padding: 8px">NOMBRE</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ESTADO</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ACCIONES</th>
 
-<table style="background-color: #f8f8fa;">
-<thead>
-<tr>
-<th style="border: 1px solid #ccc; padding: 8px">ID</th>
-<th style="border: 1px solid #ccc; padding: 8px">ENTIDAD</th>
-<th style="border: 1px solid #ccc; padding: 8px">NOMBRE</th>
-<th style="border: 1px solid #ccc; padding: 8px">ESTADO</th>
-<th style="border: 1px solid #ccc; padding: 8px">ACCIONES</th>
+            </tr>
 
-</tr>
+        </thead>
+        <tbody> 
+            @foreach($programa as $programa)
+                <tr class="border-b">
+                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->idPrograma}}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->entidad->subSector}}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->nombre}}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->estado}}</td>
+                    <td class="p-2 flex gap-2">
 
-</thead>
-<tbody> 
-    @foreach($programa as $programa)
-    <tr>
-        <td style="border: 1px solid #ccc; padding: 8px">{{$programa->idPrograma}}</td>
-        <td style="border: 1px solid #ccc; padding: 8px">{{$programa->entidad->subSector}}</td>
-        <td style="border: 1px solid #ccc; padding: 8px">{{$programa->nombre}}</td>
-<td style="border: 1px solid #ccc; padding: 8px">{{$programa->estado}}</td>
-<td style="border: 1px solid #ccc; padding: 8px">
+                        {{-- Enlace para Editar --}}
+                        <a href="{{ route('programa.edit', $programa->idPrograma) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
 
-    {{-- Enlace para Editar --}}
-    <a href="{{ route('programa.edit', $programa->idPrograma) }}" style="margin-right: 10px;">✏️Editar</a>
-
-    {{-- Enlace para Eliminar --}}
-    <a href="{{ route('programa.edit', $programa->idPrograma) }}" onclick="event.preventDefault(); if(confirm('¿Estás seguro de eliminar este Programa?')) { document.getElementById('form-eliminar-{{ $programa->idPrograma }}').submit(); }" style="color: red;">🗑️ Eliminar</a>
-
-    {{-- Formulario oculto --}}
-    <form id="form-eliminar-{{ $programa->idPrograma }}" action="{{ route('programa.destroy', $programa->idPrograma) }}" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
+                        {{-- Enlace para Eliminar --}}
+                        <form method="POST" action="{{ route('programa.destroy', $programa->idPrograma) }}" onsubmit="return confirm('¿Está seguro de eliminar este programa?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
+                        </form>
 
 </td>
 </tr>
@@ -55,4 +53,8 @@
 @endforeach
 </tbody>
 </table>
+</div>
+<div class="mt-4">
+<a href="{{ route('dashboard.externo') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
+</div>
 @endsection

@@ -64,6 +64,16 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+            // Redirección basada en el rol
+    return match ($user->rol) {
+        'Administrador del Sistema'    => redirect()->route('dashboard.admin'),
+        'Técnico de Planificación'     => redirect()->route('dashboard.tecnico'),
+        'Revisor Institucional'        => redirect()->route('dashboard.revisor'),
+        'Autoridad Validante'          => redirect()->route('dashboard.autoridad'),
+        'Usuario Externo'              => redirect()->route('dashboard.externo'),
+        'Auditor'                      => redirect()->route('dashboard.auditor'),
+        'Desarrollador'                => redirect()->route('dashboard.desarrollador'),
+        default                        => redirect()->route('dashboard'),
+    };
     }
 }

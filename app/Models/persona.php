@@ -24,7 +24,7 @@ protected $fillable = [
     'telefono',
     'password',
 ];
-/* RELACION 1:N UNA PERTENECE PERTENECE A UNA ENTIDAD*/
+/* RELACION 1:N UNA PERSONA PERTENECE PERTENECE A UNA ENTIDAD*/
 public function entidad ():BelongsTo
 {
     return $this->belongsTo(entidad::class,'idEntidad','idEntidad');

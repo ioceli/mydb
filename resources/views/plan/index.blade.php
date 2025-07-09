@@ -21,17 +21,20 @@
             <tr>
                 <th class="p-2">ID</th>
                 <th class="p-2">ENTIDAD</th>
-                <th class="p-2">NOMBRE</th>
+                
+                <th class="p-2">NOMBRE DEL PLAN</th>
                 <th class="p-2">ESTADO</th>
                 <th class="p-2">ACCIONES</th>
 
             </tr>
         </thead>
         <tbody> 
+            
             @foreach($plan as $plan)
                 <tr class="border-b">
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->idPlan}}</td>
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->entidad->subSector}}</td>
+                    
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->nombre}}</td>
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->estado}}</td>
                     <td class="p-2 flex gap-2">

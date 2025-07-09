@@ -33,7 +33,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
+                               <div>
                     <label class="w-full max-w-xl mb-2 font-bold">NOMBRE</label>
                     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
                 </div>
@@ -48,12 +48,8 @@
                         @endforeach
                     </select>
                 </div>
-            <button type="submit" class="font-bold btn btn-success">
-    GUARDAR
-</button>
-<a href="{{ route('plan.index') }}" class="font-bold btn btn-secondary text-white">
-    VOLVER
-</a>
+            <button type="submit" class="font-bold btn btn-success">GUARDAR</button>
+<a href="{{ route('plan.index') }}" class="font-bold btn btn-secondary text-white">VOLVER</a>
 </form>
 
 @endsection

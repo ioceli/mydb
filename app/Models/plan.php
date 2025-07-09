@@ -12,7 +12,6 @@ protected $primaryKey='idPlan';
 public $timestamps =false;
 protected $fillable = [
     'idEntidad',
-    'idObjetivoEstrategico',
     'nombre',
     'estado',
 ];
@@ -21,9 +20,9 @@ public function entidad ():BelongsTo
 {
     return $this->belongsTo(entidad::class,'idEntidad','idEntidad');
 }
-/* RELACION 1:N UN PLAN PERTENECE A UN OBJETIVO ESTRATEGICO*/
-/*public function objetivoEstrategico():BelongsTo
+/* RELACION 1:N UN PLAN TIENE MUCHOS OBJETIVOS ESTRATEGICOS*/
+/* public function objetivoEstrategico ():HasMany
 {
-    return $this->belongsTo(objetivoEstrategico::class, 'idObjetivoEstrategico');
-}*/
+    return $this->hasMany(objetivoEstrategico::class,'idPlan','idPlan');
+} */
 }

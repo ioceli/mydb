@@ -17,7 +17,7 @@
     </div>
 @endif
 
-<h2 class="text-2x1 font-bold mb-4"> EDITAR PLANES   </h2>
+<h2 class="text-2x1 font-bold mb-4"> EDITAR PLAN   </h2>
     <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
         <form action="{{route ('plan.update', $plan->idPlan )}}"method="POST" class="space-y-4">
             @csrf
@@ -31,6 +31,7 @@
                         @endforeach
                     </select>
             </div>
+            
             <div>
                 <label class="block mb-1 font-bold">NOMBRE</label>
                 <input type="text" name="nombre" class="w-full border rounded p-2" required value="{{old('nombre', $plan->nombre)}}">
@@ -50,7 +51,7 @@
                 <button type="submit " class="font-bold bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">ACTUALIZAR</button>
 
                     <a href="{{route('plan.index')}}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">CANCELAR</a>
-        </div>
-                </form>
-</div>
+            </div>
+        </form>
+    </div>
 @endsection

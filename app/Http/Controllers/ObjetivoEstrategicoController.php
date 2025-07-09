@@ -32,9 +32,10 @@ class ObjetivoEstrategicoController extends Controller
     public function store(Request $request)
     {
           $request->validate([
-            'descripcion'=>'required|string',
+            'descripcion'=>'required|string|unique:objetivo_estrategico,descripcion',
             'fechaRegistro'=>'required|date',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
+             'idPlan' => 'nullable|exists:plan,idPlan',
       ]);
        objetivoEstrategico::create($request->all());
     return redirect()->route('objetivoEstrategico.index')->with('success','Objetivo Estrategico Creado satisfactoriamente');

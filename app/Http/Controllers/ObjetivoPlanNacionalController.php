@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\objetivoPlanNacional;
+use App\Models\ObjetivoPlanNacional;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

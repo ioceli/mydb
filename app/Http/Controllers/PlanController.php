@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\entidad;
+use App\Models\objetivoEstrategico;
 use App\Models\plan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -24,8 +25,8 @@ class PlanController extends Controller
     public function create()
     {
         $entidad = entidad::all();
-       return view('plan.create', compact('entidad'));
-    }
+               return view('plan.create', compact('entidad') );
+      }
 
     /**
      * Store a newly created resource in storage.
@@ -37,7 +38,12 @@ class PlanController extends Controller
             'nombre'=>'required|string',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
       ]);
-       plan::create($request->all());
+    /*    plan::create($request->all()); */
+        plan::create([
+        'idEntidad' => $request->idEntidad,
+        'nombre' => $request->nombre,
+        'estado' => $request->estado,
+    ]);
     return redirect()->route('plan.index')->with('success','Plan Creado satisfactoriamente');
     }
 
@@ -56,7 +62,7 @@ class PlanController extends Controller
     {
          $plan = plan::findOrfail($id);
         $entidad = entidad::all();
-        return view('plan.edit',compact('plan','entidad'));
+                return view('plan.edit',compact('plan','entidad'));
     }
 
     /**
@@ -70,7 +76,11 @@ class PlanController extends Controller
             'estado'=>['required',Rule::in(EstadoEnum::values())],
         ]);
        $plan = plan::findOrfail($id);
-       $plan->update($request->all());
+     $plan->update([
+        'idEntidad' => $request->idEntidad,
+        'nombre' => $request->nombre,
+        'estado' => $request->estado,
+    ]);
     return redirect()->route('plan.index')->with('success','Plan Actualizado satisfactoriamente');
     }
 

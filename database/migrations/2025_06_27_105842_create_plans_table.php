@@ -13,12 +13,10 @@ return new class extends Migration
             $table->id('idPlan');
             $table->unsignedBigInteger('idEntidad');
             $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
-           /* $table->unsignedBigInteger('idObjetivoEstrategico');/*
-            $table->foreign('idObjetivoEstrategico')->references('idObjetivoEstrategico')->on('objetivo_estrategico')->onDelete('cascade');*/
-            $table->string('nombre');
+           $table->string('nombre');
             $table->enum('estado',['Activo','Inactivo']);
             $table->timestamps();
-            });
+            });  
     }
     /**
      * Reverse the migrations.
