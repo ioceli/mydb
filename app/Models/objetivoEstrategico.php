@@ -11,15 +11,15 @@ protected $table = 'objetivo_estrategico';
 protected $primaryKey='idObjetivoEstrategico';
 public $timestamps =false;
 protected $fillable = [
-
+    'idPlan',
     'descripcion',
     'fechaRegistro',
     'estado',
 ];
 /* RELACION 1:N UN PLAN PERTENECE PERTENECE A UN OBJETIVO ESTRATEGICO*/
-/* public function plan(): BelongsTo
+ public function plan(): BelongsTo
 {
     return $this->belongsTo(Plan::class, 'idPlan', 'idPlan');
-} */
+} 
 
 }

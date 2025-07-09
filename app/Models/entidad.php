@@ -21,11 +21,6 @@ protected $fillable = [
     'fechaCreacion',
     'fechaActualizacion',
 ];
-/* RELACION 1:N UNA ENTIDAD TIENE MUCHOS PROGRAMAS*/
-public function programa ():HasMany
-{
-    return $this->hasMany(programa::class,'idEntidad','idEntidad');
-}
 /* RELACION 1:N UNA ENTIDAD TIENE MUCHAS PERSONAS*/
 public function user ():HasMany
 {
@@ -35,6 +30,11 @@ public function user ():HasMany
 public function plan ():HasMany
 {
     return $this->hasMany(plan::class,'idEntidad','idEntidad');
+}
+/* RELACION 1:N UNA ENTIDAD TIENE MUCHOS PROGRAMAS*/
+public function programa ():HasMany
+{
+    return $this->hasMany(programa::class,'idEntidad','idEntidad');
 }
 /* RELACION 1:N UNA ENTIDAD TIENE MUCHOS PROYECTOS*/
 public function proyecto ():HasMany

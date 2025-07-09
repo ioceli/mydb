@@ -33,7 +33,8 @@
                         @endforeach
                     </select>
                 </div>
-                               <div>
+
+                <div>
                     <label class="w-full max-w-xl mb-2 font-bold">NOMBRE</label>
                     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
                 </div>

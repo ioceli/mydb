@@ -55,6 +55,7 @@ class ObjetivoEstrategicoController extends Controller
     public function edit($id)
     {
          $objetivoEstrategico = objetivoEstrategico::findOrfail($id);
+         $plan = plan::all();
            return view('objetivoEstrategico.edit',compact('objetivoEstrategico'));
     }
 
@@ -64,12 +65,18 @@ class ObjetivoEstrategicoController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-              'descripcion'=>'required|string', $id . 'idObjetivoEstrategico',
+            'idPlan'=>'required|exists:plan,idPlan',
+            'descripcion'=>'required|string', $id . 'idObjetivoEstrategico',
             'fechaRegistro'=>'required|date',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
         ]);
        $objetivoEstrategico = objetivoEstrategico::findOrfail($id);
-       $objetivoEstrategico->update($request->all());
+       $objetivoEstrategico->update([
+       'idPlan' => $request->idPlan,
+        'descripcion' => $request->descripcion,
+        'fechaRegistro' => $request->fechaRegistro,
+        'estado' => $request->estado,
+       ]);
     return redirect()->route('objetivoEstrategico.index')->with('success','Objetivo Estrategico Actualizado satisfactoriamente');
     }
 
