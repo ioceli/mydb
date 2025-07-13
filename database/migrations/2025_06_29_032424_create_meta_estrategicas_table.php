@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('meta_estrategica', function (Blueprint $table) {
             $table->id('idMetaEstrategica');
-            $table->timestamps();
+            $table->unsignedBigInteger('idPlan')->nullable();
+            $table->foreign('idPlan')->references('idPlan')->on('plan')->onDelete('cascade'); 
             $table->string('nombre');
             $table->string('descripcion');
             $table->date('fechaInicio');

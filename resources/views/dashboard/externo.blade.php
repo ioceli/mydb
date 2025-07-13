@@ -10,8 +10,7 @@
         <li><a href="{{ route('plan.index') }}">Gestionar Plan Institucional</a></li>
          <li><a href="{{ route('programa.index') }}">Gestionar Programa Institucional</a></li>
           <li><a href="{{ route('proyecto.index') }}">Gestionar Proyecto Institucional</a></li>
-          <li><a href="{{ route('objetivoEstrategico.index') }}">Gestionar Objetivo Estrategico</a></li>
-        <li><a href="{{ route('programa.index') }}">Seguimiento al Estado</a></li>
+          <li><a href="{{ route('programa.index') }}">Seguimiento al Estado</a></li>
         <li><a href="{{ route('proyecto.index') }}">Descargar Reportes</a></li>
     </ul>
 </div>

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\objetivoDesarrolloSostenible;
+use App\Models\objetivoEstrategico;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,9 @@ class ObjetivoDesarrolloSostenibleController extends Controller
      */
     public function create()
     {
-       return view('objetivoDesarrolloSostenible.create');
+        $objetivoEstrategico = objetivoEstrategico::all();
+        
+       return view('objetivoDesarrolloSostenible.create', compact('objetivoEstrategico'));
     }
 
     /**
@@ -29,11 +32,19 @@ class ObjetivoDesarrolloSostenibleController extends Controller
     public function store(Request $request)
     {
           $request->validate([
-            'numero'=>'required|integer',
+            'idObjetivoEstrategico' => 'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
+            'numero'=>'required|integer|unique:objetivo_desarrollo_sostenible,numero',
             'nombre'=>'required|string',
             'descripcion'=>'required|string',
             ]);
-       objetivoDesarrolloSostenible::create($request->all());
+       objetivoDesarrolloSostenible::create([
+            'idObjetivoEstrategico' => $request->idObjetivoEstrategico,
+            'numero' => $request->numero,
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+        ]);
+       
+       
     return redirect()->route('objetivoDesarrolloSostenible.index')->with('success','Objetivo Desarrollo Sostenible Creado satisfactoriamente');
     }
 
@@ -51,7 +62,8 @@ class ObjetivoDesarrolloSostenibleController extends Controller
     public function edit($id)
     {
          $objetivoDesarrolloSostenible = objetivoDesarrolloSostenible::findOrfail($id);
-        return view('objetivoDesarrolloSostenible.edit',compact('objetivoDesarrolloSostenible'));
+        $objetivoEstrategico = objetivoEstrategico::all();
+        return view('objetivoDesarrolloSostenible.edit',compact('objetivoDesarrolloSostenible', 'objetivoEstrategico'));
     }
 
     /**
@@ -60,12 +72,18 @@ class ObjetivoDesarrolloSostenibleController extends Controller
     public function update(Request $request, $id)
     {
                 $request->validate([
+            'idObjetivoEstrategico'=>'required|exists:objetivo_estrategico,idObjetivoEstrategico',
             'numero'=>'required|integer', $id . 'idObjetivoEstrategico',        
             'nombre'=>'required|string',
             'descripcion'=>'required|string',
         ]);
        $objetivoDesarrolloSostenible = objetivoDesarrolloSostenible::findOrfail($id);
-       $objetivoDesarrolloSostenible->update($request->all());
+       $objetivoDesarrolloSostenible->update([
+        'idObjetivoEstrategico' => $request->idObjetivoEstrategico,
+        'numero' => $request->numero,
+        'nombre' => $request->nombre,
+        'descripcion' => $request->descripcion,
+         ]);
     return redirect()->route('objetivoDesarrolloSostenible.index')->with('success','Objetivo Desarrollo Sostenible Actualizado satisfactoriamente');
     }
 

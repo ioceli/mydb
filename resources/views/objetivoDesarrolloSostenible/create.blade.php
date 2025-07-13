@@ -19,6 +19,7 @@
     {{--FORMULARIO PARA LA CREACION DE OBJETIVO DESARROLLO SOSTENIBLE--}}
         <form action="{{ route ('objetivoDesarrolloSostenible.store')}} "method="POST" class="space-y-4">
             @csrf
+
                 <div class="mb-4">
                     <label class="w-full max-w-xl mb-2 font-bold">NUMERO</label>
                     <input  class="w-full max-w-xl mb-2 border rounded p-2" type="number" name="numero"  required>

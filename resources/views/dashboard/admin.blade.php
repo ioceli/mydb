@@ -12,6 +12,7 @@
         <li><a href="{{ route('entidad.index') }}">Gestión de Entidades</a></li>
         <li><a href="{{ route('objetivoDesarrolloSostenible.index') }}">Gestión de Objetivos ODS</a></li>
         <li><a href="{{ route('objetivoPlanNacional.index') }}">Gestión de Objetivos PND</a></li>
+        <li><a href="{{ route('objetivoEstrategico.index') }}">Gestionar Objetivo Estrategico</a></li>
     </ul>
 </div>
 @endsection

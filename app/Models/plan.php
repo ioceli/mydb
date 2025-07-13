@@ -25,4 +25,9 @@ public function entidad ():BelongsTo
 {
     return $this->hasMany(objetivoEstrategico::class,'idPlan','idPlan');
 } 
+/* RELACION 1:N UN PLAN TIENE MUCHAS METAS ESTRATEGICAS*/
+ public function metaEstrategica(): HasMany
+{
+    return $this->hasMany(metaEstrategica::class, 'idPlan', 'idPlan');
+}
 }

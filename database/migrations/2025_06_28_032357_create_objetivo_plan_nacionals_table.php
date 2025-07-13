@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('objetivo_plan_nacional', function (Blueprint $table) {
             $table->id('idObjetivoPlanNacional');
-            $table->timestamps();
+            $table->unsignedBigInteger('idObjetivoEstrategico')->nullable();
+            $table->foreign('idObjetivoEstrategico')->references('idObjetivoEstrategico')->on('objetivo_estrategico')->onDelete('cascade'); 
             $table->integer('codigo')->unique();
             $table->string('nombre');
             $table->string('descripcion');

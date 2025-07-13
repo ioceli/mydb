@@ -25,7 +25,8 @@
                 @csrf
                 <div class="mb-4">
                     <label class="w-full max-w-xl mb-2 font-bold">ENTIDAD</label>
-                    <select name="idEntidad" class="w-full max-w-xl mb-2 border rounded p-2" required>
+                    <select name="idEntidad" class="w-full max-w-xl mb-2 border rounded p-2">
+                        <option value="">Seleccione su entidad</option>
                         @foreach ($entidad as $entidad)
                             <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}
 
@@ -33,9 +34,19 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="mb-4">
+                    <label class="w-full max-w-xl mb-2 font-bold">OBJETIVO ESTRATEGICO</label>
+                    <select name="idObjetivoEstrategico" class="w-full max-w-xl mb-2 border rounded p-2">
+                        <option value="">Seleccione el Objetivo Estrategico</option>
+                        @foreach ($objetivoEstrategico as $objetivoEstrategico)
+                            <option value="{{$objetivoEstrategico->idObjetivoEstrategico}}">{{$objetivoEstrategico->descripcion}}
 
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <div>
-                    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE</label>
+                    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE DEL PLAN</label>
                     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
                 </div>
                 <div>

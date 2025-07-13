@@ -1,56 +1,39 @@
 <?php
-use App\Http\Controllers\EntidadController;
-use App\Http\Controllers\ObjetivoDesarrolloSostenibleController;
-use App\Http\Controllers\ObjetivoPlanNacionalController;
-use App\Http\Controllers\MetaEstrategicaController;
-use App\Http\Controllers\MetaPlanNacionalController;
-use App\Http\Controllers\ObjetivoEstrategicoController;
-use App\Http\Controllers\IndicadorController;
-use App\Http\Controllers\AuditoriaController;
-use App\Http\Controllers\PersonaController;
-use App\Http\Controllers\PlanController;
 
-use App\Http\Controllers\ProgramaController;
-use App\Http\Controllers\ProyectoController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{
+    EntidadController,
+    ObjetivoDesarrolloSostenibleController,
+    ObjetivoPlanNacionalController,
+    MetaEstrategicaController,
+    MetaPlanNacionalController,
+    ObjetivoEstrategicoController,
+    IndicadorController,
+    AuditoriaController,
+    PersonaController,
+    PlanController,
+    ProgramaController,
+    ProyectoController,
+    ProfileController,
+    Auth\TwoFactorController
+};
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+// Solo una ruta raíz
 Route::get('/', function () {
     return view('home');
-}); 
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+});
+// Estas rutas no requieren MFA todavía
 Route::middleware('auth')->group(function () {
-//RUTA PARA MODULO PERSONA
-Route::resource('persona', PersonaController::class);
-Route::resource('entidad', EntidadController::class);
-//RUTA PARA MODULO PLAN
-Route::resource('plan', PlanController::class);
-//RUTA PARA MODULO PROYECTO
-Route::resource('proyecto', ProyectoController::class);
-//RUTA PARA MODULO PROGRAMA
-Route::resource('programa', ProgramaController::class);
-//RUTA PARA MODULO OBJETIVO ESTRATEGICO
-Route::resource('objetivoEstrategico', ObjetivoEstrategicoController::class);
-//RUTA PARA MODULO OBJETIVO DESARROLLO SOSTENIBLE
-Route::resource('objetivoDesarrolloSostenible', ObjetivoDesarrolloSostenibleController::class);
-//RUTA PARA MODULO OBJETIVO PLAN NACIONAL
-Route::resource('objetivoPlanNacional', ObjetivoPlanNacionalController::class);
-//RUTA PARA MODULO META ESTRATEGICA
-Route::resource('metaEstrategica', MetaEstrategicaController::class);
-//RUTA PARA MODULO META PLAN NACIONAL
-Route::resource('metaPlanNacional', MetaPlanNacionalController::class);
-//RUTA PARA MODULO INDICADOR
-Route::resource('indicador', IndicadorController::class);
-//RUTA PARA MODULO AUDITORIA
-Route::resource('auditoria', AuditoriaController::class);
+    Route::get('/two-factor-challenge', [TwoFactorController::class, 'showChallengeForm'])->name('two-factor.challenge');
+    Route::post('/two-factor-challenge', [TwoFactorController::class, 'verifyChallenge'])->name('two-factor.verify'); 
+});
+
+
+// Rutas protegidas por login + MFA
+ Route::middleware(['auth'])->group(function () { 
+    Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+
+    // Dashboards por rol
     Route::get('/dashboard/admin', fn() => view('dashboard.admin'))->name('dashboard.admin');
     Route::get('/dashboard/tecnico', fn() => view('dashboard.tecnico'))->name('dashboard.tecnico');
     Route::get('/dashboard/revisor', fn() => view('dashboard.revisor'))->name('dashboard.revisor');
@@ -58,12 +41,32 @@ Route::resource('auditoria', AuditoriaController::class);
     Route::get('/dashboard/externo', fn() => view('dashboard.externo'))->name('dashboard.externo');
     Route::get('/dashboard/auditor', fn() => view('dashboard.auditor'))->name('dashboard.auditor');
     Route::get('/dashboard/desarrollador', fn() => view('dashboard.desarrollador'))->name('dashboard.desarrollador');
+
+    // Módulos protegidos
+    Route::resources([
+        'persona' => PersonaController::class,
+        'entidad' => EntidadController::class,
+        'plan' => PlanController::class,
+        'proyecto' => ProyectoController::class,
+        'programa' => ProgramaController::class,
+        'objetivoEstrategico' => ObjetivoEstrategicoController::class,
+        'objetivoDesarrolloSostenible' => ObjetivoDesarrolloSostenibleController::class,
+        'objetivoPlanNacional' => ObjetivoPlanNacionalController::class,
+        'metaEstrategica' => MetaEstrategicaController::class,
+        'metaPlanNacional' => MetaPlanNacionalController::class,
+        'indicador' => IndicadorController::class,
+        'auditoria' => AuditoriaController::class,
+    ]);
+
+    // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+  });  
 
+// Breeze o Fortify auth routes
 require __DIR__.'/auth.php';
+
 
 
 

@@ -21,7 +21,7 @@
             <tr>
                 <th class="p-2">ID</th>
                 <th class="p-2">ENTIDAD</th>
-                
+                {{-- REALIZAR CAMBIOS<th class="p-2">OE</th>--}}
                 <th class="p-2">NOMBRE DEL PLAN</th>
                 <th class="p-2">ESTADO</th>
                 <th class="p-2">ACCIONES</th>
@@ -34,7 +34,7 @@
                 <tr class="border-b">
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->idPlan}}</td>
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->entidad->subSector}}</td>
-                    
+                    {{--REALIZAR CAMBIOS<td style="border: 1px solid #ccc; padding: 8px">{{$plan->objetivoEstrategico->idObjetivoEstrategico ?? 'No asignado' }}</td>--}}
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->nombre}}</td>
                     <td style="border: 1px solid #ccc; padding: 8px">{{$plan->estado}}</td>
                     <td class="p-2 flex gap-2">

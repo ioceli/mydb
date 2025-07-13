@@ -31,6 +31,9 @@ return new class extends Migration
             $table->enum('genero',['Masculino','Femenino','Otro']);
             $table->string('telefono',10);
             $table->string('password');
+            // Campos para autenticación multifactor
+            $table->string('two_factor_code')->nullable()->comment('Código para autenticación multifactor');
+            $table->timestamp('two_factor_expires_at')->nullable()->comment('Fecha de expiración del código MFA');
             $table->rememberToken();
             $table->timestamps();
         });

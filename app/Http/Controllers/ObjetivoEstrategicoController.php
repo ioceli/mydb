@@ -1,7 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\objetivoEstrategico;
-use App\Models\plan;
+use App\Models\objetivoPlanNacional;
+use App\Models\objetivoDesarrolloSostenible;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,19 +13,28 @@ class ObjetivoEstrategicoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-         $objetivoEstrategico =objetivoEstrategico::all(); 
-        return view('objetivoEstrategico.index',compact('objetivoEstrategico'));
-    }
+public function index()
+{
+    $objetivoEstrategico = ObjetivoEstrategico::with(['ods', 'opnd'])->get();
 
+    if ($objetivoEstrategico->isEmpty()) {
+        return view('objetivoEstrategico.index', ['objetivoEstrategico' => $objetivoEstrategico, 'message' => 'No hay objetivos estratégicos registrados.']);
+    }
+    return view('objetivoEstrategico.index', compact('objetivoEstrategico'));
+}
     /**
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-       return view('objetivoEstrategico.create');
-    }
+   {
+    $objetivoDesarrolloSostenible = objetivoDesarrolloSostenible::all();
+    $objetivoPlanNacional = objetivoPlanNacional::all();
+
+    return view('objetivoEstrategico.create', compact(
+        'objetivoDesarrolloSostenible',
+        'objetivoPlanNacional'
+    ));
+}
 
     /**
      * Store a newly created resource in storage.
@@ -32,12 +42,33 @@ class ObjetivoEstrategicoController extends Controller
     public function store(Request $request)
     {
           $request->validate([
-            'descripcion'=>'required|string|unique:objetivo_estrategico,descripcion',
-            'fechaRegistro'=>'required|date',
-            'estado'=>['required', Rule::in(EstadoEnum::values())],
-             'idPlan' => 'nullable|exists:plan,idPlan',
+        
+        'descripcion' => 'required|string|unique:objetivo_estrategico,descripcion',
+        'fechaRegistro' => 'required|date',
+        'estado' => ['required', Rule::in(EstadoEnum::values())],
+        'ods_seleccionados' => 'nullable|array',
+        'ods_seleccionados.*' => 'exists:objetivo_desarrollo_sostenible,idObjetivoDesarrolloSostenible',
+        'opnd_seleccionados' => 'nullable|array',
+        'opnd_seleccionados.*' => 'exists:objetivo_plan_nacional,idObjetivoPlanNacional',
+             
       ]);
-       objetivoEstrategico::create($request->all());
+       $objetivo=objetivoEstrategico::create([
+           
+            'descripcion' => $request->descripcion,
+    'fechaRegistro' => $request->fechaRegistro,
+    'estado' => $request->estado,
+]);
+
+if ($request->filled('ods_seleccionados')) {
+    $objetivo->ods()->attach($request->ods_seleccionados);
+}
+
+if ($request->filled('opnd_seleccionados')) {
+    $objetivo->opnd()->attach($request->opnd_seleccionados);
+}
+    
+
+
     return redirect()->route('objetivoEstrategico.index')->with('success','Objetivo Estrategico Creado satisfactoriamente');
     }
 
@@ -52,33 +83,53 @@ class ObjetivoEstrategicoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
-    {
-         $objetivoEstrategico = objetivoEstrategico::findOrfail($id);
-         $plan = plan::all();
-           return view('objetivoEstrategico.edit',compact('objetivoEstrategico'));
-    }
+public function edit($id)
+{
+    $objetivoEstrategico = objetivoEstrategico::with(['ods', 'opnd'])->findOrFail($id);
+    $objetivoDesarrolloSostenible = objetivoDesarrolloSostenible::all();
+    $objetivoPlanNacional = objetivoPlanNacional::all();
+
+    return view('objetivoEstrategico.edit', compact(
+        'objetivoEstrategico',
+        'objetivoDesarrolloSostenible',
+        'objetivoPlanNacional'
+    ));
+}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'idPlan'=>'required|exists:plan,idPlan',
-            'descripcion'=>'required|string', $id . 'idObjetivoEstrategico',
-            'fechaRegistro'=>'required|date',
-            'estado'=>['required',Rule::in(EstadoEnum::values())],
-        ]);
-       $objetivoEstrategico = objetivoEstrategico::findOrfail($id);
-       $objetivoEstrategico->update([
-       'idPlan' => $request->idPlan,
+   public function update(Request $request, $id)
+{
+    $request->validate([
+        'descripcion' => [
+            'required',
+            'string',
+            Rule::unique('objetivo_estrategico', 'descripcion')->ignore($id, 'idObjetivoEstrategico'),
+        ],
+        'fechaRegistro' => 'required|date',
+        'estado' => ['required', Rule::in(EstadoEnum::values())],
+        'ods_seleccionados' => 'nullable|array',
+        'ods_seleccionados.*' => 'exists:objetivo_desarrollo_sostenible,idObjetivoDesarrolloSostenible',
+        'opnd_seleccionados' => 'nullable|array',
+        'opnd_seleccionados.*' => 'exists:objetivo_plan_nacional,idObjetivoPlanNacional',
+    ]);
+
+    $objetivoEstrategico = objetivoEstrategico::findOrFail($id);
+
+    $objetivoEstrategico->update([
         'descripcion' => $request->descripcion,
         'fechaRegistro' => $request->fechaRegistro,
         'estado' => $request->estado,
-       ]);
-    return redirect()->route('objetivoEstrategico.index')->with('success','Objetivo Estrategico Actualizado satisfactoriamente');
-    }
+    ]);
+
+    // Actualizar relaciones ODS y OPND (muchos a muchos)
+    $objetivoEstrategico->ods()->sync($request->ods_seleccionados ?? []);
+    $objetivoEstrategico->opnd()->sync($request->opnd_seleccionados ?? []);
+
+    return redirect()->route('objetivoEstrategico.index')
+        ->with('success', 'Objetivo Estratégico actualizado satisfactoriamente');
+}
 
     /**
      * Remove the specified resource from storage.

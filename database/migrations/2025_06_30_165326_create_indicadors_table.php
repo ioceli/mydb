@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('indicador', function (Blueprint $table) {
             $table->id('idIndicador');
-            $table->timestamps();
+            $table->unsignedBigInteger('idMetaEstrategica')->nullable();
+            $table->foreign('idMetaEstrategica')->references('idMetaEstrategica')->on('meta_estrategica')->onDelete('cascade'); 
             $table->string('nombre');
             $table->string('descripcion');
             $table->date('fechaMedicion');

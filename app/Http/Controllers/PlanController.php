@@ -16,7 +16,8 @@ class PlanController extends Controller
     public function index()
     {
          $plan =plan::all(); 
-        return view('plan.index',compact('plan'));
+         $objetivoEstrategico = objetivoEstrategico::all();
+        return view('plan.index',compact('plan','objetivoEstrategico'));
     }
 
     /**
@@ -25,7 +26,8 @@ class PlanController extends Controller
     public function create()
     {
         $entidad = entidad::all();
-               return view('plan.create', compact('entidad') );
+        $objetivoEstrategico = objetivoEstrategico::all();
+               return view('plan.create', compact('entidad','objetivoEstrategico') );
       }
 
     /**
@@ -34,13 +36,15 @@ class PlanController extends Controller
     public function store(Request $request)
      {
           $request->validate([
-            'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string',
+            'idEntidad'=>'nullable|exists:entidad,idEntidad',
+            'idObjetivoEstrategico'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
+            'nombre'=>'required|string|unique:plan,nombre',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
       ]);
-    /*    plan::create($request->all()); */
+  
         plan::create([
         'idEntidad' => $request->idEntidad,
+        'idObjetivoEstrategico' => $request->idObjetivoEstrategico,
         'nombre' => $request->nombre,
         'estado' => $request->estado,
     ]);
@@ -62,7 +66,8 @@ class PlanController extends Controller
     {
          $plan = plan::findOrfail($id);
         $entidad = entidad::all();
-                return view('plan.edit',compact('plan','entidad'));
+        $objetivoEstrategico = objetivoEstrategico::all();
+                return view('plan.edit',compact('plan','entidad','objetivoEstrategico'));
     }
 
     /**
@@ -71,13 +76,15 @@ class PlanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'idEntidad'=>'required|exists:entidad,idEntidad',
+            'idEntidad'=>'nullable|exists:entidad,idEntidad',
+            'idObjetivoEstrategico'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'nombre'=>'required|string', $id . 'idPLan',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
         ]);
        $plan = plan::findOrfail($id);
      $plan->update([
         'idEntidad' => $request->idEntidad,
+        'idObjetivoEstrategico' => $request->idObjetivoEstrategico,
         'nombre' => $request->nombre,
         'estado' => $request->estado,
     ]);

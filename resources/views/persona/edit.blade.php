@@ -23,6 +23,7 @@
     <div class="mb-4">
         <label class="font-bold block mb-1">Entidad</label>
         <select name="idEntidad" class="w-full border rounded p-2">
+            <option value="">Seleccione una entidad</option>
             @foreach ($entidades as $entidad)
                 <option value="{{ $entidad->idEntidad }}" {{ $usuario->idEntidad == $entidad->idEntidad ? 'selected' : '' }}>
                     {{ $entidad->subSector }}

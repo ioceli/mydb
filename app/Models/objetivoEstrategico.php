@@ -3,7 +3,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 class objetivoEstrategico extends Model
 {
     use HasFactory;
@@ -16,10 +16,31 @@ protected $fillable = [
     'fechaRegistro',
     'estado',
 ];
-/* RELACION 1:N UN PLAN PERTENECE PERTENECE A UN OBJETIVO ESTRATEGICO*/
- public function plan(): BelongsTo
-{
-    return $this->belongsTo(Plan::class, 'idPlan', 'idPlan');
-} 
+// Relación con Plan
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class, 'idPlan', 'idPlan');
+    }
 
+    // Relación N:M con ODS
+    public function ods()
+    {
+        return $this->belongsToMany(
+            objetivoDesarrolloSostenible::class,
+            'objetivo_estrategico_ods',
+            'idObjetivoEstrategico',
+            'idObjetivoDesarrolloSostenible'
+        );
+    }
+
+    // Relación N:M con OPND
+    public function opnd()
+    {
+        return $this->belongsToMany(
+            objetivoPlanNacional::class,
+            'objetivo_estrategico_opnd',
+            'idObjetivoEstrategico',
+            'idObjetivoPlanNacional'
+        );
+    }
 }

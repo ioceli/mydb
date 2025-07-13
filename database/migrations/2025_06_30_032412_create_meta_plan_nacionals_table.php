@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('objetivo_desarrollo_sostenible', function (Blueprint $table) {
-            $table->id('idObjetivoDesarrolloSostenible');
-            $table->timestamps();
-            $table->integer('numero');
+        Schema::create('meta_plan_nacional', function (Blueprint $table) {
+            $table->id('idMetaPlanNacional');
+            $table->unsignedBigInteger('idMetaEstrategica')->nullable();
+            $table->foreign('idMetaEstrategica')->references('idMetaEstrategica')->on('meta_estrategica')->onDelete('cascade'); 
             $table->string('nombre');
             $table->string('descripcion');
+            $table->decimal('porcentajeAlineacion');
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('objetivo_desarrollo_sostenible');
+        Schema::dropIfExists('meta_plan_nacional');
     }
 };

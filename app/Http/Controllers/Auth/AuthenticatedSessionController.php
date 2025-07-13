@@ -22,8 +22,8 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-   {
+public function store(LoginRequest $request): RedirectResponse
+{
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
@@ -34,22 +34,22 @@ class AuthenticatedSessionController extends Controller
             'email' => __('auth.failed'),
         ]);
     }
+  /** @var \App\Models\User $user */
+    // Usuario autenticado
+    $user = Auth::user();
 
-    $request->session()->regenerate();
+    // Generar código MFA y enviarlo por correo
+    $user->generateTwoFactorCode();
 
-    $rol = Auth::user()->rol;
+  // Volver a autenticar al usuario para mantener la sesión activa
+    Auth::login($user);
 
-    // Redirección basada en el rol
-    return match ($rol) {
-        'Administrador del Sistema'    => redirect()->route('dashboard.admin'),
-        'Técnico de Planificación'     => redirect()->route('dashboard.tecnico'),
-        'Revisor Institucional'        => redirect()->route('dashboard.revisor'),
-        'Autoridad Validante'          => redirect()->route('dashboard.autoridad'),
-        'Usuario Externo'              => redirect()->route('dashboard.externo'),
-        'Auditor'                      => redirect()->route('dashboard.auditor'),
-        'Desarrollador'                => redirect()->route('dashboard.desarrollador'),
-        default                        => redirect()->route('dashboard'),
-    };
+       // Marcar como no verificado aún con MFA
+    $request->session()->put('two_factor:' . $user->idUser, false);
+
+ 
+    // Redirigir al formulario MFA
+    return redirect()->route('two-factor.challenge');
 }
 
     /**

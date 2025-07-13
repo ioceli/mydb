@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id('idPlan');
             $table->unsignedBigInteger('idEntidad');
             $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
-           $table->string('nombre');
+            $table->string('nombre');
             $table->enum('estado',['Activo','Inactivo']);
             $table->timestamps();
             });  
