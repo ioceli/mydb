@@ -15,9 +15,11 @@ class PlanController extends Controller
      */
     public function index()
     {
-         $plan =plan::all(); 
-         $objetivoEstrategico = objetivoEstrategico::all();
-        return view('plan.index',compact('plan','objetivoEstrategico'));
+         $plan =plan::with(['entidad','objetivosEstrategicos'])->get(); 
+    if ($plan->isEmpty()) {
+        return view('plan.index', ['plan' => $plan, 'message' => 'No hay planes registrados.']);
+    }
+        return view('plan.index',compact('plan'));
     }
 
     /**
@@ -37,17 +39,22 @@ class PlanController extends Controller
      {
           $request->validate([
             'idEntidad'=>'nullable|exists:entidad,idEntidad',
-            'idObjetivoEstrategico'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'nombre'=>'required|string|unique:plan,nombre',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
+            'idObjetivoEstrategico' => 'nullable|array',
+            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
       ]);
-  
-        plan::create([
+
+        $plan=plan::create([
         'idEntidad' => $request->idEntidad,
-        'idObjetivoEstrategico' => $request->idObjetivoEstrategico,
         'nombre' => $request->nombre,
         'estado' => $request->estado,
     ]);
+
+      // Asocia objetivos estratégicos al plan
+    if ($request->has('idObjetivoEstrategico')) {
+        $plan->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+    }
     return redirect()->route('plan.index')->with('success','Plan Creado satisfactoriamente');
     }
 
@@ -77,17 +84,23 @@ class PlanController extends Controller
     {
         $request->validate([
             'idEntidad'=>'nullable|exists:entidad,idEntidad',
-            'idObjetivoEstrategico'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
-            'nombre'=>'required|string', $id . 'idPLan',
+            'nombre'=>'required|string|unique:plan,nombre,' . $id . ',idPlan',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
+            'idObjetivoEstrategico' => 'nullable|array',
+            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
+            
         ]);
        $plan = plan::findOrfail($id);
      $plan->update([
         'idEntidad' => $request->idEntidad,
-        'idObjetivoEstrategico' => $request->idObjetivoEstrategico,
+        
         'nombre' => $request->nombre,
         'estado' => $request->estado,
     ]);
+      // Asocia objetivos estratégicos al plan
+    if ($request->has('idObjetivoEstrategico')) {
+        $plan->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+    }
     return redirect()->route('plan.index')->with('success','Plan Actualizado satisfactoriamente');
     }
 

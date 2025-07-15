@@ -19,4 +19,10 @@ public function entidad ():BelongsTo
 {
     return $this->belongsTo(entidad::class,'idEntidad','idEntidad');
 }
+/* RELACION 1:N UN PROGRAMA TIENE MUCHOS OBJETIVOS ESTRATEGICOS*/
+public function objetivosEstrategicos()
+{
+    return $this->belongsToMany(ObjetivoEstrategico::class, 'proyecto_objetivo_estrategico', 
+    'idProyecto', 'idObjetivoEstrategico');
+}
 }

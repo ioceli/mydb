@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\objetivoEstrategico;
 use App\Models\entidad;
 use App\Models\proyecto;
 use App\Http\Controllers\Controller;
@@ -15,8 +16,11 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-         $proyecto =proyecto::all(); 
-        return view('proyecto.index',compact('proyecto'));
+         $proyecto =proyecto::with('entidad','objetivosEstrategicos')->get(); 
+        if ($proyecto->isEmpty()) {
+            return view('proyecto.index', ['proyecto' => $proyecto, 'mensaje' => 'No hay proyectos registrados.']);
+        }
+         return view('proyecto.index',compact('proyecto'));
     }
 
     /**
@@ -25,7 +29,8 @@ class ProyectoController extends Controller
     public function create()
     {
         $entidad = entidad::all();
-       return view('proyecto.create', compact('entidad'));
+        $objetivoEstrategico = objetivoEstrategico::all();
+       return view('proyecto.create', compact('entidad', 'objetivoEstrategico'));
     }
 
     /**
@@ -35,10 +40,20 @@ class ProyectoController extends Controller
      {
           $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string',
+            'nombre'=>'required|string|unique:proyecto,nombre',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
+            'idObjetivoEstrategico' => 'nullable|array',
+            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
       ]);
-       proyecto::create($request->all());
+       $proyecto = proyecto::create([
+        'idEntidad' => $request->idEntidad,
+        'nombre' => $request->nombre,
+        'estado' => $request->estado,
+    ]);
+        // Asocia objetivos estratégicos al proyecto
+    if ($request->has('idObjetivoEstrategico')) {
+        $proyecto->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+    }
     return redirect()->route('proyecto.index')->with('success','Proyecto Creado satisfactoriamente');
     }
 
@@ -57,7 +72,8 @@ class ProyectoController extends Controller
     {
          $proyecto = proyecto::findOrfail($id);
         $entidad = entidad::all();
-        return view('proyecto.edit',compact('proyecto','entidad'));
+        $objetivoEstrategico = objetivoEstrategico::all();
+        return view('proyecto.edit',compact('proyecto','entidad','objetivoEstrategico'));
     }
 
     /**
@@ -67,11 +83,21 @@ class ProyectoController extends Controller
     {
         $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string', $id . 'idProyecto',
+            'nombre'=>'required|string|unique:proyecto,nombre,' . $id . ',idProyecto',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
+            'idObjetivoEstrategico' => 'nullable|array',
+            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
         ]);
        $proyecto = proyecto::findOrfail($id);
-       $proyecto->update($request->all());
+       $proyecto->update([
+         'idEntidad' => $request->idEntidad,
+         'nombre' => $request->nombre,
+         'estado' => $request->estado,
+       ]);
+       // Actualiza la relación con los objetivos estratégicos
+       if ($request->has('idObjetivoEstrategico')) {
+           $proyecto->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+       }
     return redirect()->route('proyecto.index')->with('success','Proyecto Actualizado satisfactoriamente');
     }
 

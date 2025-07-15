@@ -21,10 +21,11 @@ public function entidad ():BelongsTo
     return $this->belongsTo(entidad::class,'idEntidad','idEntidad');
 }
 /* RELACION 1:N UN PLAN TIENE MUCHOS OBJETIVOS ESTRATEGICOS*/
- public function objetivoEstrategico ():HasMany
+public function objetivosEstrategicos()
 {
-    return $this->hasMany(objetivoEstrategico::class,'idPlan','idPlan');
-} 
+    return $this->belongsToMany(ObjetivoEstrategico::class, 'plan_objetivo_estrategico', 
+    'idPlan', 'idObjetivoEstrategico');
+}
 /* RELACION 1:N UN PLAN TIENE MUCHAS METAS ESTRATEGICAS*/
  public function metaEstrategica(): HasMany
 {

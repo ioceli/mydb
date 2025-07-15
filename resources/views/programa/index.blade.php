@@ -21,27 +21,42 @@
             <tr>
                 <th style="border: 1px solid #ccc; padding: 8px">ID</th>
                 <th style="border: 1px solid #ccc; padding: 8px">ENTIDAD</th>
-                <th style="border: 1px solid #ccc; padding: 8px">NOMBRE</th>
+                <th style="border: 1px solid #ccc; padding: 8px">NOMBRE DEL PROGRAMA</th>
+                <th class="border: 1px solid #ccc; padding: 8px">OBJETIVO ESTRATEGICO</th>
                 <th style="border: 1px solid #ccc; padding: 8px">ESTADO</th>
                 <th style="border: 1px solid #ccc; padding: 8px">ACCIONES</th>
-
             </tr>
-
         </thead>
         <tbody> 
-            @foreach($programa as $programa)
+            @foreach($programa as $index => $p)
                 <tr class="border-b">
-                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->idPrograma}}</td>
-                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->entidad->subSector}}</td>
-                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->nombre}}</td>
-                    <td style="border: 1px solid #ccc; padding: 8px">{{$programa->estado}}</td>
+                    <td class="border p-2 text-center">{{ $loop->iteration }}</td>
+                    <td class="border p-2">{{$p->entidad->subSector}}</td>
+                    <td class="border p-2">{{$p->nombre}}</td>
+                    <td class="border p-2">
+                     @if ($p->objetivosEstrategicos->count())
+                    <ul class="list-disc list-inside">
+                        @foreach ($p->objetivosEstrategicos as $objetivo)
+                            <li>{{ $objetivo->descripcion }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <span class="text-gray-500">Sin objetivos</span>
+                @endif
+            </td>
+
+
+
+
+
+                    <td style="border: 1px solid #ccc; padding: 8px">{{$p->estado}}</td>
                     <td class="p-2 flex gap-2">
 
                         {{-- Enlace para Editar --}}
-                        <a href="{{ route('programa.edit', $programa->idPrograma) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
+                        <a href="{{ route('programa.edit', $p->idPrograma) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
 
                         {{-- Enlace para Eliminar --}}
-                        <form method="POST" action="{{ route('programa.destroy', $programa->idPrograma) }}" onsubmit="return confirm('¿Está seguro de eliminar este programa?')">
+                        <form method="POST" action="{{ route('programa.destroy', $p->idPrograma) }}" onsubmit="return confirm('¿Está seguro de eliminar este programa?')">
                             @csrf
                             @method('DELETE')
                             <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>

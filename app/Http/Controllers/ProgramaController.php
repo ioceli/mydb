@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\objetivoEstrategico;
 use App\Models\programa;
 use App\Models\entidad;
 use App\Http\Controllers\Controller;
@@ -16,8 +16,11 @@ class ProgramaController extends Controller
      */
     public function index()
     {
-         $programa =programa::all(); 
-        return view('programa.index',compact('programa'));
+         $programa =programa::with('entidad','objetivosEstrategicos')->get(); 
+       if ($programa->isEmpty()) {
+        return view('programa.index', ['programa' => $programa, 'message' => 'No hay programas registrados.']);
+       }
+         return view('programa.index',compact('programa'));
     }
 
     /**
@@ -26,7 +29,9 @@ class ProgramaController extends Controller
     public function create()
     {
         $entidad = entidad::all();
-       return view('programa.create', compact('entidad'));
+        $objetivoEstrategico = objetivoEstrategico::all();
+        return view('programa.create', compact('entidad','objetivoEstrategico'));
+       
     }
 
     /**
@@ -36,10 +41,20 @@ class ProgramaController extends Controller
      {
           $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string',
+            'nombre'=>'required|string|unique:programa,nombre',
             'estado'=>['required', Rule::in(EstadoEnum::values())],
-      ]);
-       programa::create($request->all());
+            'idObjetivoEstrategico' => 'nullable|array',
+            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',    
+        ]);
+       $programa= programa::create([
+        'idEntidad' => $request->idEntidad,
+        'nombre' => $request->nombre,
+        'estado' => $request->estado,
+    ]);
+        // Asocia objetivos estratégicos al programa
+    if ($request->has('idObjetivoEstrategico')) {
+        $programa->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+    }
     return redirect()->route('programa.index')->with('success','Programa Creado satisfactoriamente');
     }
 
@@ -58,7 +73,8 @@ class ProgramaController extends Controller
     {
          $programa = programa::findOrfail($id);
          $entidad = entidad::all();
-        return view('programa.edit',compact('programa','entidad'));
+         $objetivoEstrategico = objetivoEstrategico::all();
+        return view('programa.edit',compact('programa','entidad', 'objetivoEstrategico'));
     }
 
     /**
@@ -68,11 +84,21 @@ class ProgramaController extends Controller
     {
         $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string',
+            'nombre'=>'required|string|unique:programa,nombre,'.$id.',idPrograma',
             'estado'=>['required',Rule::in(EstadoEnum::values())],
+            'idObjetivoEstrategico' => 'nullable|array',
+            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
         ]);
        $programa = programa::findOrfail($id);
-       $programa->update($request->all());
+       $programa->update([
+         'idEntidad' => $request->idEntidad,
+         'nombre' => $request->nombre,
+         'estado' => $request->estado,
+       ]);
+       // Actualiza la relación con los objetivos estratégicos
+       if ($request->has('idObjetivoEstrategico')) {
+           $programa->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+       }
     return redirect()->route('programa.index')->with('success','Programa Actualizado satisfactoriamente');
     }
 
