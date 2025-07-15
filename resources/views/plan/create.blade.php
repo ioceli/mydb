@@ -1,13 +1,9 @@
 @extends('layouts.master')
-
 @section('title','Nuevo Plan')
-
 @section('content')
-
 @php
     use App\Enums\EstadoEnum;
 @endphp
-
 @if ($errors->any())
 <div>
     <ul>
@@ -34,14 +30,12 @@
                         @endforeach
                     </select>
                 </div>
-                
                 <div>
                     <label class="w-full max-w-xl mb-2 font-bold">NOMBRE DEL PLAN</label>
                     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
                 </div>
                 <div class="mb-4">
                    <label class="w-full max-w-xl mb-2 font-bold" for="idObjetivoEstrategico">OBJETIVOS ESTRATEGICOS</label>
-    
                         <div class="grid grid-cols-1 gap-2">
                             @foreach($objetivoEstrategico as $objetivo)
                              <label class="inline-flex items-center space-x-2">
@@ -53,6 +47,20 @@
                              </label>
                             @endforeach
                         </div>
+                </div>
+                <div class="mb-4">
+                    <label class="w-full max-w-xl mb-2 font-bold" for="idMetaEstrategica">METAS ESTRATEGICAS</label>
+                    <div class="grid grid-cols-1 gap-2">
+                        @foreach($metasEstrategicas as $meta)
+                            <label class="inline-flex items-center space-x-2">
+                                <input type="checkbox"
+                                       name="idMetaEstrategica[]"
+                                       value="{{ $meta->idMetaEstrategica }}"
+                                       class="form-checkbox text-blue-600">
+                                <span>{{ $meta->descripcion }}</span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
                 <div>
                     <label class="w-full max-w-xl mb-2 font-bold">ESTADO</label>

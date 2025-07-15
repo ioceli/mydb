@@ -1,9 +1,6 @@
 @extends('layouts.master')
-
 @section('title','Nueva Meta Estrategica')
-
 @section('content')
-
 @if ($errors->any())
 <div>
     <ul>
@@ -14,48 +11,48 @@
     </ul>
 </div>
 @endif
-
-{{--FORMULAIO PARA LA CREACION DE META ESTRATEGICA--}}
-<form action="{{ route ('metaEstrategica.store')}} "method="POST" class="space-y-4">
-    @csrf
-<div>
-    <label class="block">NOMBRE</label>
-    <input type="text" name="nombre" required>
+<h2 class="text-xl font-bold mb-4">Registrar nueva Meta Estrategica</h2>
+    <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+        {{--FORMULARIO PARA LA CREACION DE META ESTRATEGICA--}}
+            <form action="{{ route ('metaEstrategica.store')}} "method="POST" class="space-y-4">
+                @csrf
+        <div>
+    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
 </div>
     <div>
-    <label class="block">DESCRIPCION</label>
-    <input type="text" name="descripcion" required>
+    <label class="w-full max-w-xl mb-2 font-bold">DESCRIPCION</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="descripcion" required>
 </div>
 <div>
-    <label class="block">FECHA INICIO</label>
-    <input type="date" name="fechaInicio" required>
+    <label class="w-full max-w-xl mb-2 font-bold">FECHA INICIO</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="date" name="fechaInicio" required>
 </div>
 <div>
-    <label class="block">FECHA FIN</label>
-    <input type="date" name="fechaFin" required>
+    <label class="w-full max-w-xl mb-2 font-bold">FECHA FIN</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="date" name="fechaFin" required>
 </div>
 <div>
-    <label class="block">FORMULA INDICADOR</label>
-    <input type="string" name="formulaIndicador" required>
+    <label class="w-full max-w-xl mb-2 font-bold">FORMULA INDICADOR</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="formulaIndicador" required>
 </div>
 <div>
-    <label class="block">META ESPERADA</label>
-    <input type="number" name="metaEsperada" required>
+    <label class="w-full max-w-xl mb-2 font-bold">META ESPERADA</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="number" name="metaEsperada" required>
 </div>
 <div>
-    <label class="block">PROGRESO ACTUAL</label>
-    <input type="number" name="progresoActual" required>
+    <label class="w-full max-w-xl mb-2 font-bold">PROGRESO ACTUAL</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2"  type="number" name="progresoActual" required>
 </div>
 <div>
-    <label class="block">TIPO INDICADOR</label>
-    <input type="number" name="tipoIndicador" required>
+    <label class="w-full max-w-xl mb-2 font-bold">TIPO INDICADOR</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="number" name="tipoIndicador" required>
 </div>
 <div>
-    <label class="block">UNIDAD MEDIDA</label>
-    <input type="string" name="unidadMedida" required>
+    <label class="w-full max-w-xl mb-2 font-bold">UNIDAD MEDIDA</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="unidadMedida" required>
 </div>
-<button type="submit">GUARDAR</button>
-<a href="{{route('metaEstrategica.index')}}">VOLVER</a>
+<button type="submit" class="btn btn-success font-bold">GUARDAR</button>
+<a href="{{route('metaEstrategica.index')}}" class="btn btn-secondary text-white font-bold">VOLVER</a>
 </form>
-
 @endsection

@@ -19,6 +19,7 @@
                 <th class="p-2">ENTIDAD</th>
                 <th class="p-2">NOMBRE DEL PLAN</th>
                 <th class="p-2">OBJETIVO ESTRATEGICO</th>
+                <th class="p-2">META ESTRATEGICA</th>
                 <th class="p-2">ESTADO</th>
                 <th class="p-2">ACCIONES</th>
             </tr>
@@ -40,8 +41,19 @@
                     <span class="text-gray-500">Sin objetivos</span>
                 @endif
             </td>
+            <td class="border p-2">
+                @if ($p->metasEstrategicas->count())
+                    <ul class="list-disc list-inside">
+                        @foreach ($p->metasEstrategicas as $meta)
+                            <li>{{ $meta->descripcion }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <span class="text-gray-500">Sin metas</span>
+                @endif
+            </td>
             <td class="border p-2">{{ $p->estado }}</td>
-                    <td class="border p-2">
+                    <td class="p-2 flex gap-2">
                         {{-- Enlace para Editar --}}
                         <a href="{{ route('plan.edit', $p->idPlan) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
                         <form action="{{ route('plan.destroy', $p->idPlan) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Deseas eliminar este plan?')">

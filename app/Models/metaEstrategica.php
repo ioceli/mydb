@@ -23,14 +23,14 @@ protected $fillable = [
     'unidadMedida',
 ];
 /* RELACION N:1 UNA META ESTRATEGICA PERTENECE A UN PLAN */
- public function plan(): BelongsTo
+public function planes()
 {
-    return $this->belongsTo(Plan::class, 'idPlan', 'idPlan');
+    return $this->belongsToMany(Plan::class, 'plan_meta_estrategica', 'idMetaEstrategica', 'idPlan');
 }
-/* RELACION 1:N UNA META ESTRATEGICA PUEDE TENER MUCHAS METAS DEL PLAN NACIONAL */
- public function metaPlanNacional(): HasMany
+/* RELACION N:1 UNA META ESTRATEGICA PERTENECE A UNA ENTIDAD */
+ public function entidad(): BelongsTo
 {
-    return $this->hasMany(metaPlanNacional::class, 'idMetaEstrategica', 'idMetaEstrategica');
+    return $this->belongsTo(entidad::class, 'idEntidad', 'idEntidad');
 }
 /* RELACION 1:N UNA META ESTRATEGICA PUEDE TENER MUCHOS INDICADORES */
  public function indicador(): HasMany
@@ -38,4 +38,5 @@ protected $fillable = [
     return $this->hasMany(indicador::class, 'idMetaEstrategica', 'idMetaEstrategica');
 
 }
+
 }

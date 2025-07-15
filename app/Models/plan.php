@@ -3,7 +3,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class plan extends Model
 {
     use HasFactory;
@@ -27,8 +27,9 @@ public function objetivosEstrategicos()
     'idPlan', 'idObjetivoEstrategico');
 }
 /* RELACION 1:N UN PLAN TIENE MUCHAS METAS ESTRATEGICAS*/
- public function metaEstrategica(): HasMany
+ public function metasEstrategicas()
 {
-    return $this->hasMany(metaEstrategica::class, 'idPlan', 'idPlan');
+    return $this->belongsToMany(metaEstrategica::class, 'plan_meta_estrategica', 'idPlan', 
+    'idMetaEstrategica');
 }
 }

@@ -49,6 +49,24 @@
                 @endforeach
             </div>
         </div>
+            {{-- METAS ESTRATEGICAS --}}
+            <div class="mb-4">
+                <label class="block font-bold mb-2">Metas Estratégicas</label>
+                <div class="grid gap-2">
+                    @foreach ($metasEstrategicas as $meta)
+                        <label class="inline-flex items-center">
+                            <input
+                                type="checkbox"
+                                name="idMetaEstrategica[]"
+                                value="{{ $meta->idMetaEstrategica }}"
+                                {{ $plan->metasEstrategicas->contains('idMetaEstrategica', $meta->idMetaEstrategica) ? 'checked' : '' }}
+                                class="mr-2"
+                            >
+                            {{ $meta->descripcion }}
+                        </label>
+                    @endforeach
+                </div>
+            </div>
             <div>
                 <label class="block mb-1 font-bold">ESTADO</label>
                     <select name="estado"  class="w-full border rounded p-2" required>

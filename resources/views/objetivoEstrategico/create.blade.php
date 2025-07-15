@@ -1,13 +1,9 @@
 @extends('layouts.master')
-
 @section('title','Nuevo Objetivo Estrategico')
-
 @section('content')
-
 @php
     use App\Enums\EstadoEnum;
 @endphp 
-
 <h2 class="text-xl font-bold mb-4">Registrar nuevo Objetivo Estrategico</h2>
     <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
 {{--FORMULARIO PARA LA CREACION DE OBJETIVO ESTRATEGICO--}}
@@ -59,5 +55,4 @@
             <button type="submit" class="btn btn-success font-bold">GUARDAR</button>
             <a href="{{route('objetivoEstrategico.index')}}"class="btn btn-secondary text-white font-bold">VOLVER</a>
 </form>
-
 @endsection

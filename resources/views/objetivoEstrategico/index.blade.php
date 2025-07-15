@@ -1,10 +1,7 @@
 @extends('layouts.master')
-
 @section('title','Inicio')
-
 @section('content')
 <h2 class="text-2x1 font-bold mb-4"> Listado de Objetivo Estrategico   </h2>
-
 {{--VALIDACION--}}
  @if (session('success'))
     <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
@@ -16,9 +13,7 @@
         {{ $message }}
     </div>
 @endif
-
 <a href="{{route('objetivoEstrategico.create')}}" class="font-bold mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"> Nuevo Objetivo Estrategico</a>
-
 {{--TABLA PARA MOSTRAR LOS OBJETIVOS ESTRATEGICOS--}}
 <div class="overflow-x-auto bg-white rounded shadow">
 <table class="min-w-full table-auto border-collapse">

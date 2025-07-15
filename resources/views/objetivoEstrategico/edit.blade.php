@@ -1,15 +1,10 @@
 @extends('layouts.master')
-
 @section('title','Editar Objetivo Estrategico')
-
 @section('content')
-
 @php
     use App\Enums\EstadoEnum;
 @endphp
-
 <h2 class="text-xl font-bold mb-4">Editar Objetivo Estrategico</h2>
-
 @if ($errors->any())
     <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
         <ul>
@@ -19,12 +14,10 @@
         </ul>
     </div>
 @endif
-
 <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
     <form action="{{ route('objetivoEstrategico.update', $objetivoEstrategico->idObjetivoEstrategico) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
-
         <!-- ODS -->
         <div class="mb-4">
             <label class="block font-bold mb-2">Objetivos de Desarrollo Sostenible (ODS)</label>
@@ -38,7 +31,6 @@
                 @endforeach
             </div>
         </div>
-
         <!-- OPND -->
         <div class="mb-4">
             <label class="block font-bold mb-2">Objetivos del Plan Nacional de Desarrollo (OPND)</label>
@@ -52,19 +44,16 @@
                 @endforeach
             </div>
         </div>
-
         <!-- Descripción -->
         <div>
             <label class="block font-bold mb-2">Descripción</label>
             <input type="text" name="descripcion" required class="w-full border rounded p-2" value="{{ old('descripcion', $objetivoEstrategico->descripcion) }}">
         </div>
-
         <!-- Fecha Registro -->
         <div>
             <label class="block font-bold mb-2">Fecha de Registro</label>
             <input type="date" name="fechaRegistro" required class="w-full border rounded p-2" value="{{ old('fechaRegistro', $objetivoEstrategico->fechaRegistro) }}">
         </div>
-
         <!-- Estado -->
         <div>
             <label class="block font-bold mb-2">Estado</label>
@@ -77,7 +66,6 @@
                 @endforeach
             </select>
         </div>
-
         <!-- Botones -->
         <div class="flex gap-4">
             <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-bold">Actualizar</button>
@@ -85,5 +73,4 @@
         </div>
     </form>
 </div>
-
 @endsection

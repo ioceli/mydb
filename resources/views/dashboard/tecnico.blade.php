@@ -10,6 +10,7 @@
     <ul class="list-disc ml-6 text-blue-700 space-y-2">
         <li><a href="{{ route('plan.index') }}">Registrar / Actualizar Planes Institucionales</a></li>
         <li><a href="{{ route('metaEstrategica.index') }}">Cargar Metas Estratégicas</a></li>
+        <li><a href="{{ route('metaPlanNacional.index') }}">Cargar Metas Plan Nacional</a></li>
         <li><a href="{{ route('indicador.index') }}">Cargar Indicadores</a></li>
         <li><a href="{{ route('auditoria.index') }}">Revisar Avances</a></li>
     </ul>
