@@ -19,37 +19,53 @@
     <table class="min-w-full table-auto border-collapse">
         <thead class="bg-gray-200 text-gray-700 text-left">
             <tr>
-                <th class="border border-gray-300 px-4 py-2">ID</th>
-                <th class="border border-gray-300 px-4 py-2">NOMBRE</th>
-                <th class="border border-gray-300 px-4 py-2">DESCRIPCION</th>
-                <th class="border border-gray-300 px-4 py-2">FECHA INICIO</th>
-                <th class="border border-gray-300 px-4 py-2">FECHA FIN</th>
-                <th class="border border-gray-300 px-4 py-2">FORMULA INDICADOR</th>
-                <th class="border border-gray-300 px-4 py-2">META ESPERADA</th>
-                <th class="border border-gray-300 px-4 py-2">PROGRESO ACTUAL </th>
-                <th class="border border-gray-300 px-4 py-2">TIPO INDICADOR </th>
-                <th class="border border-gray-300 px-4 py-2">UNIDAD MEDIDA</th>
-                <th class="border border-gray-300 px-4 py-2">ACCIONES</th>
+                <th class="p-2 border">ID</th>
+                <th class="p-2 border">ENTIDAD</th>
+                <th class="p-2 border">META PLAN NACIONAL</th>
+                <th class="p-2 border">NOMBRE DEL PLAN</th>
+                <th class="p-2 border">NOMBRE</th>
+                <th class="p-2 border">DESCRIPCION</th>
+                <th class="p-2 border">FECHA INICIO</th>
+                <th class="p-2 border">FECHA FIN</th>
+                <th class="p-2 border">FORMULA INDICADOR</th>
+                <th class="p-2 border">META ESPERADA</th>
+                <th class="p-2 border">PROGRESO ACTUAL </th>
+                <th class="p-2 border">TIPO INDICADOR </th>
+                <th class="p-2 border">UNIDAD MEDIDA</th>
+                <th class="p-2 border">ACCIONES</th>
             </tr>
         </thead>
         <tbody> 
-            @forelse($metaEstrategica as $metaEstrategica)
+            @forelse($metas as $index => $meta)
                 <tr>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->idMetaEstrategica}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->nombre}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->descripcion}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->fechaInicio}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->fechaFin}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->formulaIndicador}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->metaEsperada}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->progresoActual}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->tipoIndicador}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{$metaEstrategica->unidadMedida}}</td>
+                    <td class="border p-2 text-center">{{ $index + 1 }}</td>
+                    <td class="border p-2">{{ $meta->plan->entidad->subSector ?? 'Sin entidad' }}</td>
+                                        <td class="border p-2">
+                        @if($meta->metasPlanNacional->count())
+                            <ul class="list-disc list-inside">
+                                @foreach($meta->metasPlanNacional as $m)
+                                    <li>{{ $m->descripcion }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <span class="text-gray-500">Sin metas PND asociadas</span>
+                        @endif
+                    </td>
+                    <td class="border p-2">{{ $meta->plan->nombre ?? 'Sin plan' }}</td>
+                    <td class="border p-2">{{ $meta->nombre }}</td>
+                    <td class="border p-2">{{ $meta->descripcion }}</td>
+                    <td class="border p-2">{{ $meta->fechaInicio }}</td>
+                    <td class="border p-2">{{ $meta->fechaFin }}</td>
+                    <td class="border p-2">{{ $meta->formulaIndicador }}</td>
+                    <td class="border p-2">{{ $meta->metaEsperada }}</td>
+                    <td class="border p-2">{{ $meta->progresoActual }}</td>
+                    <td class="border p-2">{{ $meta->tipoIndicador }}</td>
+                    <td class="border p-2">{{ $meta->unidadMedida }}</td>
                     <td class="p-2 flex gap-2">
                     {{-- Enlace para Editar --}}   
-                    <a href="{{ route('metaEstrategica.edit', $metaEstrategica->idMetaEstrategica) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
+                    <a href="{{ route('metaEstrategica.edit', $meta->idMetaEstrategica) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
                         {{-- Enlace para Eliminar --}}
-                        <form method="POST" action="{{ route('metaEstrategica.destroy', $metaEstrategica->idMetaEstrategica) }}" onsubmit="return confirm('¿Está seguro de eliminar esta Meta Estratégico?')">
+                        <form method="POST" action="{{ route('metaEstrategica.destroy', $meta->idMetaEstrategica) }}" onsubmit="return confirm('¿Está seguro de eliminar esta Meta Estratégico?')">
                             @csrf
                             @method('DELETE')
                              <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>

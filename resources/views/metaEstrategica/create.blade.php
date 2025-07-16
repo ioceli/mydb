@@ -1,6 +1,7 @@
 @extends('layouts.master')
 @section('title','Nueva Meta Estrategica')
 @section('content')
+
 @if ($errors->any())
 <div>
     <ul>
@@ -16,8 +17,34 @@
         {{--FORMULARIO PARA LA CREACION DE META ESTRATEGICA--}}
             <form action="{{ route ('metaEstrategica.store')}} "method="POST" class="space-y-4">
                 @csrf
+{{-- Plan --}}
         <div>
-    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE</label>
+            <label class="block font-bold mb-1">Plan Asociado</label>
+            <select name="idPlan" class="w-full border rounded p-2" required>
+                <option value="">Seleccione un plan</option>
+                @foreach($planes as $plan)
+                    <option value="{{ $plan->idPlan }}">{{ $plan->nombre }} ({{ $plan->entidad->subSector ?? 'Sin entidad' }})</option>
+                @endforeach
+            </select>
+        </div>
+{{-- Metas del Plan Nacional (Checkboxes) --}}
+        <div>
+            <label class="block font-bold mb-2">Seleccione Metas del Plan Nacional de Desarrollo</label>
+            @if($metaPlanNacional->count())
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @foreach($metaPlanNacional as $meta)
+                        <label class="flex items-start space-x-2">
+                            <input type="checkbox" name="idMetaPlanNacional[]" value="{{ $meta->idMetaPlanNacional }}" class="mt-1">
+                            <span>{{ $meta->descripcion }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500">No hay metas del PND registradas.</p>
+            @endif
+        </div>
+         <div>
+    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE META ESTRATEGICA</label>
     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
 </div>
     <div>

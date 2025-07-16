@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plan_meta_estrategica', function (Blueprint $table) {
-           $table->unsignedBigInteger('idPlan');
+        Schema::create('meta_pnd_meta_estrategica', function (Blueprint $table) {
+           $table->unsignedBigInteger('idMetaPlanNacional');
             $table->unsignedBigInteger('idMetaEstrategica');
 
-            $table->foreign('idPlan')->references('idPlan')->on('plan')->onDelete('cascade');
+            $table->foreign('idMetaPlanNacional')->references('idMetaPlanNacional')->on('meta_plan_nacional')->onDelete('cascade');
             $table->foreign('idMetaEstrategica')->references('idMetaEstrategica')->on('meta_estrategica')->onDelete('cascade');
 
-            $table->primary(['idPlan', 'idMetaEstrategica']);
+            $table->primary(['idMetaPlanNacional', 'idMetaEstrategica']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plan_meta_estrategica');
+        Schema::dropIfExists('meta_pnd_meta_estrategica');
     }
 };

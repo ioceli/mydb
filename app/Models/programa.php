@@ -26,4 +26,10 @@ public function objetivosEstrategicos()
     return $this->belongsToMany(ObjetivoEstrategico::class, 'programa_objetivo_estrategico', 
     'idPrograma', 'idObjetivoEstrategico');
 }
+/* RELACION 1:N UN PROGRAMA TIENE MUCHAS METAS DEL PLAN NACIONAL*/
+ public function metasPlanNacional()
+{
+    return $this->belongsToMany(metaPlanNacional::class, 'programa_meta_plan_nacional', 'idPrograma', 
+    'idMetaPlanNacional');
+}
 }
