@@ -23,14 +23,14 @@ Route::get('/', function () {
     return view('home');
 });
 // Estas rutas no requieren MFA todavía
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/two-factor-challenge', [TwoFactorController::class, 'showChallengeForm'])->name('two-factor.challenge');
     Route::post('/two-factor-challenge', [TwoFactorController::class, 'verifyChallenge'])->name('two-factor.verify'); 
 });
 
 
 // Rutas protegidas por login + MFA
- Route::middleware(['auth'])->group(function () { 
+ Route::middleware(['auth'/* ,'two_factor_verified' */])->group(function () { 
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 
     // Dashboards por rol
@@ -63,7 +63,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
   });  
-
+Route::put('/entidad/{entidad}', [EntidadController::class, 'update'])->name('entidad.update');
+Route::put('/plan/{plan}', [PlanController::class, 'update'])->name('plan.update');
 // Breeze o Fortify auth routes
 require __DIR__.'/auth.php';
 

@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum EstadoEnum: string
 {
-    case activo = 'ACTIVO';
-    case inactivo = 'INACTIVO';
+    case activo = 'Activo';
+    case inactivo = 'Inactivo';
         
     public static function values(): array
     {
