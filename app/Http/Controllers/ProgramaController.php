@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\objetivoEstrategico;
+use App\Helpers\BitacoraHelper;
 use App\Models\metaEstrategica;
 use App\Models\programa;
 use App\Models\entidad;
@@ -40,6 +41,7 @@ class ProgramaController extends Controller
      */
     public function store(Request $request)
      {
+        BitacoraHelper::registrar('Programa', 'Creó un nuevo programa');
           $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:programa,nombre',
@@ -92,6 +94,7 @@ class ProgramaController extends Controller
      */
     public function update(Request $request, $id)
     {
+         BitacoraHelper::registrar('Programa', 'Actualizó el programa con ID ' . $id);
         $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:programa,nombre,'.$id.',idPrograma',
@@ -124,6 +127,7 @@ class ProgramaController extends Controller
      */
     public function destroy( $id)
     {
+        BitacoraHelper::registrar('Programa', 'Eliminó el programa con ID ' . $id);
         $programa = programa::findOrfail($id);
         $programa->delete();
 return redirect()->route('programa.index')->with('success','Programa Eliminado satisfactoriamente');

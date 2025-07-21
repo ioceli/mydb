@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\metaPlanNacional;
+use App\Helpers\BitacoraHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -28,6 +29,7 @@ class MetaPlanNacionalController extends Controller
      */
     public function store(Request $request)
     {
+        BitacoraHelper::registrar('MetaPlanNacional', 'Creó una nueva meta del plan nacional');
           $request->validate([
             'nombre'=>'required|string',
             'descripcion'=>'required|string',
@@ -59,6 +61,7 @@ class MetaPlanNacionalController extends Controller
      */
     public function update(Request $request, $id)
     {
+        BitacoraHelper::registrar('MetaPlanNacional', 'Actualizó una meta del plan nacional');
         $request->validate([
             'nombre'=>'required|string', $id . 'idMetaPlanNacional',
             'descripcion'=>'required|string',
@@ -75,6 +78,7 @@ class MetaPlanNacionalController extends Controller
      */
     public function destroy($id)
     {
+        BitacoraHelper::registrar('MetaPlanNacional', 'Eliminó una meta del plan nacional');
         $metaPlanNacional = metaPlanNacional::findOrfail($id);
         $metaPlanNacional->delete();
 return redirect()->route('metaPlanNacional.index')->with('success','Meta del Plan Nacional Eliminada satisfactoriamente');

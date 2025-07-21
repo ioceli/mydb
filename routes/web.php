@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/revision/{tipo}/{id}/estado_revision', [RevisionController::class, 'cambiarEstado'])->name('revision.estado');
     Route::get('/autoridad', [AutoridadController::class, 'index'])->name('autoridad.index');
     Route::put('/autoridad/{tipo}/{id}/estado_autoridad', [AutoridadController::class, 'cambiarEstado'])->name('autoridad.estado');
+    Route::get('/bitacora', [AuditoriaController::class, 'index'])->name('auditoria.index');
+
     // Módulos protegidos
     Route::resources([
         'persona' => PersonaController::class,

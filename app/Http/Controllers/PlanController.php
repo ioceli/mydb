@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\entidad;
+use App\Helpers\BitacoraHelper;
 use App\Models\metaEstrategica;
 use App\Models\objetivoEstrategico;
 use App\Models\plan;
@@ -48,7 +49,7 @@ class PlanController extends Controller
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
       ]);
-
+   BitacoraHelper::registrar('Plan', 'Creó un nuevo plan');
         $plan=plan::create([
         'idEntidad' => $request->idEntidad,
         'nombre' => $request->nombre,   
@@ -80,6 +81,7 @@ class PlanController extends Controller
      */
     public function edit($id)
     {
+
          $plan = plan::findOrfail($id);
         $entidad = entidad::all();
         $objetivoEstrategico = objetivoEstrategico::all();
@@ -102,6 +104,7 @@ class PlanController extends Controller
             'idMetaEstrategica' => 'nullable|array',
             
         ]);
+        BitacoraHelper::registrar('Plan', 'Actualizó el plan con ID ' . $id);
        $plan = plan::findOrfail($id);
      $plan->update([
         'idEntidad' => $request->idEntidad,
@@ -125,6 +128,7 @@ class PlanController extends Controller
      */
     public function destroy( $id)
     {
+        BitacoraHelper::registrar('Plan', 'Eliminó el plan con ID ' . $id);
         $plan = plan::findOrfail($id);
         $plan->delete();
 return redirect()->route('plan.index')->with('success','Plan Eliminado satisfactoriamente');

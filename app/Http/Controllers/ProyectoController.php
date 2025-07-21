@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\objetivoEstrategico;
+use App\Helpers\BitacoraHelper;
 use App\Models\metaEstrategica;
 use App\Models\entidad;
 use App\Models\proyecto;
@@ -40,6 +41,7 @@ class ProyectoController extends Controller
      */
     public function store(Request $request)
      {
+        BitacoraHelper::registrar('Proyecto', 'Creó un nuevo proyecto');
           $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:proyecto,nombre',
@@ -91,6 +93,7 @@ class ProyectoController extends Controller
      */
     public function update(Request $request, $id)
     {
+         BitacoraHelper::registrar('Proyecto', 'Actualizó el proyecto con ID ' . $id);
         $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:proyecto,nombre,' . $id . ',idProyecto',
@@ -123,6 +126,7 @@ class ProyectoController extends Controller
      */
     public function destroy( $id)
     {
+        BitacoraHelper::registrar('Proyecto', 'Eliminó el proyecto con ID ' . $id);
         $proyecto = proyecto::findOrfail($id);
         $proyecto->delete();
 return redirect()->route('proyecto.index')->with('success','Proyecto Eliminado satisfactoriamente');

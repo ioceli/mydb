@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Helpers\BitacoraHelper;
 use App\Models\indicador;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class IndicadorController extends Controller
      */
     public function store(Request $request)
     {
+        BitacoraHelper::registrar('Indicador', 'Creó un nuevo indicador');
           $request->validate([
             'nombre'=>'required|string',
             'descripcion'=>'required|string',
@@ -65,6 +67,7 @@ class IndicadorController extends Controller
      */
     public function update(Request $request, $id)
     {
+        BitacoraHelper::registrar('Indicador', 'Actualizó el indicador con ID ' . $id);
         $request->validate([
             'nombre'=>'required|string', $id . 'idMetaEstrategica',
             'descripcion'=>'required|string',
@@ -86,6 +89,7 @@ class IndicadorController extends Controller
      */
     public function destroy($id)
     {
+        BitacoraHelper::registrar('Indicador', 'Eliminó el indicador con ID ' . $id);
         $indicador = indicador::findOrfail($id);
         $indicador->delete();
 return redirect()->route('indicador.index')->with('success','Indicador Eliminado satisfactoriamente');

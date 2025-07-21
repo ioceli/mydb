@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Helpers\BitacoraHelper;
 use App\Models\entidad;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -37,6 +37,7 @@ class EntidadController extends Controller
      */
     public function store(Request $request)
     {
+        BitacoraHelper::registrar('Entidad', 'Creó una nueva entidad');
         $request->validate([
             'codigo'=>'required|integer|unique:entidad,codigo',
             'subSector'=>'required|string',
@@ -71,7 +72,8 @@ class EntidadController extends Controller
      */
     public function update(Request $request, $id)
     {
-          // Buscar la entidad por su ID
+        BitacoraHelper::registrar('Entidad', 'Actualizó la entidad con ID ' . $id);
+        // Buscar la entidad por su ID
     $entidad = Entidad::findOrFail($id);
         //Validar Datos
             $request->validate([
@@ -94,6 +96,7 @@ class EntidadController extends Controller
      */
     public function destroy($id)
     {
+        BitacoraHelper::registrar('Entidad', 'Eliminó la entidad con ID ' . $id);
         $entidad = entidad::findOrfail($id);
         $entidad->delete();
 return redirect()->route('entidad.index')->with('success','Entidad Eliminada satisfactoriamente');

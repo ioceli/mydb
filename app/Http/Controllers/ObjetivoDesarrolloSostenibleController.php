@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\objetivoDesarrolloSostenible;
+use App\Helpers\BitacoraHelper;
 use App\Models\objetivoEstrategico;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class ObjetivoDesarrolloSostenibleController extends Controller
      */
     public function store(Request $request)
     {
+        BitacoraHelper::registrar('ObjetivoDesarrolloSostenible', 'Creó un nuevo objetivo de desarrollo sostenible');
           $request->validate([
             'idObjetivoEstrategico' => 'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'numero'=>'required|integer|unique:objetivo_desarrollo_sostenible,numero',
@@ -71,6 +73,7 @@ class ObjetivoDesarrolloSostenibleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        BitacoraHelper::registrar('ObjetivoDesarrolloSostenible', 'Actualizó un objetivo de desarrollo sostenible');
                 $request->validate([
             'idObjetivoEstrategico'=>'required|exists:objetivo_estrategico,idObjetivoEstrategico',
             'numero'=>'required|integer', $id . 'idObjetivoEstrategico',        
@@ -92,7 +95,8 @@ class ObjetivoDesarrolloSostenibleController extends Controller
      */
     public function destroy($id)
     {
-        $objetivoDesarrolloSostenible = objetivoDesarrolloSostenible::findOrfail($id);
+        BitacoraHelper::registrar('ObjetivoDesarrolloSostenible', 'Eliminó un objetivo de desarrollo sostenible');
+         $objetivoDesarrolloSostenible = objetivoDesarrolloSostenible::findOrfail($id);
         $objetivoDesarrolloSostenible->delete();
 return redirect()->route('objetivoDesarrolloSostenible.index')->with('success','Objetivo Estrategico Eliminado satisfactoriamente');
     }

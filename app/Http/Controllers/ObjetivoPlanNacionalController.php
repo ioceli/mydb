@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\ObjetivoPlanNacional;
+use App\Helpers\BitacoraHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -29,6 +30,7 @@ class ObjetivoPlanNacionalController extends Controller
      */
     public function store(Request $request)
     {
+        BitacoraHelper::registrar('ObjetivoPlanNacional', 'Creó un nuevo objetivo de plan nacional');
           $request->validate([
             'codigo'=>'required|integer','unique:objetivoPlanNacional,codigo',
             'nombre'=>'required|string',
@@ -61,6 +63,7 @@ class ObjetivoPlanNacionalController extends Controller
      */
     public function update(Request $request,  $id)
     {
+        BitacoraHelper::registrar('ObjetivoPlanNacional', 'Actualizó un objetivo de plan nacional');
         $request->validate([
             'codigo'=>'required|integer', $id . 'idObjetivoPlanNacional',
             'nombre'=>'required|string',
@@ -77,6 +80,7 @@ class ObjetivoPlanNacionalController extends Controller
      */
     public function destroy($id)
     {
+        BitacoraHelper::registrar('ObjetivoPlanNacional', 'Eliminó un objetivo de plan nacional con ID ' . $id);
         $objetivoPlanNacional = objetivoPlanNacional::findOrfail($id);
         $objetivoPlanNacional->delete();
 return redirect()->route('objetivoPlanNacional.index')->with('success','Objetivo Plan Nacional Eliminado satisfactoriamente');

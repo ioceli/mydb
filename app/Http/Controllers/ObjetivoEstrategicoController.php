@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\objetivoEstrategico;
+use App\Helpers\BitacoraHelper;
 use App\Models\objetivoPlanNacional;
 use App\Models\objetivoDesarrolloSostenible;
 use App\Http\Controllers\Controller;
@@ -41,8 +42,8 @@ public function index()
      */
     public function store(Request $request)
     {
+        BitacoraHelper::registrar('ObjetivoEstrategico', 'Creó un nuevo objetivo estratégico');
           $request->validate([
-        
         'descripcion' => 'required|string|unique:objetivo_estrategico,descripcion',
         'fechaRegistro' => 'required|date',
         'estado' => ['required', Rule::in(EstadoEnum::values())],
@@ -101,6 +102,7 @@ public function edit($id)
      */
    public function update(Request $request, $id)
 {
+    BitacoraHelper::registrar('ObjetivoEstrategico', 'Actualizó un objetivo estratégico con ID ' . $id);
     $request->validate([
         'descripcion' => [
             'required',
@@ -136,6 +138,7 @@ public function edit($id)
      */
     public function destroy($id)
     {
+        BitacoraHelper::registrar('ObjetivoEstrategico', 'Eliminó un objetivo estratégico con ID ' . $id);
         $objetivoEstrategico = objetivoEstrategico::findOrfail($id);
         $objetivoEstrategico->delete();
 return redirect()->route('objetivoEstrategico.index')->with('success','Objetivo Estrategico Eliminado satisfactoriamente');

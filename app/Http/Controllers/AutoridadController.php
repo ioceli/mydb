@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Helpers\BitacoraHelper;
 use App\Models\Plan;
 use App\Models\Programa;
 use App\Models\Proyecto;
@@ -20,6 +20,7 @@ class AutoridadController extends Controller
 
     public function cambiarEstado(Request $request, $tipo, $id)
     {
+        BitacoraHelper::registrar('Autoridad', 'Ha cambiado el estado de ' . $tipo . ' con ID ' . $id);
          $modelos = [
             'planes' => \App\Models\Plan::class,
             'programas' => \App\Models\Programa::class,

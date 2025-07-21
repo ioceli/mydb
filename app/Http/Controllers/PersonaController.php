@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\User;
-
+use App\Helpers\BitacoraHelper;
 use App\Models\Entidad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -36,7 +36,7 @@ public function store(Request $request)
         'telefono' => 'required|string|max:15',
         'password' => 'required|string|confirmed|min:8',
     ]);
-
+    BitacoraHelper::registrar('Usuarios', 'Creó un nuevo usuario');
     User::create([
         'idEntidad' => $request->idEntidad,
         'cedula' => $request->cedula,
@@ -64,7 +64,7 @@ public function update(Request $request, $id)
 {
        // Buscar la persona por su ID
     $usuario = User::findOrFail($id);
- 
+     BitacoraHelper::registrar('Usuarios', 'Actualizó al usuario con ID ' . $id);
     // Validar datos
     $request->validate([
         'idEntidad'=>'required|exists:entidad,idEntidad',
@@ -94,7 +94,7 @@ public function update(Request $request, $id)
     if ($request->filled('password')) {
         $usuario->password = Hash::make($request->password);
     }
-
+    
     $usuario->save(); 
 
 
@@ -104,7 +104,7 @@ public function destroy($id)
 {
     $usuario = User::findOrFail($id);
     $usuario->delete();
-
+    BitacoraHelper::registrar('Usuarios', 'Eliminó al usuario con ID ' . $id);
     return redirect()->route('persona.index')->with('success', 'Usuario eliminado correctamente.');
 }
 }

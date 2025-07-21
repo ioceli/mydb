@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Helpers\BitacoraHelper;
 use App\Models\metaEstrategica;
 use App\Models\metaPlanNacional;
 use App\Models\indicador;
@@ -37,6 +38,7 @@ class MetaEstrategicaController extends Controller
      */
     public function store(Request $request)
     {
+        BitacoraHelper::registrar('MetaEstrategica', 'Creó una nueva meta estratégica');
           $request->validate([
             /* 'idPlan' => 'required|exists:plan,idPlan', */
             'nombre'=>'required|string',
@@ -102,6 +104,7 @@ class MetaEstrategicaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        BitacoraHelper::registrar('MetaEstrategica', 'Actualizó la meta estratégica con ID ' . $id);
         $request->validate([
           /*   'idPlan' => 'required|exists:plan,idPlan', */
             'nombre'=>'required|string', $id . 'idMetaEstrategica',
@@ -154,6 +157,7 @@ class MetaEstrategicaController extends Controller
      */
     public function destroy($id)
     {
+        BitacoraHelper::registrar('MetaEstrategica', 'Eliminó la meta estratégica con ID ' . $id);
         $meta = metaEstrategica::findOrfail($id);
         $meta->delete();
         return redirect()->route('metaEstrategica.index')->with('success','Meta Estrategica Eliminada satisfactoriamente');
