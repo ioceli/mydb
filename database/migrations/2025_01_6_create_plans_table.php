@@ -14,7 +14,8 @@ return new class extends Migration
             $table->unsignedBigInteger('idEntidad');
             $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
             $table->string('nombre');
-            $table->enum('estado',['Activo','Inactivo']);
+            $table->string('estado_revision')->default('pendiente');
+            $table->string('estado_autoridad')->default('pendiente');
             $table->timestamps();
             });  
     }

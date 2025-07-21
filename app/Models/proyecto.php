@@ -3,6 +3,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\EstadoRevisionEnum;
+use App\Enums\EstadoAutoridadEnum;
 class proyecto extends Model
 {
    use HasFactory;
@@ -14,6 +16,10 @@ protected $fillable = [
     'nombre',
     'estado',
 ];
+protected $casts = [
+    'estado_revision' => EstadoRevisionEnum::class,
+    'estado_autoridad' => EstadoAutoridadEnum::class,
+];
 /* RELACION 1:N UN PROYECTO PERTENECE A UNA ENTIDAD*/
 public function entidad ():BelongsTo
 {
@@ -24,5 +30,11 @@ public function objetivosEstrategicos()
 {
     return $this->belongsToMany(ObjetivoEstrategico::class, 'proyecto_objetivo_estrategico', 
     'idProyecto', 'idObjetivoEstrategico');
+}
+/* RELACION 1:N UN PROYECTO TIENE MUCHAS METAS ESTRATEGICAS*/
+public function metasEstrategicas()
+{
+    return $this->belongsToMany(metaEstrategica::class, 'proyecto_meta_estrategica', 'idProyecto', 
+    'idMetaEstrategica');   
 }
 }

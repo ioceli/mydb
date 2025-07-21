@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 use App\Models\objetivoEstrategico;
+use App\Models\metaEstrategica;
 use App\Models\entidad;
 use App\Models\proyecto;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Enums\EstadoEnum; 
-
+use App\Enums\EstadoRevisionEnum; 
+use App\Enums\EstadoAutoridadEnum;
 class ProyectoController extends Controller
 {
     /**
@@ -16,7 +17,7 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-         $proyecto =proyecto::with('entidad','objetivosEstrategicos')->get(); 
+         $proyecto =proyecto::with('entidad','objetivosEstrategicos','metasEstrategicas')->get(); 
         if ($proyecto->isEmpty()) {
             return view('proyecto.index', ['proyecto' => $proyecto, 'mensaje' => 'No hay proyectos registrados.']);
         }
@@ -30,7 +31,8 @@ class ProyectoController extends Controller
     {
         $entidad = entidad::all();
         $objetivoEstrategico = objetivoEstrategico::all();
-       return view('proyecto.create', compact('entidad', 'objetivoEstrategico'));
+        $metasEstrategicas = metaEstrategica::all();
+       return view('proyecto.create', compact('entidad', 'objetivoEstrategico', 'metasEstrategicas'));
     }
 
     /**
@@ -41,18 +43,25 @@ class ProyectoController extends Controller
           $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:proyecto,nombre',
-            'estado'=>['required', Rule::in(EstadoEnum::values())],
+           'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
+            'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
+            'idMetaEstrategica' => 'nullable|array',
       ]);
        $proyecto = proyecto::create([
         'idEntidad' => $request->idEntidad,
         'nombre' => $request->nombre,
-        'estado' => $request->estado,
+          'estado_revision' => 'pendiente',
+        'estado_autoridad' => 'pendiente',
     ]);
         // Asocia objetivos estratégicos al proyecto
     if ($request->has('idObjetivoEstrategico')) {
         $proyecto->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+    }
+    // Asocia metas estratégicas al proyecto
+    if ($request->has('idMetaEstrategica')) {
+        $proyecto->metasEstrategicas()->sync($request->idMetaEstrategica);
     }
     return redirect()->route('proyecto.index')->with('success','Proyecto Creado satisfactoriamente');
     }
@@ -73,7 +82,8 @@ class ProyectoController extends Controller
          $proyecto = proyecto::findOrfail($id);
         $entidad = entidad::all();
         $objetivoEstrategico = objetivoEstrategico::all();
-        return view('proyecto.edit',compact('proyecto','entidad','objetivoEstrategico'));
+        $metasEstrategicas = metaEstrategica::all();
+        return view('proyecto.edit',compact('proyecto','entidad','objetivoEstrategico','metasEstrategicas'));
     }
 
     /**
@@ -84,19 +94,26 @@ class ProyectoController extends Controller
         $request->validate([
             'idEntidad'=>'required|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:proyecto,nombre,' . $id . ',idProyecto',
-            'estado'=>['required',Rule::in(EstadoEnum::values())],
+            'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
+            'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
+            'idMetaEstrategica' => 'nullable|array',
         ]);
        $proyecto = proyecto::findOrfail($id);
        $proyecto->update([
          'idEntidad' => $request->idEntidad,
          'nombre' => $request->nombre,
-         'estado' => $request->estado,
+        'estado_revision' => 'pendiente',
+        'estado_autoridad' => 'pendiente',
        ]);
        // Actualiza la relación con los objetivos estratégicos
        if ($request->has('idObjetivoEstrategico')) {
            $proyecto->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+       }
+         // Actualiza la relación con las metas estratégicas
+       if ($request->has('idMetaEstrategica')) {
+           $proyecto->metasEstrategicas()->sync($request->idMetaEstrategica);
        }
     return redirect()->route('proyecto.index')->with('success','Proyecto Actualizado satisfactoriamente');
     }

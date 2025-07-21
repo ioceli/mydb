@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\metaEstrategica;
 use App\Models\metaPlanNacional;
-use App\Models\plan;
+use App\Models\indicador;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -13,9 +13,9 @@ class MetaEstrategicaController extends Controller
      */
     public function index()
     {
-         $metas =metaEstrategica::with('plan.entidad','metasPlanNacional')->get(); 
+         $metas =metaEstrategica::with(/* 'plan.entidad', */'indicadores','metasPlanNacional')->get(); 
              if ($metas->isEmpty()) {
-        return view('metaEstrategica.index', ['metaEstrategica' => $metas, 'message' => 'No hay metas estratégicas registradas.']);
+        return view('metaEstrategica.index', ['metas' => $metas, 'message' => 'No hay metas estratégicas registradas.']);
     }
         return view('metaEstrategica.index',compact('metas'));
     }
@@ -26,9 +26,10 @@ class MetaEstrategicaController extends Controller
     public function create()
 
     {
-        $planes = plan::with('entidad')->get();
+        /* $planes = plan::with('entidad')->get(); */
+        $indicadores = indicador::all();
         $metaPlanNacional = metaPlanNacional::all();
-        return view('metaEstrategica.create', compact('planes', 'metaPlanNacional'));
+        return view('metaEstrategica.create', compact(/* 'planes', */ 'indicadores', 'metaPlanNacional'));
     }
 
     /**
@@ -37,7 +38,7 @@ class MetaEstrategicaController extends Controller
     public function store(Request $request)
     {
           $request->validate([
-            'idPlan' => 'required|exists:plan,idPlan',
+            /* 'idPlan' => 'required|exists:plan,idPlan', */
             'nombre'=>'required|string',
             'descripcion'=>'required|string',
             'fechaInicio'=>'required|date',
@@ -45,12 +46,12 @@ class MetaEstrategicaController extends Controller
             'formulaIndicador'=>'required|string',
             'metaEsperada'=>'required|numeric',
             'progresoActual'=>'required|numeric',
-            'tipoIndicador'=>'required|integer',        
+            'tipoIndicador'=>'required|string',        
             'unidadMedida'=>'required|string',        
         ]);
 
        $metaEstrategica=metaEstrategica::create([
-        'idPlan' => $request->idPlan,
+        /* 'idPlan' => $request->idPlan, */
         'nombre' => $request->nombre,
         'descripcion' => $request->descripcion,
         'fechaInicio' => $request->fechaInicio,
@@ -64,6 +65,10 @@ class MetaEstrategicaController extends Controller
         // Asocia metas del Plan Nacional a la meta estratégica
         if ($request->has('idMetaPlanNacional')) {
             $metaEstrategica->metasPlanNacional()->sync($request->idMetaPlanNacional);
+        }
+        // Asocia el indicador a la meta estratégica
+        if ($request->has('idIndicador')) {
+            $metaEstrategica->indicadores()->sync($request->idIndicador);
         }
 
 
@@ -84,9 +89,12 @@ class MetaEstrategicaController extends Controller
     public function edit( $id)
     {
          $meta = metaEstrategica::findOrfail($id);
-        $planes = Plan::all();
+       /*  $planes = Plan::all(); */
+        // Obtiene los indicadores asociados a la meta estratégica
+        $indicadores = indicador::all();
+        // Obtiene las metas del Plan Nacional asociadas a la meta estratégica
         $metaPlanNacional = MetaPlanNacional::all();
-        return view('metaEstrategica.edit',compact('meta','planes','metaPlanNacional'));
+        return view('metaEstrategica.edit',compact('meta',/* 'planes', */'indicadores', 'metaPlanNacional'));
     }
 
     /**
@@ -95,7 +103,7 @@ class MetaEstrategicaController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'idPlan' => 'required|exists:plan,idPlan',
+          /*   'idPlan' => 'required|exists:plan,idPlan', */
             'nombre'=>'required|string', $id . 'idMetaEstrategica',
             'descripcion'=>'required|string',
             'fechaInicio'=>'required|date',
@@ -103,14 +111,16 @@ class MetaEstrategicaController extends Controller
             'formulaIndicador'=>'required|string',
             'metaEsperada'=>'required|numeric',
             'progresoActual'=>'required|numeric',
-            'tipoIndicador'=>'required|integer',        
+            'tipoIndicador'=>'required|string',        
             'unidadMedida'=>'required|string', 
+            'indicador' => 'nullable|array',
+            'indicador.*' => 'exists:indicador,idIndicador',
             'metaPlanNacional' => 'nullable|array',
             'metaPlanNacional.*' => 'nullable|exists:meta_plan_nacional,idMetaPlanNacional',         
         ]);
        $meta = metaEstrategica::findOrfail($id);
        $meta->update([
-        'idPlan' => $request->idPlan,
+        /* 'idPlan' => $request->idPlan, */
         'nombre' => $request->nombre,
         'descripcion' => $request->descripcion,
         'fechaInicio' => $request->fechaInicio,
@@ -124,6 +134,16 @@ class MetaEstrategicaController extends Controller
     // Asocia metas del Plan Nacional a la meta estratégica
     if ($request->has('metaPlanNacional')) {
         $meta->metasPlanNacional()->sync($request->metaPlanNacional);
+    }
+    // Asocia el indicador a la meta estratégica
+    if ($request->has('indicador')) {
+        $meta->indicadores()->sync($request->indicador);
+    }
+
+     // Si se envía un idMetaEstrategica, actualiza la meta específica
+     if ($request->has('idMetaEstrategica')) {
+        $meta->idMetaEstrategica = $request->idMetaEstrategica;
+        $meta->save();
     }
 
     return redirect()->route('metaEstrategica.index')->with('success','Meta Estrategica Actualizada satisfactoriamente');

@@ -71,7 +71,7 @@ class RegisteredUserController extends Controller
     Mail::to($user->email)->send(new TwoFactorCodeMail($user));
 
     // Guardar sesión temporal para MFA
-    session()->put('two_factor:' . $user->id, false);
+    session()->put('two_factor:' . $user->idUser, false);
 
     // Redirigir al formulario de MFA
     return redirect()->route('two-factor.challenge');

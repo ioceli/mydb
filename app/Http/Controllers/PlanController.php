@@ -7,8 +7,8 @@ use App\Models\plan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Enums\EstadoEnum;
-
+use App\Enums\EstadoRevisionEnum;
+use App\Enums\EstadoAutoridadEnum;
 class PlanController extends Controller
 {
     /**
@@ -42,7 +42,8 @@ class PlanController extends Controller
           $request->validate([
             'idEntidad'=>'nullable|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:plan,nombre',
-            'estado'=>['required', Rule::in(EstadoEnum::values())],
+            'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
+            'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
@@ -50,8 +51,9 @@ class PlanController extends Controller
 
         $plan=plan::create([
         'idEntidad' => $request->idEntidad,
-        'nombre' => $request->nombre,
-        'estado' => $request->estado,
+        'nombre' => $request->nombre,   
+        'estado_revision' => 'pendiente',
+        'estado_autoridad' => 'pendiente',
     ]);
 
       // Asocia objetivos estratégicos al plan
@@ -93,7 +95,8 @@ class PlanController extends Controller
         $request->validate([
             'idEntidad'=>'nullable|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:plan,nombre,' . $id . ',idPlan',
-            'estado'=>['required',Rule::in(EstadoEnum::values())],
+            'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
+            'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
@@ -103,7 +106,8 @@ class PlanController extends Controller
      $plan->update([
         'idEntidad' => $request->idEntidad,
         'nombre' => $request->nombre,
-        'estado' => $request->estado,
+        'estado_revision' => 'pendiente',
+        'estado_autoridad' => 'pendiente',
     ]);
       // Asocia objetivos estratégicos al plan
     if ($request->has('idObjetivoEstrategico')) {

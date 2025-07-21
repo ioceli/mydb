@@ -15,22 +15,16 @@
     <form action="{{route ('metaEstrategica.update', $meta->idMetaEstrategica )}}"method="POST" class="space-y-4">
 @csrf
 @method('PUT')
-{{-- Plan --}}
-            <div>
-                <label for="idPlan" class="block font-bold mb-1">Plan</label>
-                <select name="idPlan" id="idPlan" class="w-full border rounded p-2" required>
-                    <option value="">Seleccione un plan</option>
-                    @foreach ($planes as $plan)
-                        <option value="{{ $plan->idPlan }}" {{ $meta->idPlan == $plan->idPlan ? 'selected' : '' }}>
-                            {{ $plan->nombre }} - {{ $plan->entidad->subSector ?? 'Sin entidad' }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+<div>
+    <label class="block font-bold mb-2">NOMBRE</label>
+    <input type="text" class="w-full border rounded p-2" name="nombre" required value="{{old('nombre', $meta->nombre)}}">
+</div>
             {{-- Metas del PND --}}
             <div>
                 <label class="block font-bold mb-2">Metas del Plan Nacional de Desarrollo</label>
                 <div class="space-y-2">
+                     @if($indicadores->count())
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     @foreach ($metaPlanNacional as $m)
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" name="metaPlanNacional[]" value="{{ $m->idMetaPlanNacional }}"
@@ -39,10 +33,29 @@
                         </label>
                     @endforeach
                 </div>
+                 @else
+                <p class="text-gray-500">No hay Metas del Plan Nacional de Desarrollo registradas.</p>
+            @endif
+</div>
             </div>
+{{-- Indicadores --}}
 <div>
-    <label class="block font-bold mb-2">NOMBRE</label>
-    <input type="text" class="w-full border rounded p-2" name="nombre" required value="{{old('nombre', $meta->nombre)}}">
+    <label class="block font-bold mb-2">INDICADORES</label>
+    <div class="space-y-2">
+        @if($indicadores->count())
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        @foreach ($indicadores as $indica)
+            <label class="flex items-center space-x-2">
+                <input type="checkbox" name="indicador[]" value="{{ $indica->idIndicador }}"
+                    {{ $meta->indicadores->contains('idIndicador', $indica->idIndicador) ? 'checked' : '' }}>
+                <span>{{ $indica->nombre }}</span>
+            </label>
+        @endforeach
+    </div>
+     @else
+                <p class="text-gray-500">No hay indicadores registrados.</p>
+            @endif
+</div>
 </div>
 <div>
     <label class="block font-bold mb-2">DESCRIPCION</label>
@@ -70,7 +83,7 @@
 </div>
 <div>
     <label class="block font-bold mb-2">TIPO INDICADOR</label>
-    <input type="number" class="w-full border rounded p-2" name="tipoIndicador" required value="{{old('tipoIndicador', $meta->tipoIndicador)}}">
+    <input type="text" class="w-full border rounded p-2" name="tipoIndicador" required value="{{old('tipoIndicador', $meta->tipoIndicador)}}">
 </div>
 <div>
     <label class="block font-bold mb-2">UNIDAD MEDIDA</label>

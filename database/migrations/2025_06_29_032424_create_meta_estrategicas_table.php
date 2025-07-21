@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('formulaIndicador');
             $table->decimal('metaEsperada');
             $table->decimal('progresoActual');
-            $table->integer('tipoIndicador');
+            $table->string('tipoIndicador');
             $table->string('unidadMedida');
         });
     }

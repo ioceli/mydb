@@ -1,6 +1,10 @@
 @extends('layouts.master')
 @section('title','Inicio')
 @section('content')
+@php
+    use App\Enums\EstadoRevisionEnum;
+    use App\Enums\EstadoAutoridadEnum;
+@endphp 
 <h2 class="text-2x1 font-bold mb-4"> Listado de proyecto   </h2>
 {{--VALIDACION--}}
     @if (session ('success'))
@@ -18,8 +22,10 @@
                 <th style="border: 1px solid #ccc; padding: 8px">ID</th>
                 <th style="border: 1px solid #ccc; padding: 8px">ENTIDAD</th>
                 <th style="border: 1px solid #ccc; padding: 8px">NOMBRE DEL PROYECTO</th>
-                <th style="border: 1px solid #ccc; padding: 8px">OBJETIVOS ESTRATEGICOS</th>
-                <th style="border: 1px solid #ccc; padding: 8px">ESTADO</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ALINEACION CON OBJETIVOS ESTRATEGICOS</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ALINEACION CON META ESTRATEGICA</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ESTADO POR TECNICO</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ESTADO POR AUTORIDAD</th>
                 <th style="border: 1px solid #ccc; padding: 8px">ACCIONES</th>
             </tr>
         </thead>
@@ -40,10 +46,23 @@
                     <span class="text-gray-500">Sin objetivos</span>
                 @endif
             </td>
-                    <td class="border p-2">{{$p->estado}}</td>
-                    <td class="border p-2">
+                                    <td class="border p-2">
+                @if ($p->metasEstrategicas->count())
+                    <ul class="list-disc list-inside">
+                        @foreach ($p->metasEstrategicas as $meta)
+                            <li>{{ $meta->descripcion }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <span class="text-gray-500">Sin metas</span>
+                @endif
+            </td>
+            <td class="border p-2">{{ $p->estado_revision }}</td>
+            <td class="border p-2">{{ $p->estado_autoridad }}</td>
+                    <td class="p-2 flex gap-2">
                         {{-- Enlace para Editar --}}
                         <a href="{{ route('proyecto.edit', $p->idProyecto) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
+                        {{-- Enlace para Eliminar --}}
                         <form action="{{ route('proyecto.destroy', $p->idProyecto) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Deseas eliminar este proyecto?')">
                             @csrf
                             @method('DELETE')

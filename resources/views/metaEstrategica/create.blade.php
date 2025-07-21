@@ -17,16 +17,11 @@
         {{--FORMULARIO PARA LA CREACION DE META ESTRATEGICA--}}
             <form action="{{ route ('metaEstrategica.store')}} "method="POST" class="space-y-4">
                 @csrf
-{{-- Plan --}}
-        <div>
-            <label class="block font-bold mb-1">Plan Asociado</label>
-            <select name="idPlan" class="w-full border rounded p-2" required>
-                <option value="">Seleccione un plan</option>
-                @foreach($planes as $plan)
-                    <option value="{{ $plan->idPlan }}">{{ $plan->nombre }} ({{ $plan->entidad->subSector ?? 'Sin entidad' }})</option>
-                @endforeach
-            </select>
-        </div>
+<div>
+    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE META ESTRATEGICA</label>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
+</div>
+
 {{-- Metas del Plan Nacional (Checkboxes) --}}
         <div>
             <label class="block font-bold mb-2">Seleccione Metas del Plan Nacional de Desarrollo</label>
@@ -43,10 +38,23 @@
                 <p class="text-gray-500">No hay metas del PND registradas.</p>
             @endif
         </div>
-         <div>
-    <label class="w-full max-w-xl mb-2 font-bold">NOMBRE META ESTRATEGICA</label>
-    <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="nombre" required>
-</div>
+{{-- Indicadores (Checkboxes) --}}
+        <div>
+            <label class="block font-bold mb-2">Seleccione Indicadores</label>
+            @if($indicadores->count())
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @foreach($indicadores as $indicar)
+                        <label class="flex items-start space-x-2">
+                            <input type="checkbox" name="indicadores[]" value="{{ $indicar->idIndicador }}" class="mt-1">
+                            <span>{{ $indicar->nombre }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500">No hay indicadores registrados.</p>
+            @endif
+        </div>
+
     <div>
     <label class="w-full max-w-xl mb-2 font-bold">DESCRIPCION</label>
     <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="descripcion" required>
@@ -73,7 +81,7 @@
 </div>
 <div>
     <label class="w-full max-w-xl mb-2 font-bold">TIPO INDICADOR</label>
-    <input class="w-full max-w-xl mb-2 border rounded p-2" type="number" name="tipoIndicador" required>
+    <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="tipoIndicador" required>
 </div>
 <div>
     <label class="w-full max-w-xl mb-2 font-bold">UNIDAD MEDIDA</label>

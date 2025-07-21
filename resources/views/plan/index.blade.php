@@ -1,6 +1,10 @@
 @extends('layouts.master')
 @section('title','Inicio')
 @section('content')
+@php
+    use App\Enums\EstadoRevisionEnum;
+    use App\Enums\EstadoAutoridadEnum;
+@endphp 
 <h2 class="text-2x1 font-bold mb-4"> Listado de plan   </h2>
 {{--VALIDACION--}}
     @if (session ('success'))
@@ -18,9 +22,10 @@
                 <th class="p-2">ID</th>
                 <th class="p-2">ENTIDAD</th>
                 <th class="p-2">NOMBRE DEL PLAN</th>
-                <th class="p-2">OBJETIVO ESTRATEGICO</th>
-                <th class="p-2">META ESTRATEGICA</th>
-                <th class="p-2">ESTADO</th>
+                <th class="p-2">ALINEACIÓN CON OBJETIVO ESTRATEGICO</th>
+                <th class="p-2">ALINEACIÓN CON META ESTRATEGICA</th>
+                <th class="p-2">ESTADO POR TECNICO</th>
+                <th class="p-2">ESTADO POR AUTORIDAD</th>
                 <th class="p-2">ACCIONES</th>
             </tr>
         </thead>
@@ -52,11 +57,12 @@
                     <span class="text-gray-500">Sin metas</span>
                 @endif
             </td>
-            <td class="border p-2">{{ $p->estado }}</td>
-                    <td class="p-2 flex gap-2">
-                        {{-- Enlace para Editar --}}
-                        <a href="{{ route('plan.edit', $p->idPlan) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
-                        <form action="{{ route('plan.destroy', $p->idPlan) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Deseas eliminar este plan?')">
+            <td class="border p-2">{{ $p->estado_revision }}</td>
+            <td class="border p-2">{{ $p->estado_autoridad }}</td>
+            <td class="p-2 flex gap-2">
+                {{-- Enlace para Editar --}}
+                <a href="{{ route('plan.edit', $p->idPlan) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
+                <form action="{{ route('plan.destroy', $p->idPlan) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Deseas eliminar este plan?')">
                             @csrf
                             @method('DELETE')
                             <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>

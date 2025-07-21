@@ -37,11 +37,6 @@
                     @if(Auth::user()->rol === 'Auditor')
                         <li><a href="{{ route('auditoria.index') }}">Auditoría y Seguimiento</a></li>
                     @endif
-
-                    @if(Auth::user()->rol === 'Desarrollador')
-                        <li><a href="{{ route('plan.index') }}">Documentación de la API</a></li>
-                        <li><a href="{{ route('plan.index') }}">Ver Logs del Sistema</a></li>
-                    @endif
                 </ul>
             </div>
         </div>

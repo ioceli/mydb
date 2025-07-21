@@ -16,7 +16,7 @@ class EnsureTwoFactorCodeIsVerified
         }
 
         // Si el usuario ya completó MFA, continúa
-        if (session()->get('two_factor:' . Auth::id())) {
+        if (session()->get('two_factor:' . Auth::idUser())) {
             return $next($request);
         }
 

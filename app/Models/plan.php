@@ -3,7 +3,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use App\Enums\EstadoRevisionEnum;
+use App\Enums\EstadoAutoridadEnum;
 class plan extends Model
 {
     use HasFactory;
@@ -14,6 +15,10 @@ protected $fillable = [
     'idEntidad',
     'nombre',
     'estado',
+];
+protected $casts = [
+    'estado_revision' => EstadoRevisionEnum::class,
+    'estado_autoridad' => EstadoAutoridadEnum::class,
 ];
 /* RELACION 1:N UN PLAN PERTENECE A UNA ENTIDAD*/
 public function entidad ():BelongsTo

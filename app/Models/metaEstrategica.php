@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class metaEstrategica extends Model
 {
     use HasFactory;
@@ -33,18 +33,18 @@ public function planes()
 {
     return $this->belongsTo(entidad::class, 'idEntidad', 'idEntidad');
 }
-/* RELACION 1:N UN PLAN TIENE MUCHAS METAS ESTRATEGICAS*/
+/* RELACION 1:N UNA META ESTRATEGICA TIENE MUCHAS METAS DEL PLAN NACIONAL*/
  public function metasPlanNacional()
 {
     return $this->belongsToMany(metaPlanNacional::class, 'meta_pnd_meta_estrategica', 'idMetaEstrategica', 
     'idMetaPlanNacional');
 }
 /* RELACION 1:N UNA META ESTRATEGICA PUEDE TENER MUCHOS INDICADORES */
- public function indicador(): HasMany
+public function indicadores(): BelongsToMany
 {
-    return $this->hasMany(indicador::class, 'idMetaEstrategica', 'idMetaEstrategica');
-
+    return $this->belongsToMany(Indicador::class, 'indicador_meta_estrategica', 'idMetaEstrategica', 'idIndicador');
 }
+/* RELACION N:1 UNA META ESTRATEGICA PERTENECE A UN PLAN */
 public function plan(): BelongsTo
 {
     return $this->belongsTo(Plan::class, 'idPlan', 'idPlan');

@@ -1,8 +1,5 @@
 @extends('layouts.master')
 @section('title','Editar Programas')
-@php
-    use App\Enums\EstadoEnum;
-@endphp
 @section('content')
 <h2 class="text-2x1 font-bold mb-4"> EDITAR PROGRAMA   </h2>
 @if ($errors->any())
@@ -48,16 +45,23 @@
                     @endforeach
                 </div>
             </div>
-                <div>
-                <label class="block  mb-1 font-bold">ESTADO</label>
-                <select class="w-full border rounded p-2" name="estado" required>
-                    <option value="">Seleccione un estado</option>
-                        @foreach (EstadoEnum::cases() as $estado)
-                            <option value="{{ $estado->value }}" {{ old('estado',  $persona->estado ??'') === $estado->value? 'selected' : '' }}>
-                                {{ $estado->value }}
-                            </option>
-                        @endforeach
-                </select>
+                        {{-- METAS ESTRATEGICAS --}}
+            <div class="mb-4">
+                <label class="block font-bold mb-2">Alineación con Metas Estratégicas</label>
+                <div class="grid gap-2">
+                    @foreach ($metasEstrategicas as $meta)
+                        <label class="inline-flex items-center">
+                            <input
+                                type="checkbox"
+                                name="idMetaEstrategica[]"
+                                value="{{ $meta->idMetaEstrategica }}"
+                                {{ $programa->metasEstrategicas->contains('idMetaEstrategica', $meta->idMetaEstrategica) ? 'checked' : '' }}
+                                class="mr-2"
+                            >
+                            {{ $meta->descripcion }}
+                        </label>
+                    @endforeach
+                </div>
             </div>
             <div class="flex gap-4">
                 <button type="submit" class="font-bold bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">ACTUALIZAR</button>

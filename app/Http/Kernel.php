@@ -60,8 +60,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'two_factor_verified' => \App\Http\Middleware\EnsureTwoFactorCodeIsVerified::class,
 
-          'two-factor' => \App\Http\Middleware\TwoFactorMiddleware::class,
-          
+   
+
 
     ];
 }

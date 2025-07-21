@@ -1,9 +1,6 @@
 @extends('layouts.master')
 @section('title','Nuevo Programa')
 @section('content')
-@php
-    use App\Enums\EstadoEnum;
-@endphp
 @if ($errors->any())
 <div>
     <ul>
@@ -47,17 +44,20 @@
                             @endforeach
                         </div>
                     </div>
-                    <div>
-                        <label class="w-full max-w-xl mb-2 font-bold">ESTADO</label>
-                        <select name="estado" class="w-full max-w-xl mb-2 border rounded p-2" required>
-                            <option value="">Seleccione un estado</option>
-                                @foreach (EstadoEnum::cases() as $estado)
-                                    <option value="{{ $estado->value }}" {{ old('estado') === $estado->value ? 'selected' : '' }}>
-                                        {{ $estado->value }}
-                                    </option>
-                                @endforeach
-                        </select>
+                                    <div class="mb-4">
+                    <label class="w-full max-w-xl mb-2 font-bold" for="idMetaEstrategica">Alineación con Metas Estratégicas</label>
+                    <div class="grid grid-cols-1 gap-2">
+                        @foreach($metasEstrategicas as $meta)
+                            <label class="inline-flex items-center space-x-2">
+                                <input type="checkbox"
+                                       name="idMetaEstrategica[]"
+                                       value="{{ $meta->idMetaEstrategica }}"
+                                       class="form-checkbox text-blue-600">
+                                <span>{{ $meta->descripcion }}</span>
+                            </label>
+                        @endforeach
                     </div>
+                </div>
                         <button type="submit" class="font-bold btn btn-success">GUARDAR</button>
                             <a href="{{route('programa.index')}}"  class="font-bold btn btn-secondary text-white">VOLVER</a>
             </form>

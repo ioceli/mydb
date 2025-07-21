@@ -48,7 +48,7 @@ class TwoFactorController extends Controller
     RolEnum::autoridad->value        => redirect()->route('dashboard.autoridad'),
     RolEnum::externo->value          => redirect()->route('dashboard.externo'),
     RolEnum::auditor->value          => redirect()->route('dashboard.auditor'),
-    RolEnum::desarrollador->value    => redirect()->route('dashboard.desarrollador'),
+    
     default                          => redirect()->route('dashboard'),
             };
         }

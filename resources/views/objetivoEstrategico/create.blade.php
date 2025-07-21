@@ -9,8 +9,12 @@
 {{--FORMULARIO PARA LA CREACION DE OBJETIVO ESTRATEGICO--}}
 <form action="{{ route ('objetivoEstrategico.store')}} "method="POST" class="space-y-4">
     @csrf
+            <div>
+            <label class="w-full max-w-xl mb-2 font-bold">Descripción del Objetivo Estratégico</label>
+            <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="descripcion" required>
+        </div>
 <div class="mb-4">
-    <label class="block font-bold mb-2">Objetivos de Desarrollo Sostenible (ODS)</label>
+    <label class="block font-bold mb-2">Alineación con Objetivos de Desarrollo Sostenible (ODS)</label>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
         @foreach ($objetivoDesarrolloSostenible as $ods)
             <label class="flex items-center space-x-2">
@@ -22,21 +26,18 @@
     </div>
 </div>
 <div class="mb-4">
-                    <label for="opnd_seleccionados" class="w-full max-w-xl mb-2 font-bold">OBJETIVO PLAN NACIONAL</label>
+                    <label for="opnd_seleccionados" class="w-full max-w-xl mb-2 font-bold">Alineación con Objetivos del Plan Nacional de Desarrollo (OPND)</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     @foreach ($objetivoPlanNacional as $opnd)
                       <label class="flex items-center space-x-2">
                         <input type="checkbox" name="opnd_seleccionados[]" value="{{ $opnd->idObjetivoPlanNacional }}"
                             {{ is_array(old('opnd_seleccionados')) && in_array($opnd->idObjetivoPlanNacional, old('opnd_seleccionados')) ? 'checked' : '' }}>
-                        <span>{{ $opnd->nombre }}</span>
+                        <span>{{ $opnd->descripcion }}</span>
                         </label>
                     @endforeach
 </div>
                 </div>
-        <div>
-            <label class="w-full max-w-xl mb-2 font-bold">DESCRIPCION</label>
-            <input class="w-full max-w-xl mb-2 border rounded p-2" type="text" name="descripcion" required>
-        </div>
+
         <div>
             <label class="w-full max-w-xl mb-2 font-bold">FECHA REGISTRO</label>
             <input class="w-full max-w-xl mb-2 border rounded p-2" type="date" name="fechaRegistro" required>

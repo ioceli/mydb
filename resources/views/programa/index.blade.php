@@ -1,10 +1,11 @@
 @extends('layouts.master')
-
 @section('title','Inicio')
-
 @section('content')
+@php
+    use App\Enums\EstadoRevisionEnum;
+    use App\Enums\EstadoAutoridadEnum;
+@endphp 
 <h2 class="text-2x1 font-bold mb-4"> Listado de programa   </h2>
-
 {{--VALIDACION--}}
      @if (session ('success'))
         <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
@@ -22,8 +23,10 @@
                 <th style="border: 1px solid #ccc; padding: 8px">ID</th>
                 <th style="border: 1px solid #ccc; padding: 8px">ENTIDAD</th>
                 <th style="border: 1px solid #ccc; padding: 8px">NOMBRE DEL PROGRAMA</th>
-                <th class="border: 1px solid #ccc; padding: 8px">OBJETIVO ESTRATEGICO</th>
-                <th style="border: 1px solid #ccc; padding: 8px">ESTADO</th>
+                <th class="border: 1px solid #ccc; padding: 8px">ALINEACION CON OBJETIVO ESTRATEGICO</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ALINEACION CON META ESTRATEGICA</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ESTADO POR TECNICO</th>
+                <th style="border: 1px solid #ccc; padding: 8px">ESTADO POR AUTORIDAD</th>
                 <th style="border: 1px solid #ccc; padding: 8px">ACCIONES</th>
             </tr>
         </thead>
@@ -44,12 +47,19 @@
                     <span class="text-gray-500">Sin objetivos</span>
                 @endif
             </td>
-
-
-
-
-
-                    <td style="border: 1px solid #ccc; padding: 8px">{{$p->estado}}</td>
+                        <td class="border p-2">
+                @if ($p->metasEstrategicas->count())
+                    <ul class="list-disc list-inside">
+                        @foreach ($p->metasEstrategicas as $meta)
+                            <li>{{ $meta->descripcion }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <span class="text-gray-500">Sin metas</span>
+                @endif
+            </td>
+            <td class="border p-2">{{ $p->estado_revision }}</td>
+            <td class="border p-2">{{ $p->estado_autoridad }}</td>
                     <td class="p-2 flex gap-2">
 
                         {{-- Enlace para Editar --}}

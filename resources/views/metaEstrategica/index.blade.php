@@ -20,10 +20,9 @@
         <thead class="bg-gray-200 text-gray-700 text-left">
             <tr>
                 <th class="p-2 border">ID</th>
-                <th class="p-2 border">ENTIDAD</th>
-                <th class="p-2 border">META PLAN NACIONAL</th>
-                <th class="p-2 border">NOMBRE DEL PLAN</th>
-                <th class="p-2 border">NOMBRE</th>
+                <th class="p-2 border">NOMBRE META ESTRATEGICA</th>
+                <th class="p-2 border">ALINEACION CON META PLAN NACIONAL</th>
+                <th class="p-2 border">ALINEACION CON INDICADOR</th>
                 <th class="p-2 border">DESCRIPCION</th>
                 <th class="p-2 border">FECHA INICIO</th>
                 <th class="p-2 border">FECHA FIN</th>
@@ -39,8 +38,8 @@
             @forelse($metas as $index => $meta)
                 <tr>
                     <td class="border p-2 text-center">{{ $index + 1 }}</td>
-                    <td class="border p-2">{{ $meta->plan->entidad->subSector ?? 'Sin entidad' }}</td>
-                                        <td class="border p-2">
+                    <td class="border p-2">{{ $meta->nombre }}</td>
+                    <td class="border p-2">
                         @if($meta->metasPlanNacional->count())
                             <ul class="list-disc list-inside">
                                 @foreach($meta->metasPlanNacional as $m)
@@ -51,8 +50,17 @@
                             <span class="text-gray-500">Sin metas PND asociadas</span>
                         @endif
                     </td>
-                    <td class="border p-2">{{ $meta->plan->nombre ?? 'Sin plan' }}</td>
-                    <td class="border p-2">{{ $meta->nombre }}</td>
+                    <td class="border p-2">
+                        @if($meta->indicadores->count())
+                            <ul class="list-disc list-inside">
+                                @foreach($meta->indicadores as $i)
+                                    <li>{{ $i->descripcion }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <span class="text-gray-500">Sin indicadores asociados</span>
+                        @endif
+                    </td>
                     <td class="border p-2">{{ $meta->descripcion }}</td>
                     <td class="border p-2">{{ $meta->fechaInicio }}</td>
                     <td class="border p-2">{{ $meta->fechaFin }}</td>

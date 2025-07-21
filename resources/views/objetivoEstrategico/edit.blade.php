@@ -18,9 +18,14 @@
     <form action="{{ route('objetivoEstrategico.update', $objetivoEstrategico->idObjetivoEstrategico) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
+        <!-- Descripción -->
+        <div>
+            <label class="block font-bold mb-2">Descripción del Objetivo Estratégico</label>
+            <input type="text" name="descripcion" required class="w-full border rounded p-2" value="{{ old('descripcion', $objetivoEstrategico->descripcion) }}">
+        </div>
         <!-- ODS -->
         <div class="mb-4">
-            <label class="block font-bold mb-2">Objetivos de Desarrollo Sostenible (ODS)</label>
+            <label class="block font-bold mb-2">Alineación con Objetivos de Desarrollo Sostenible (ODS)</label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 @foreach ($objetivoDesarrolloSostenible as $ods)
                     <label class="flex items-center space-x-2">
@@ -33,21 +38,16 @@
         </div>
         <!-- OPND -->
         <div class="mb-4">
-            <label class="block font-bold mb-2">Objetivos del Plan Nacional de Desarrollo (OPND)</label>
+            <label class="block font-bold mb-2">Alineación con Objetivos del Plan Nacional de Desarrollo (OPND)</label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 @foreach ($objetivoPlanNacional as $opnd)
                     <label class="flex items-center space-x-2">
                         <input type="checkbox" name="opnd_seleccionados[]" value="{{ $opnd->idObjetivoPlanNacional }}"
                             {{ in_array($opnd->idObjetivoPlanNacional, old('opnd_seleccionados', $objetivoEstrategico->opnd->pluck('idObjetivoPlanNacional')->toArray())) ? 'checked' : '' }}>
-                        <span>{{ $opnd->nombre }}</span>
+                        <span>{{ $opnd->descripcion }}</span>
                     </label>
                 @endforeach
             </div>
-        </div>
-        <!-- Descripción -->
-        <div>
-            <label class="block font-bold mb-2">Descripción</label>
-            <input type="text" name="descripcion" required class="w-full border rounded p-2" value="{{ old('descripcion', $objetivoEstrategico->descripcion) }}">
         </div>
         <!-- Fecha Registro -->
         <div>

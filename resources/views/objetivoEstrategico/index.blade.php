@@ -21,8 +21,8 @@
         <tr>
             <th class="border border-gray-300 px-4 py-2">ID</th>
             <th class="border border-gray-300 px-4 py-2">Descripción</th>
-            <th class="border border-gray-300 px-4 py-2">ODS Asociados</th>
-            <th class="border border-gray-300 px-4 py-2">OPND Asociados</th>
+            <th class="border border-gray-300 px-4 py-2">Alineación con ODS </th>
+            <th class="border border-gray-300 px-4 py-2">Alineación con OPND </th>
             <th class="border border-gray-300 px-4 py-2">Fecha Registro</th>
             <th class="border border-gray-300 px-4 py-2">Estado</th>
             <th class="border border-gray-300 px-4 py-2">Acciones</th>
@@ -48,7 +48,7 @@
                     @if($objetivo->opnd && $objetivo->opnd->count())
                         <ul class="list-disc list-inside">
                             @foreach($objetivo->opnd as $opnd)
-                                <li>{{ $opnd->nombre }}</li>
+                                <li>{{ $opnd->descripcion }}</li>
                             @endforeach
                         </ul>
                     @else

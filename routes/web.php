@@ -15,6 +15,8 @@ use App\Http\Controllers\{
     ProgramaController,
     ProyectoController,
     ProfileController,
+    RevisionController,
+    AutoridadController,
     Auth\TwoFactorController
 };
 
@@ -40,8 +42,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/autoridad', fn() => view('dashboard.autoridad'))->name('dashboard.autoridad');
     Route::get('/dashboard/externo', fn() => view('dashboard.externo'))->name('dashboard.externo');
     Route::get('/dashboard/auditor', fn() => view('dashboard.auditor'))->name('dashboard.auditor');
-    Route::get('/dashboard/desarrollador', fn() => view('dashboard.desarrollador'))->name('dashboard.desarrollador');
-
+    Route::get('/revision', [RevisionController::class, 'index'])->name('revision.index');
+    Route::put('/revision/{tipo}/{id}/estado_revision', [RevisionController::class, 'cambiarEstado'])->name('revision.estado');
+    Route::get('/autoridad', [AutoridadController::class, 'index'])->name('autoridad.index');
+    Route::put('/autoridad/{tipo}/{id}/estado_autoridad', [AutoridadController::class, 'cambiarEstado'])->name('autoridad.estado');
     // Módulos protegidos
     Route::resources([
         'persona' => PersonaController::class,
@@ -63,6 +67,10 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
   });  
+
+
+
+
 Route::put('/entidad/{entidad}', [EntidadController::class, 'update'])->name('entidad.update');
 Route::put('/plan/{plan}', [PlanController::class, 'update'])->name('plan.update');
 // Breeze o Fortify auth routes

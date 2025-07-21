@@ -10,7 +10,6 @@ enum RolEnum: string
     case autoridad = 'Autoridad Validante';
     case externo = 'Usuario Externo';
     case auditor = 'Auditor';
-    case desarrollador = 'Desarrollador';
 
     public static function values(): array
     {

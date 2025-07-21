@@ -23,8 +23,8 @@ return new class extends Migration
                 'Revisor Institucional',
                 'Autoridad Validante',
                 'Usuario Externo',
-                'Auditor',
-                'Desarrollador']);
+                'Auditor'
+                ]);
             $table->enum('estado',['Activo','Inactivo']);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
