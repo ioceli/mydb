@@ -1,15 +1,33 @@
 @extends('layouts.master')
+
 @section('title', 'Panel del Auditor')
+
 @section('content')
-<x-slot name="header">Panel del Auditor</x-slot>
-
-<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-    <h2 class="text-xl font-bold mb-4 text-orange-600">Bienvenido, {{ Auth::user()->name }}</h2>
-
-    <ul class="list-disc ml-6 text-blue-700 space-y-2">
-        <li><a href="{{ route('auditoria.index') }}">Consultar Bitácoras del Sistema</a></li>
-        <li><a href="{{ route('auditoria.index') }}">Generar Reportes de Control</a></li>
-        <li><a href="{{ route('auditoria.index') }}">Ver Historial de Versiones y Aprobaciones</a></li>
-    </ul>
+<div class="flex">
+    {{-- Menú lateral --}}
+    <aside class="w-64 bg-blue-100 h-auto p-4 shadow-md">
+        <h3 class="text-lg font-bold mb-4">Menú Auditor</h3>
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ route('auditoria.index') }}" class="block p-2 rounded hover:bg-gray-200">
+                    Consultar Bitácoras
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('auditoria.index') }}" class="block p-2 rounded hover:bg-gray-200">
+                    Generar Reportes
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('auditoria.index') }}" class="block p-2 rounded hover:bg-gray-200">
+                    Historial de Versiones
+                </a>
+            </li>
+        </ul>
+    </aside>
+    {{-- Contenido principal --}}
+    <div class="flex-1 p-6">
+        <h2 class="text-2xl font-bold mb-4 text-orange-600">Bienvenido, {{ Auth::user()->name }}</h2>
+    </div>
 </div>
 @endsection

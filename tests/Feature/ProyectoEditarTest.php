@@ -1,18 +1,14 @@
 <?php
-
 namespace Tests\Feature;
-
 use Tests\TestCase;
-use App\Models\Plan;
+use App\Models\Proyecto;
 use App\Models\User;
 use App\Models\Entidad;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
-class PlanEditarTest extends TestCase
+class ProyectoEditarTest extends TestCase
 {
-    use RefreshDatabase;
-
-    public function test_usuario_puede_editar_un_plan(): void
+use RefreshDatabase;
+    public function test_usuario_puede_editar_un_proyecto(): void
     {
         // Crear entidad relacionada
         $entidad = Entidad::create([
@@ -23,36 +19,32 @@ class PlanEditarTest extends TestCase
             'fechaCreacion' => now()->toDateString(),
             'fechaActualizacion' => now()->toDateString(),
         ]);
-
-        // Crear plan original
-        $plan = Plan::create([
+        // Crear proyecto original
+        $proyecto = Proyecto::create([
             'idEntidad' => $entidad->idEntidad,
-            'nombre' => 'Plan Inicial',
+            'nombre' => 'Proyecto Inicial',
             'estado_revision' => 'pendiente',
             'fechaCreacion' => now()->toDateString(),
             'fechaActualizacion' => now()->toDateString(),
         ]);
-
         // Crear y autenticar usuario
         $usuario = User::factory()->create();
         $this->actingAs($usuario);
-
-        // Ejecutar solicitud PUT para editar el plan
-        $response = $this->put(route('plan.update', $plan->idPlan), [
+        // Ejecutar solicitud PUT para editar el proyecto
+        $response = $this->put(route('proyecto.update', $proyecto->idProyecto), [
             'idEntidad' => $entidad->idEntidad,
-            'nombre' => 'Plan Actualizado',
+            'nombre' => 'Proyecto Actualizado',
             'estado_revision' => 'pendiente',
-            'fechaCreacion' => $plan->fechaCreacion,
+            'fechaCreacion' => $proyecto->fechaCreacion,
             'fechaActualizacion' => now()->toDateString(),
         ]);
-
         // Verifica que se redirige correctamente
-        $response->assertRedirect(route('plan.index'));
+        $response->assertRedirect(route('proyecto.index'));
 
         // Verifica que los datos fueron actualizados en la base de datos
-        $this->assertDatabaseHas('plan', [
-            'idPlan' => $plan->idPlan,
-            'nombre' => 'Plan Actualizado',
+        $this->assertDatabaseHas('proyecto', [
+            'idProyecto' => $proyecto->idProyecto,
+            'nombre' => 'Proyecto Actualizado',
             'estado_revision' => 'pendiente',
         ]);
     }

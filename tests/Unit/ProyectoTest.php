@@ -1,18 +1,16 @@
 <?php
-
 namespace Tests\Unit;
-
-use Tests\TestCase;
-use App\Models\Plan;
+use App\Models\Proyecto;
 use App\Models\Entidad;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-class PlanTest extends TestCase
+class ProyectoTest extends TestCase
 {
-  use RefreshDatabase;
-    public function test_puede_crear_un_plan(): void
+use RefreshDatabase;
+    public function test_puede_crear_un_proyecto(): void
     {
-         $entidad = entidad::create([
+ $entidad = entidad::create([
             'codigo' => '1234',
             'subSector' => 'Agua Potable',
             'nivelGobierno' => 'Nacional',
@@ -21,17 +19,17 @@ class PlanTest extends TestCase
             'fechaActualizacion' => now()->toDateString(),
         ]);
 
-        $plan = Plan::create([
+        $proyecto = Proyecto::create([
             'idEntidad' => $entidad->idEntidad,
-            'nombre' => 'Nuevo Plan',
+            'nombre' => 'Nuevo Proyecto',
             'estado_revision' => 'pendiente',
             'fechaCreacion' => now()->toDateString(),
             'fechaActualizacion' => now()->toDateString(),
-        ]);
+            ]);
 
-        $this->assertDatabaseHas('plan', [
-            'nombre' => 'Nuevo Plan',
-            'estado_revision' => 'pendiente'
+        $this->assertDatabaseHas('proyecto', [
+            'nombre' => 'Nuevo Proyecto',
+            'estado_revision' => 'pendiente',
         ]);
     }
 }
