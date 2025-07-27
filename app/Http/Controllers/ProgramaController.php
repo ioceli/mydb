@@ -43,8 +43,20 @@ class ProgramaController extends Controller
      {
         BitacoraHelper::registrar('Programa', 'Creó un nuevo programa');
           $request->validate([
+            'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string|unique:programa,nombre',
+            
+             'accion' => 'required|string',
+            'objeto' => 'required|string',
+            'plazo_ejecucion' => 'required|string|max:50',
+            'monto_total' => 'required|numeric|min:0',
+            'diagnostico' => 'nullable|string',
+            'marco_logico' => 'nullable|string',
+            'analisis_integral' => 'nullable|string',
+            'financiamiento' => 'nullable|string',
+            'estrategia_ejecucion' => 'nullable|string',
+            'seguimiento_evaluacion' => 'nullable|string',
+            'anexos' => 'nullable|string',
             'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
@@ -52,9 +64,20 @@ class ProgramaController extends Controller
             'idMetaEstrategica' => 'nullable|array',
         ]);
        $programa= programa::create([
+         'cup' => programa::generarCUP(),
         'idEntidad' => $request->idEntidad,
-        'nombre' => $request->nombre,
-          'estado_revision' => 'pendiente',
+        'tipo_dictamen' => $request->tipo_dictamen,
+        'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
+        'plazo_ejecucion' => $request->plazo_ejecucion,
+        'monto_total' => $request->monto_total,
+        'diagnostico' => $request->diagnostico,
+        'marco_logico' => $request->marco_logico,
+        'analisis_integral' => $request->analisis_integral,
+        'financiamiento' => $request->financiamiento,
+        'estrategia_ejecucion' => $request->estrategia_ejecucion,
+        'seguimiento_evaluacion' => $request->seguimiento_evaluacion,
+        'anexos' => $request->anexos,
+        'estado_revision' => 'pendiente',
         'estado_autoridad' => 'pendiente',
     ]);
         // Asocia objetivos estratégicos al programa
@@ -96,18 +119,41 @@ class ProgramaController extends Controller
     {
          BitacoraHelper::registrar('Programa', 'Actualizó el programa con ID ' . $id);
         $request->validate([
+            
+            'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string|unique:programa,nombre,'.$id.',idPrograma',
+            'accion' => 'required|string',
+            'objeto' => 'required|string',
+            'plazo_ejecucion' => 'required|string|max:50',
+            'monto_total' => 'required|numeric|min:0',
+            'diagnostico' => 'nullable|string',
+            'marco_logico' => 'nullable|string',
+            'analisis_integral' => 'nullable|string',
+            'financiamiento' => 'nullable|string',
+            'estrategia_ejecucion' => 'nullable|string',
+            'seguimiento_evaluacion' => 'nullable|string',
+            'anexos' => 'nullable|string',
             'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
-            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
+            'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',    
             'idMetaEstrategica' => 'nullable|array',
         ]);
        $programa = programa::findOrfail($id);
        $programa->update([
-         'idEntidad' => $request->idEntidad,
-         'nombre' => $request->nombre,
+         'cup' => programa::generarCUP(),
+        'idEntidad' => $request->idEntidad,
+        'tipo_dictamen' => $request->tipo_dictamen,
+        'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
+        'plazo_ejecucion' => $request->plazo_ejecucion,
+        'monto_total' => $request->monto_total,
+        'diagnostico' => $request->diagnostico,
+        'marco_logico' => $request->marco_logico,
+        'analisis_integral' => $request->analisis_integral,
+        'financiamiento' => $request->financiamiento,
+        'estrategia_ejecucion' => $request->estrategia_ejecucion,
+        'seguimiento_evaluacion' => $request->seguimiento_evaluacion,
+        'anexos' => $request->anexos,
         'estado_revision' => 'pendiente',
         'estado_autoridad' => 'pendiente',
        ]);

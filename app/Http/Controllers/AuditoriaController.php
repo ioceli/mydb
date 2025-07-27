@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bitacora;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 class AuditoriaController extends Controller
 {
     /**
@@ -13,8 +13,19 @@ class AuditoriaController extends Controller
      */
     public function index(Request $request)
 {
-    $bitacoras = Bitacora::latest('fecha')->paginate(10);
-    return view('auditoria.index', compact('bitacoras'));
+    $perPage = $request->input('per_page', 10);
+    $bitacoras = Bitacora::latest('fecha')->paginate($perPage);
+    return view('auditoria.index', compact('bitacoras', 'perPage'));
 }
 
+public function exportPdf(Request $request)
+{
+    $perPage = $request->input('per_page', 100);
+    $bitacoras = Bitacora::latest('fecha')->paginate($perPage);
+
+    // Cargar la vista y pasar los datos
+    $pdf = Pdf::loadView('auditoria.pdf', compact('bitacoras'));
+
+    return $pdf->download('reporte_bitacora.pdf');
+}
 }

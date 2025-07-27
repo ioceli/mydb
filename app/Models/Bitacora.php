@@ -14,4 +14,5 @@ class Bitacora extends Model
         'usuario',
         'accion'
     ];
+    
 }

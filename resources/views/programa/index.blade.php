@@ -35,31 +35,31 @@
                 <tr class="border-b">
                     <td class="border p-2 text-center">{{ $loop->iteration }}</td>
                     <td class="border p-2">{{$p->entidad->subSector}}</td>
-                    <td class="border p-2">{{$p->nombre}}</td>
+                    <td class="border p-2">{{ $p->cup }}: {{ $p->nombre }}</td>
                     <td class="border p-2">
-                     @if ($p->objetivosEstrategicos->count())
-                    <ul class="list-disc list-inside">
-                        @foreach ($p->objetivosEstrategicos as $objetivo)
-                            <li>{{ $objetivo->descripcion }}</li>
-                        @endforeach
-                    </ul>
-                @else
-                    <span class="text-gray-500">Sin objetivos</span>
-                @endif
-            </td>
-                        <td class="border p-2">
-                @if ($p->metasEstrategicas->count())
-                    <ul class="list-disc list-inside">
-                        @foreach ($p->metasEstrategicas as $meta)
-                            <li>{{ $meta->descripcion }}</li>
-                        @endforeach
-                    </ul>
-                @else
-                    <span class="text-gray-500">Sin metas</span>
-                @endif
-            </td>
-            <td class="border p-2">{{ $p->estado_revision }}</td>
-            <td class="border p-2">{{ $p->estado_autoridad }}</td>
+                        @if ($p->objetivosEstrategicos->count())
+                            <ul class="list-disc list-inside">
+                                @foreach ($p->objetivosEstrategicos as $objetivo)
+                                    <li>{{ $objetivo->descripcion }}</li>
+                                @endforeach
+                            </ul>
+                            @else
+                                <span class="text-gray-500">Sin objetivos</span>
+                        @endif
+                    </td>
+                    <td class="border p-2">
+                        @if ($p->metasEstrategicas->count())
+                            <ul class="list-disc list-inside">
+                                @foreach ($p->metasEstrategicas as $meta)
+                                    <li>{{ $meta->descripcion }}</li>
+                                @endforeach
+                            </ul>
+                            @else
+                                <span class="text-gray-500">Sin metas</span>
+                        @endif
+                    </td>
+                    <td class="border p-2">{{ $p->estado_revision }}</td>
+                    <td class="border p-2">{{ $p->estado_autoridad }}</td>
                     <td class="p-2 flex gap-2">
 
                         {{-- Enlace para Editar --}}
@@ -72,8 +72,8 @@
                             <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
                         </form>
 
-</td>
-</tr>
+                    </td>
+                </tr>
 
 @endforeach
 </tbody>

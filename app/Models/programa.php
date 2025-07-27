@@ -12,10 +12,29 @@ protected $table = 'programa';
 protected $primaryKey='idPrograma';
 public $timestamps =false;
 protected $fillable = [
+    'cup',
     'idEntidad',
+    'tipo_dictamen',
     'nombre',
-    'estado',
+    'plazo_ejecucion',
+    'monto_total',
+    'diagnostico',
+    'marco_logico',
+    'analisis_integral',
+    'financiamiento',
+    'estrategia_ejecucion',
+    'seguimiento_evaluacion',
+    'anexos',
+
 ];
+public static function generarCUP(): string
+{
+    $ultimo = self::orderByDesc('idPrograma')->first();
+    $numero = $ultimo ? ((int) filter_var($ultimo->cup, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
+    return 'CUP' . str_pad($numero, 4, '0', STR_PAD_LEFT);
+}
+
+
 protected $casts = [
     'estado_revision' => EstadoRevisionEnum::class,
     'estado_autoridad' => EstadoAutoridadEnum::class,

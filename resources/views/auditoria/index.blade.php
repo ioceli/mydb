@@ -37,7 +37,23 @@
             <div class="bg-blue-100 text-blue-800 p-3 rounded">
                 No hay registros disponibles en la bitácora.
             </div>
-        @else
+            @else
+            <div class="d-flex justify-content-end mb-3">
+                <form method="GET" action="{{ route('auditoria.index') }}" class="row g-2 align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Selecciona cuántos registros ver por página">
+                    <div class="col-auto">
+                        <label for="per_page" class="col-form-label">
+                            <i class="bi bi-list-ul me-1"></i> Mostrar:
+                        </label>
+                    </div>
+                    <div class="col-auto">
+                        <select name="per_page" id="per_page" class="form-select" onchange="this.form.submit()">
+                            <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                            <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
             <table class="min-w-full table-auto border-collapse">
                 <thead class="bg-gray-200 text-gray-700 text-left">
                     <tr>
@@ -56,10 +72,23 @@
                             <td class="border px-4 py-2">{{ $registro->accion }}</td>
                         </tr>
                     @endforeach
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                            new bootstrap.Tooltip(tooltipTriggerEl)
+                            })
+                            });
+                        </script>
                 </tbody>
             </table>
             <div class="mt-4">
-                {{ $bitacoras->links() }}
+                <a href="{{ route('auditoria.pdf', ['per_page' => $perPage]) }}" class="btn btn-danger mb-3">
+                    <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
+                </a>
+            </div>
+            <div class="mt-4">
+                {{ $bitacoras->appends(['per_page' => $perPage])->links() }}
             </div>
         @endif
     </div>
