@@ -16,20 +16,18 @@ protected $fillable = [
     'idEntidad',
     'tipo_dictamen',
     'nombre',
+    'accion',
+    'objeto',
     'plazo_ejecucion',
     'monto_total',
     'diagnostico',
-    'marco_logico',
-    'analisis_integral',
-    'financiamiento',
-    'estrategia_ejecucion',
-    'seguimiento_evaluacion',
-    'anexos',
-
+    'problema',
+    'longitud',
+    'latitud',
 ];
 public static function generarCUP(): string
 {
-    $ultimo = self::orderByDesc('idPrograma')->first();
+    $ultimo = self::orderBy('idPrograma', 'asc')->get()->last();
     $numero = $ultimo ? ((int) filter_var($ultimo->cup, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
     return 'CUP' . str_pad($numero, 4, '0', STR_PAD_LEFT);
 }
@@ -56,4 +54,8 @@ public function objetivosEstrategicos()
     return $this->belongsToMany(metaEstrategica::class, 'programa_meta_estrategica', 'idPrograma', 
     'idMetaEstrategica');
 }
+    public function componentes()
+    {
+        return $this->hasMany(Componente::class, 'idPrograma', 'idPrograma');
+    }
 }

@@ -43,42 +43,50 @@ class ProgramaController extends Controller
      {
         BitacoraHelper::registrar('Programa', 'Creó un nuevo programa');
           $request->validate([
+            'cup' => 'unique:programa,cup',
             'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            
-             'accion' => 'required|string',
+            'accion' => 'required|string',
             'objeto' => 'required|string',
+            'nombre' => 'required|string|max:255',
             'plazo_ejecucion' => 'required|string|max:50',
             'monto_total' => 'required|numeric|min:0',
             'diagnostico' => 'nullable|string',
-            'marco_logico' => 'nullable|string',
-            'analisis_integral' => 'nullable|string',
-            'financiamiento' => 'nullable|string',
-            'estrategia_ejecucion' => 'nullable|string',
-            'seguimiento_evaluacion' => 'nullable|string',
-            'anexos' => 'nullable|string',
+            'problema' => 'nullable|string',
+            'longitud' => 'nullable|numeric',
+            'latitud' => 'nullable|numeric',
             'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',    
             'idMetaEstrategica' => 'nullable|array',
+            'componentes' => 'nullable|array',
+            'componentes.*.nombre' => 'required|string',
+            'componentes.*.descripcion' => 'nullable|string',
+            'componentes.*.monto' => 'required|numeric',
+            'componentes.*.actividades' => 'nullable|array',
+            'componentes.*.actividades.*.nombre' => 'required|string',
+            'componentes.*.actividades.*.monto' => 'required|numeric',
+            'componentes.*.actividades.*.tareas' => 'nullable|array',
+            'componentes.*.actividades.*.tareas.*.nombre' => 'required|string',
+            'componentes.*.actividades.*.tareas.*.monto' => 'required|numeric',
         ]);
        $programa= programa::create([
          'cup' => programa::generarCUP(),
         'idEntidad' => $request->idEntidad,
         'tipo_dictamen' => $request->tipo_dictamen,
+        'accion' => $request->accion,
+        'objeto' => $request->objeto,
         'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
         'plazo_ejecucion' => $request->plazo_ejecucion,
         'monto_total' => $request->monto_total,
         'diagnostico' => $request->diagnostico,
-        'marco_logico' => $request->marco_logico,
-        'analisis_integral' => $request->analisis_integral,
-        'financiamiento' => $request->financiamiento,
-        'estrategia_ejecucion' => $request->estrategia_ejecucion,
-        'seguimiento_evaluacion' => $request->seguimiento_evaluacion,
-        'anexos' => $request->anexos,
+        'problema' => $request->problema,
+        'longitud' => $request->longitud,
+        'latitud' => $request->latitud,
         'estado_revision' => 'pendiente',
         'estado_autoridad' => 'pendiente',
+        
     ]);
         // Asocia objetivos estratégicos al programa
     if ($request->has('idObjetivoEstrategico')) {
@@ -88,6 +96,33 @@ class ProgramaController extends Controller
     if ($request->has('idMetaEstrategica')) {
         $programa->metasEstrategicas()->sync($request->idMetaEstrategica);
     }
+    if ($request->has('componentes')) {
+    foreach ($request->input('componentes') as $compData) {
+        $componente = $programa->componentes()->create([
+            'nombre' => $compData['nombre'],
+            'descripcion' => $compData['descripcion'] ?? null,
+            'monto' => $compData['monto'],
+        ]);
+
+        if (isset($compData['actividades'])) {
+            foreach ($compData['actividades'] as $actData) {
+                $actividad = $componente->actividades()->create([
+                    'nombre' => $actData['nombre'],
+                    'monto' => $actData['monto'],
+                ]);
+
+                if (isset($actData['tareas'])) {
+                    foreach ($actData['tareas'] as $tarData) {
+                        $actividad->tareas()->create([
+                            'nombre' => $tarData['nombre'],
+                            'monto' => $tarData['monto'],
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+}
     return redirect()->route('programa.index')->with('success','Programa Creado satisfactoriamente');
     }
 
@@ -102,14 +137,14 @@ class ProgramaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit( $id)
     {
-         $programa = programa::findOrfail($id);
-         $entidad = entidad::all();
-         $objetivoEstrategico = objetivoEstrategico::all();
-         $metasEstrategicas = metaEstrategica::all();
+        $programas = programa::with(['componentes.actividades.tareas', 'objetivosEstrategicos', 'metasEstrategicas'])->findOrFail($id);
+        $entidades = entidad::all();
+        $objetivosEstrategicos = objetivoEstrategico::all();
+        $metasEstrategicas = metaEstrategica::all();
 
-        return view('programa.edit',compact('programa','entidad', 'objetivoEstrategico', 'metasEstrategicas'));
+        return view('programa.edit',compact('programas','entidades', 'objetivosEstrategicos', 'metasEstrategicas'));
     }
 
     /**
@@ -117,9 +152,10 @@ class ProgramaController extends Controller
      */
     public function update(Request $request, $id)
     {
-         BitacoraHelper::registrar('Programa', 'Actualizó el programa con ID ' . $id);
+        $programas = Programa::findOrFail($id);
+        BitacoraHelper::registrar('Programa', 'Actualizó el programa con ID ' . $programas->idPrograma);
         $request->validate([
-            
+            'cup' => 'unique:programa,cup',
             'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',
             'idEntidad'=>'required|exists:entidad,idEntidad',
             'accion' => 'required|string',
@@ -127,47 +163,81 @@ class ProgramaController extends Controller
             'plazo_ejecucion' => 'required|string|max:50',
             'monto_total' => 'required|numeric|min:0',
             'diagnostico' => 'nullable|string',
-            'marco_logico' => 'nullable|string',
-            'analisis_integral' => 'nullable|string',
-            'financiamiento' => 'nullable|string',
-            'estrategia_ejecucion' => 'nullable|string',
-            'seguimiento_evaluacion' => 'nullable|string',
-            'anexos' => 'nullable|string',
+            'problema' => 'nullable|string',
+            'longitud' => 'nullable|numeric',
+            'latitud' => 'nullable|numeric',
             'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',    
             'idMetaEstrategica' => 'nullable|array',
+            'componentes' => 'nullable|array',
+            'componentes.*.nombre' => 'required_with:componentes|string',
+            'componentes.*.descripcion' => 'nullable|string',
+            'componentes.*.monto' => 'required_with:componentes|numeric',
+            'componentes.*.actividades' => 'nullable|array',
+            'componentes.*.actividades.*.nombre' => 'required_with:componentes.*.actividades|string',
+            'componentes.*.actividades.*.monto' => 'required_with:componentes.*.actividades|numeric',
+            'componentes.*.actividades.*.tareas' => 'nullable|array',
+            'componentes.*.actividades.*.tareas.*.nombre' => 'required_with:componentes.*.actividades.*.tareas|string',
+            'componentes.*.actividades.*.tareas.*.monto' => 'required_with:componentes.*.actividades.*.tareas|numeric',
         ]);
-       $programa = programa::findOrfail($id);
-       $programa->update([
-         'cup' => programa::generarCUP(),
+         // Actualiza los campos del programa
+
+       $programas->update([
         'idEntidad' => $request->idEntidad,
         'tipo_dictamen' => $request->tipo_dictamen,
         'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
         'plazo_ejecucion' => $request->plazo_ejecucion,
         'monto_total' => $request->monto_total,
         'diagnostico' => $request->diagnostico,
-        'marco_logico' => $request->marco_logico,
-        'analisis_integral' => $request->analisis_integral,
-        'financiamiento' => $request->financiamiento,
-        'estrategia_ejecucion' => $request->estrategia_ejecucion,
-        'seguimiento_evaluacion' => $request->seguimiento_evaluacion,
-        'anexos' => $request->anexos,
+        'problema' => $request->problema,
+        'longitud' => $request->longitud,
+        'latitud' => $request->latitud,
         'estado_revision' => 'pendiente',
         'estado_autoridad' => 'pendiente',
        ]);
        // Actualiza la relación con los objetivos estratégicos
        if ($request->has('idObjetivoEstrategico')) {
-           $programa->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+           $programas->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
        }
        // Actualiza la relación con las metas estratégicas
        if ($request->has('idMetaEstrategica')) {
-           $programa->metasEstrategicas()->sync($request->idMetaEstrategica);
+           $programas->metasEstrategicas()->sync($request->idMetaEstrategica);
        }
-    return redirect()->route('programa.index')->with('success','Programa Actualizado satisfactoriamente');
-    }
+        $programas->componentes()->delete();
 
+        if ($request->has('componentes')) {
+            foreach ($request->input('componentes') as $compData) {
+                $componente = $programas->componentes()->create([
+                    'nombre' => $compData['nombre'],
+                    'descripcion' => $compData['descripcion'] ?? null,
+                    'monto' => $compData['monto'],
+                ]);
+
+                if (isset($compData['actividades'])) {
+                    foreach ($compData['actividades'] as $actData) {
+                        $actividad = $componente->actividades()->create([
+                            'nombre' => $actData['nombre'],
+                            'monto' => $actData['monto'],
+                        ]);
+
+                        if (isset($actData['tareas'])) {
+                            foreach ($actData['tareas'] as $tarData) {
+                                $actividad->tareas()->create([
+                                    'nombre' => $tarData['nombre'],
+                                    'monto' => $tarData['monto'],
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return redirect()->route('programa.index')->with('success', 'Programa actualizado satisfactoriamente');
+    
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -179,3 +249,4 @@ class ProgramaController extends Controller
 return redirect()->route('programa.index')->with('success','Programa Eliminado satisfactoriamente');
     }
 }
+

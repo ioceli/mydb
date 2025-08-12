@@ -13,7 +13,6 @@
         </div>
     @endif
     {{--BOTON PARA LLAMAR AL FORMULARIO CREAR PROGRAMA--}}
-
 <a href="{{route('programa.create')}}" class="font-bold mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Nuevo Programa</a>
     {{--TABLA PARA LISTAR TODOS LOS PROGRAMAS--}}
 <div class="overflow-x-auto bg-white rounded shadow">
@@ -31,7 +30,7 @@
             </tr>
         </thead>
         <tbody> 
-            @foreach($programa as $index => $p)
+            @forelse($programa as $index => $p)
                 <tr class="border-b">
                     <td class="border p-2 text-center">{{ $loop->iteration }}</td>
                     <td class="border p-2">{{$p->entidad->subSector}}</td>
@@ -71,11 +70,13 @@
                             @method('DELETE')
                             <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
                         </form>
-
                     </td>
                 </tr>
-
-@endforeach
+  @empty
+                <tr>
+                    <td colspan="6" class="text-center p-4 text-gray-500">No hay proyectos registrados.</td>
+                </tr>
+@endforelse
 </tbody>
 </table>
 </div>

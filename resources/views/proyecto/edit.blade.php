@@ -19,7 +19,7 @@
                 <label class="block mb-1 font-bold">ENTIDAD</label>
                     <select name="idEntidad" class="w-full border rounded p-2"required>
                         @foreach ($entidad as $entidad)
-                            <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}</option>
+                            <option value="{{$entidad->idEntidad}}" {{ old('idEntidad', $proyecto->idEntidad) == $entidad->idEntidad ? 'selected' : '' }}>{{$entidad->subSector}}</option>
                         @endforeach
                     </select>
             </div>
@@ -38,9 +38,7 @@
                                 name="idObjetivoEstrategico[]"
                                 value="{{ $objetivo->idObjetivoEstrategico }}"
                                 {{ $proyecto->objetivosEstrategicos->contains('idObjetivoEstrategico', $objetivo->idObjetivoEstrategico) ? 'checked' : '' }}
-                                class="mr-2"
-                            >
-                            {{ $objetivo->descripcion }}
+                                class="mr-2">{{ $objetivo->descripcion }}
                         </label>
                     @endforeach
                 </div>

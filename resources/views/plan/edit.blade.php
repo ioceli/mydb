@@ -19,8 +19,7 @@
                 <label class="block mb-1 font-bold">ENTIDAD</label>
                     <select name="idEntidad" class="w-full border rounded p-2" required>
                         @foreach ($entidad as $entidad)
-                            <option value="{{$entidad->idEntidad}}">{{$entidad->subSector}}
-                            </option>
+                            <option value="{{$entidad->idEntidad}}" {{ old('idEntidad', $plan->idEntidad) == $entidad->idEntidad ? 'selected' : '' }}>{{$entidad->subSector}}</option>
                         @endforeach
                     </select>
             </div>

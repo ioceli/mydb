@@ -14,22 +14,22 @@ return new class extends Migration
         Schema::create('programa', function (Blueprint $table) {
             $table->id('idPrograma');
             $table->unsignedBigInteger('idEntidad');
+            $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
             $table->string('cup')->unique();
             $table->string('tipo_dictamen');
             $table->string('nombre');
+            $table->string('accion')->nullable();
+            $table->string('objeto')->nullable();
             $table->string('estado_revision')->default('pendiente');
             $table->string('estado_autoridad')->default('pendiente');   
             $table->timestamps();
             $table->string('plazo_ejecucion');
             $table->decimal('monto_total', 14, 2);
             $table->text('diagnostico')->nullable();
-            $table->text('marco_logico')->nullable();
-            $table->text('analisis_integral')->nullable();
-            $table->text('financiamiento')->nullable();
-            $table->text('estrategia_ejecucion')->nullable();
-            $table->text('seguimiento_evaluacion')->nullable();
-            $table->text('anexos')->nullable();
-            $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
+            $table->text('problema')->nullable();
+            $table->decimal('longitud', 10, 8)->nullable();
+            $table->decimal('latitud', 10, 8)->nullable();
+            
         });
     }
 
