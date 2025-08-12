@@ -86,6 +86,9 @@
                 <a href="{{ route('auditoria.pdf', ['per_page' => $perPage]) }}" class="btn btn-danger mb-3">
                     <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
                 </a>
+                <a href="{{ route('auditoria.excel', ['per_page' => $perPage]) }}" class="btn btn-success mb-3">
+                    <i class="bi bi-file-earmark-excel"></i> Descargar Excel
+                </a>
             </div>
             <div class="mt-4">
                 {{ $bitacoras->appends(['per_page' => $perPage])->links() }}

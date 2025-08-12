@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/autoridad/{tipo}/{id}/estado_autoridad', [AutoridadController::class, 'cambiarEstado'])->name('autoridad.estado');
     Route::get('/bitacora', [AuditoriaController::class, 'index'])->name('auditoria.index');
     Route::get('/auditoria/pdf', [AuditoriaController::class, 'exportPdf'])->name('auditoria.pdf');
+    Route::get('/auditoria/excel', [AuditoriaController::class, 'exportExcel'])->name('auditoria.excel');
     // Módulos protegidos
     Route::resources([
         'persona' => PersonaController::class,

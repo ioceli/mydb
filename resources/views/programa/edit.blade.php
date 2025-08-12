@@ -226,7 +226,7 @@
 
 
     const programa = @json($programas);
-    const componentesGuardados = @json($programas->componentes ?? []); // Asegúrate de que el modelo Programa tenga una relación con Componentes
+    const componentesGuardados = @json($programas->componentes ?? []);
 
     function actualizarSaldo() {
         const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;

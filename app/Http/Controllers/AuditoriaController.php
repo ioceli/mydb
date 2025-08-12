@@ -6,6 +6,8 @@ use App\Models\Bitacora;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\AuditoriaExport;
+use Maatwebsite\Excel\Facades\Excel;
 class AuditoriaController extends Controller
 {
     /**
@@ -27,5 +29,11 @@ public function exportPdf(Request $request)
     $pdf = Pdf::loadView('auditoria.pdf', compact('bitacoras'));
 
     return $pdf->download('reporte_bitacora.pdf');
+}
+
+public function exportExcel(Request $request)
+{
+    $perPage = $request->input('per_page', 100);
+    return Excel::download(new AuditoriaExport($perPage), 'reporte_bitacora.xlsx');
 }
 }
