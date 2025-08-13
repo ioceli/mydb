@@ -32,6 +32,75 @@
         {{-- Título --}}
         <h2 class="text-2xl font-bold mb-4 text-center">Bitácora del Auditor</h2>
 
+        {{-- Formulario de filtros --}}
+<form method="GET" action="{{ route('auditoria.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6 p-4 bg-blue-50 rounded shadow">
+
+    {{-- Fecha desde --}}
+    <div>
+        <label for="fecha_desde" class="block text-sm font-medium text-gray-700">Fecha desde</label>
+        <input type="date" id="fecha_desde" name="fecha_desde" value="{{ request('fecha_desde') }}"
+               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+    </div>
+
+    {{-- Fecha hasta --}}
+    <div>
+        <label for="fecha_hasta" class="block text-sm font-medium text-gray-700">Fecha hasta</label>
+        <input type="date" id="fecha_hasta" name="fecha_hasta" value="{{ request('fecha_hasta') }}"
+               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+    </div>
+
+    {{-- Usuario --}}
+    <div>
+        <label for="usuario" class="block text-sm font-medium text-gray-700">Usuario</label>
+        <select id="usuario" name="usuario"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todos</option>
+            @foreach($usuarios as $u)
+                <option value="{{ $u->usuario }}" {{ request('usuario') == $u->usuario ? 'selected' : '' }}>
+                    {{ $u->usuario }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Módulo --}}
+    <div>
+        <label for="modulo" class="block text-sm font-medium text-gray-700">Módulo</label>
+        <select id="modulo" name="modulo"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todos</option>
+            @foreach($modulos as $m)
+                <option value="{{ $m->modulo }}" {{ request('modulo') == $m->modulo ? 'selected' : '' }}>
+                    {{ $m->modulo }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Acción --}}
+    <div>
+        <label for="accion" class="block text-sm font-medium text-gray-700">Acción</label>
+        <select id="accion" name="accion"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todas</option>
+            @foreach($acciones as $a)
+                <option value="{{ $a->accion }}" {{ request('accion') == $a->accion ? 'selected' : '' }}>
+                    {{ $a->accion }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Botones --}}
+    <div class="md:col-span-5 flex items-end gap-2">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Filtrar
+        </button>
+        <a href="{{ route('auditoria.index') }}" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
+            Limpiar
+        </a>
+    </div>
+</form>
         {{-- Tabla de bitácora --}}
         @if ($bitacoras->isEmpty())
             <div class="bg-blue-100 text-blue-800 p-3 rounded">
@@ -40,6 +109,14 @@
             @else
             <div class="d-flex justify-content-end mb-3">
                 <form method="GET" action="{{ route('auditoria.index') }}" class="row g-2 align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Selecciona cuántos registros ver por página">
+                    
+{{-- Mantener filtros --}}
+    <input type="hidden" name="fecha_desde" value="{{ request('fecha_desde') }}">
+    <input type="hidden" name="fecha_hasta" value="{{ request('fecha_hasta') }}">
+    <input type="hidden" name="usuario" value="{{ request('usuario') }}">
+    <input type="hidden" name="modulo" value="{{ request('modulo') }}">
+    <input type="hidden" name="accion" value="{{ request('accion') }}">
+
                     <div class="col-auto">
                         <label for="per_page" class="col-form-label">
                             <i class="bi bi-list-ul me-1"></i> Mostrar:
