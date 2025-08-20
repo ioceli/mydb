@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('actividad', function (Blueprint $table) {
-            $table->id('idActividad');
-            $table->unsignedBigInteger('idComponente');
-            $table->foreign('idComponente')->references('idComponente')->on('componente')->onDelete('cascade');
+        Schema::create('componente_proyecto', function (Blueprint $table) {
+            $table->id('idComponente');
+            $table->unsignedBigInteger('idProyecto');
+            $table->foreign('idProyecto')->references('idProyecto')->on('proyecto')->onDelete('cascade');
             $table->string('nombre');
             $table->text('descripcion')->nullable();
             $table->decimal('monto', 12, 2);
@@ -27,7 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('actividad');
+        Schema::dropIfExists('componente_proyecto');
     }
 };
-

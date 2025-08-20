@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tarea', function (Blueprint $table) {
-            $table->id('idTarea');
-            $table->unsignedBigInteger('idActividad');
-            $table->foreign('idActividad')->references('idActividad')->on('actividad')->onDelete('cascade');
+        Schema::create('actividad_proyecto', function (Blueprint $table) {
+            $table->id('idActividad');
+            $table->unsignedBigInteger('idComponente');
+            $table->foreign('idComponente')->references('idComponente')->on('componente_proyecto')->onDelete('cascade');
             $table->string('nombre');
-            $table->string('descripcion')->nullable();
+            $table->text('descripcion')->nullable();
             $table->decimal('monto', 12, 2);
             $table->timestamps();
         });
@@ -27,6 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tarea');
+        Schema::dropIfExists('actividad_proyecto');
     }
 };
+

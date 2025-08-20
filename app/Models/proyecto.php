@@ -12,10 +12,26 @@ protected $table = 'proyecto';
 protected $primaryKey='idProyecto';
 public $timestamps =false;
 protected $fillable = [
+    'cup',
     'idEntidad',
+    'tipo_dictamen',
     'nombre',
-    'estado',
+    'accion',
+    'objeto',
+    'plazo_ejecucion',
+    'monto_total',
+    'diagnostico',
+    'problema',
+    'longitud',
+    'latitud',
 ];
+public static function generarCUP(): string
+{
+        $ultimo = self::orderBy('idProyecto', 'asc')->get()->last();
+    $numero = $ultimo ? ((int) filter_var($ultimo->cup, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
+    return 'CUP' . str_pad($numero, 4, '0', STR_PAD_LEFT);
+}
+
 protected $casts = [
     'estado_revision' => EstadoRevisionEnum::class,
     'estado_autoridad' => EstadoAutoridadEnum::class,
@@ -36,5 +52,9 @@ public function metasEstrategicas()
 {
     return $this->belongsToMany(metaEstrategica::class, 'proyecto_meta_estrategica', 'idProyecto', 
     'idMetaEstrategica');   
+}
+    public function componentesProyecto()
+{
+    return $this->hasMany(ComponenteProyecto::class, 'idProyecto', 'idProyecto');
 }
 }

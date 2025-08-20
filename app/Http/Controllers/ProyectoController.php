@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use App\Models\objetivoEstrategico;
 use App\Helpers\BitacoraHelper;
@@ -43,18 +42,48 @@ class ProyectoController extends Controller
      {
         BitacoraHelper::registrar('Proyecto', 'Creó un nuevo proyecto');
           $request->validate([
+            'cup' => 'unique:proyecto,cup',
+            'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string|unique:proyecto,nombre',
-           'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
+            'accion' => 'required|string',
+            'objeto' => 'required|string',
+            'nombre'=>'required|string|max:255',
+            'plazo_ejecucion' => 'required|string|max:50',
+            'monto_total' => 'required|numeric|min:0',
+            'diagnostico' => 'nullable|string',
+            'problema' => 'nullable|string',
+            'longitud' => 'nullable|numeric',
+            'latitud' => 'nullable|numeric',
+            'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
-      ]);
+            'componentesProyecto' => 'nullable|array',
+            'componentesProyecto.*.nombre' => 'required|string',
+            'componentesProyecto.*.descripcion' => 'nullable|string',
+            'componentesProyecto.*.monto' => 'required|numeric',
+            'componentesProyecto.*.actividadesProyecto' => 'nullable|array',
+            'componentesProyecto.*.actividadesProyecto.*.nombre' => 'required|string',
+            'componentesProyecto.*.actividadesProyecto.*.monto' => 'required|numeric',
+            'componentesProyecto.*.actividadesProyecto.*.tareasProyecto' => 'nullable|array',
+            'componentesProyecto.*.actividadesProyecto.*.tareasProyecto.*.nombre' => 'required|string',
+            'componentesProyecto.*.actividadesProyecto.*.tareasProyecto.*.monto' => 'required|numeric',
+        ]);
        $proyecto = proyecto::create([
+        'cup' => proyecto::generarCUP(),
         'idEntidad' => $request->idEntidad,
-        'nombre' => $request->nombre,
-          'estado_revision' => 'pendiente',
+        'tipo_dictamen' => $request->tipo_dictamen,
+        'accion' => $request->accion,
+        'objeto' => $request->objeto,
+        'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
+        'plazo_ejecucion' => $request->plazo_ejecucion,
+        'monto_total' => $request->monto_total,
+        'diagnostico' => $request->diagnostico,
+        'problema' => $request->problema,
+        'longitud' => $request->longitud,
+        'latitud' => $request->latitud,
+        'estado_revision' => 'pendiente',
         'estado_autoridad' => 'pendiente',
     ]);
         // Asocia objetivos estratégicos al proyecto
@@ -64,6 +93,34 @@ class ProyectoController extends Controller
     // Asocia metas estratégicas al proyecto
     if ($request->has('idMetaEstrategica')) {
         $proyecto->metasEstrategicas()->sync($request->idMetaEstrategica);
+    }
+    // Procesa los componentes, actividades y tareas
+    if ($request->has('componentesProyecto')) {
+        foreach ($request->input('componentesProyecto') as $compData) {
+            $componenteProyecto = $proyecto->componentesProyecto()->create([
+                'nombre' => $compData['nombre'],
+                'descripcion' => $compData['descripcion'] ?? null,
+                'monto' => $compData['monto'],
+            ]);
+
+            if (isset($compData['actividadesProyecto'])) {
+                foreach ($compData['actividadesProyecto'] as $actData) {
+                    $actividadProyecto = $componenteProyecto->actividadesProyecto()->create([
+                        'nombre' => $actData['nombre'],
+                        'monto' => $actData['monto'],
+                    ]);
+
+                    if (isset($actData['tareasProyecto'])) {
+                        foreach ($actData['tareasProyecto'] as $tarData) {
+                            $actividadProyecto->tareasProyecto()->create([
+                                'nombre' => $tarData['nombre'],
+                                'monto' => $tarData['monto'],
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
     }
     return redirect()->route('proyecto.index')->with('success','Proyecto Creado satisfactoriamente');
     }
@@ -81,7 +138,7 @@ class ProyectoController extends Controller
      */
     public function edit($id)
     {
-         $proyecto = proyecto::findOrfail($id);
+         $proyecto = proyecto::with(['componentesProyecto.actividadesProyecto.tareasProyecto','objetivosEstrategicos','metasEstrategicas'])->findOrFail($id);
         $entidad = entidad::all();
         $objetivoEstrategico = objetivoEstrategico::all();
         $metasEstrategicas = metaEstrategica::all();
@@ -95,20 +152,46 @@ class ProyectoController extends Controller
     {
          BitacoraHelper::registrar('Proyecto', 'Actualizó el proyecto con ID ' . $id);
         $request->validate([
+            'cup' => 'unique:proyecto,cup',
+            'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',    
             'idEntidad'=>'required|exists:entidad,idEntidad',
-            'nombre'=>'required|string|unique:proyecto,nombre,' . $id . ',idProyecto',
+            'accion' => 'required|string',
+            'objeto' => 'required|string',
+            'plazo_ejecucion' => 'required|string|max:50',
+            'monto_total' => 'required|numeric|min:0',
+            'diagnostico' => 'nullable|string',
+            'problema' => 'nullable|string',
+            'longitud' => 'nullable|numeric',
+            'latitud' => 'nullable|numeric',
             'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
+            'componentesProyecto' => 'nullable|array',
+            'componentesProyecto.*.nombre' => 'required|string',
+            'componentesProyecto.*.descripcion' => 'nullable|string',
+            'componentesProyecto.*.monto' => 'required|numeric',
+            'componentesProyecto.*.actividadesProyecto' => 'nullable|array',
+            'componentesProyecto.*.actividadesProyecto.*.nombre' => 'required|string',
+            'componentesProyecto.*.actividadesProyecto.*.monto' => 'required|numeric',
+            'componentesProyecto.*.actividadesProyecto.*.tareasProyecto' => 'nullable|array',
+            'componentesProyecto.*.actividadesProyecto.*.tareasProyecto.*.nombre' => 'required|string',
+            'componentesProyecto.*.actividadesProyecto.*.tareasProyecto.*.monto' => 'required|numeric',
         ]);
        $proyecto = proyecto::findOrfail($id);
        $proyecto->update([
          'idEntidad' => $request->idEntidad,
-         'nombre' => $request->nombre,
-        'estado_revision' => 'pendiente',
-        'estado_autoridad' => 'pendiente',
+         'tipo_dictamen' => $request->tipo_dictamen,
+         'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
+                  'plazo_ejecucion' => $request->plazo_ejecucion,
+         'monto_total' => $request->monto_total,
+         'diagnostico' => $request->diagnostico,
+         'problema' => $request->problema,
+         'longitud' => $request->longitud,
+         'latitud' => $request->latitud,
+         'estado_revision' => 'pendiente',
+         'estado_autoridad' => 'pendiente',
        ]);
        // Actualiza la relación con los objetivos estratégicos
        if ($request->has('idObjetivoEstrategico')) {
@@ -118,6 +201,34 @@ class ProyectoController extends Controller
        if ($request->has('idMetaEstrategica')) {
            $proyecto->metasEstrategicas()->sync($request->idMetaEstrategica);
        }
+       $proyecto->componentesProyecto()->delete();
+       if ($request->has('componentesProyecto')) {
+            foreach ($request->input('componentesProyecto') as $compData) {
+                $componenteProyecto = $proyecto->componentesProyecto()->create([
+                    'nombre' => $compData['nombre'],
+                    'descripcion' => $compData['descripcion'] ?? null,
+                    'monto' => $compData['monto'],
+                ]);
+
+                if (isset($compData['actividadesProyecto'])) {
+                    foreach ($compData['actividadesProyecto'] as $actData) {
+                        $actividadProyecto = $componenteProyecto->actividadesProyecto()->create([
+                            'nombre' => $actData['nombre'],
+                            'monto' => $actData['monto'],
+                        ]);
+
+                        if (isset($actData['tareasProyecto'])) {
+                            foreach ($actData['tareasProyecto'] as $tarData) {
+                                $actividadProyecto->tareasProyecto()->create([
+                                    'nombre' => $tarData['nombre'],
+                                    'monto' => $tarData['monto'],
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     return redirect()->route('proyecto.index')->with('success','Proyecto Actualizado satisfactoriamente');
     }
 

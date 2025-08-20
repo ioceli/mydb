@@ -15,11 +15,22 @@ return new class extends Migration
             $table->id('idProyecto');
             $table->unsignedBigInteger('idEntidad');
             $table->foreign('idEntidad')->references('idEntidad')->on('entidad')->onDelete('cascade');
-           $table->string('nombre');
+            $table->string('cup')->unique();
+            $table->string('tipo_dictamen');
+            $table->string('nombre');
+            $table->string('accion')->nullable();
+            $table->string('objeto')->nullable();
             $table->string('estado_revision')->default('pendiente');
-            $table->string('estado_autoridad')->default('pendiente');
+            $table->string('estado_autoridad')->default('pendiente');   
             $table->timestamps();
-            });
+            $table->string('plazo_ejecucion');
+            $table->decimal('monto_total', 14, 2);
+            $table->text('diagnostico')->nullable();
+            $table->text('problema')->nullable();
+            $table->decimal('longitud', 10, 8)->nullable();
+            $table->decimal('latitud', 10, 8)->nullable();
+            
+        });
     }
 
     /**

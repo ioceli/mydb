@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Tarea extends Model
+class TareaPrograma extends Model
 {
     use HasFactory;
-    protected $table = 'tarea';
+    protected $table = 'tarea_programa';
     protected $primaryKey = 'idTarea';
     protected $fillable = [
         'idActividad',
@@ -16,8 +16,8 @@ class Tarea extends Model
         'monto',
     ];
 
-    public function actividades()
+    public function actividadesPrograma()
     {
-        return $this->belongsTo(Actividad::class, 'idActividad', 'idActividad');
+        return $this->belongsTo(ActividadPrograma::class, 'idActividad', 'idActividad');
     }
 }

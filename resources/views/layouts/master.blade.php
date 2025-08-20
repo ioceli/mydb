@@ -31,11 +31,11 @@
     {{-- Barra de navegación --}}
 <nav class="bg-blue-600 text-white border-b border-blue-800 px-4 py-2 shadow">
     <div class="container mx-auto flex items-center justify-between">
-        <a href="{{ url('/') }}" class="text-xl font-semibold">Inicio</a>          
+        <a href="{{ url('/') }}" class="text-xl font-semibold"></a>          
                 {{-- Sesión del usuario --}}
                 <div class="d-flex align-items-center">
                     @guest
-                        <a class="btn btn-light text-2xl font-bold me-2" href="{{ route('login') }}">Login</a>
+                        <a class="btn btn-light text-2xl font-bold me-4" href="{{ route('login') }}">Iniciar sesión</a>
                         <a class="btn btn-light text-2xl font-bold" href="{{ route('register') }}">Registrarse</a>
                     @else
                         <div class="dropdown">

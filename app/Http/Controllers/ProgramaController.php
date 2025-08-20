@@ -60,16 +60,16 @@ class ProgramaController extends Controller
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',    
             'idMetaEstrategica' => 'nullable|array',
-            'componentes' => 'nullable|array',
-            'componentes.*.nombre' => 'required|string',
-            'componentes.*.descripcion' => 'nullable|string',
-            'componentes.*.monto' => 'required|numeric',
-            'componentes.*.actividades' => 'nullable|array',
-            'componentes.*.actividades.*.nombre' => 'required|string',
-            'componentes.*.actividades.*.monto' => 'required|numeric',
-            'componentes.*.actividades.*.tareas' => 'nullable|array',
-            'componentes.*.actividades.*.tareas.*.nombre' => 'required|string',
-            'componentes.*.actividades.*.tareas.*.monto' => 'required|numeric',
+            'componentesPrograma' => 'nullable|array',
+            'componentesPrograma.*.nombre' => 'required|string',
+            'componentesPrograma.*.descripcion' => 'nullable|string',
+            'componentesPrograma.*.monto' => 'required|numeric',
+            'componentesPrograma.*.actividadesPrograma' => 'nullable|array',
+            'componentesPrograma.*.actividadesPrograma.*.nombre' => 'required|string',
+            'componentesPrograma.*.actividadesPrograma.*.monto' => 'required|numeric',
+            'componentesPrograma.*.actividadesPrograma.*.tareasPrograma' => 'nullable|array',
+            'componentesPrograma.*.actividadesPrograma.*.tareasPrograma.*.nombre' => 'required|string',
+            'componentesPrograma.*.actividadesPrograma.*.tareasPrograma.*.monto' => 'required|numeric',
         ]);
        $programa= programa::create([
          'cup' => programa::generarCUP(),
@@ -88,6 +88,7 @@ class ProgramaController extends Controller
         'estado_autoridad' => 'pendiente',
         
     ]);
+    
         // Asocia objetivos estratégicos al programa
     if ($request->has('idObjetivoEstrategico')) {
         $programa->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
@@ -96,24 +97,25 @@ class ProgramaController extends Controller
     if ($request->has('idMetaEstrategica')) {
         $programa->metasEstrategicas()->sync($request->idMetaEstrategica);
     }
-    if ($request->has('componentes')) {
-    foreach ($request->input('componentes') as $compData) {
-        $componente = $programa->componentes()->create([
-            'nombre' => $compData['nombre'],
-            'descripcion' => $compData['descripcion'] ?? null,
-            'monto' => $compData['monto'],
-        ]);
+    // Manejo de componentes, actividades y tareas
+    if ($request->has('componentesPrograma')) {
+        foreach ($request->input('componentesPrograma') as $compData) {
+            $componentePrograma = $programa->componentesPrograma()->create([
+                'nombre' => $compData['nombre'],
+                'descripcion' => $compData['descripcion'] ?? null,
+                'monto' => $compData['monto'],
+            ]);
 
-        if (isset($compData['actividades'])) {
-            foreach ($compData['actividades'] as $actData) {
-                $actividad = $componente->actividades()->create([
-                    'nombre' => $actData['nombre'],
+            if (isset($compData['actividadesPrograma'])) {
+                foreach ($compData['actividadesPrograma'] as $actData) {
+                    $actividadPrograma = $componentePrograma->actividadesPrograma()->create([
+                        'nombre' => $actData['nombre'],
                     'monto' => $actData['monto'],
                 ]);
 
-                if (isset($actData['tareas'])) {
-                    foreach ($actData['tareas'] as $tarData) {
-                        $actividad->tareas()->create([
+                    if (isset($actData['tareasPrograma'])) {
+                        foreach ($actData['tareasPrograma'] as $tarData) {
+                        $actividadPrograma->tareasPrograma()->create([
                             'nombre' => $tarData['nombre'],
                             'monto' => $tarData['monto'],
                         ]);
@@ -139,12 +141,12 @@ class ProgramaController extends Controller
      */
     public function edit( $id)
     {
-        $programas = programa::with(['componentes.actividades.tareas', 'objetivosEstrategicos', 'metasEstrategicas'])->findOrFail($id);
-        $entidades = entidad::all();
+        $programa = programa::with(['componentesPrograma.actividadesPrograma.tareasPrograma', 'objetivosEstrategicos', 'metasEstrategicas'])->findOrFail($id);
+        $entidad = entidad::all();
         $objetivosEstrategicos = objetivoEstrategico::all();
         $metasEstrategicas = metaEstrategica::all();
 
-        return view('programa.edit',compact('programas','entidades', 'objetivosEstrategicos', 'metasEstrategicas'));
+        return view('programa.edit',compact('programa','entidad', 'objetivosEstrategicos', 'metasEstrategicas'));
     }
 
     /**
@@ -152,8 +154,8 @@ class ProgramaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $programas = Programa::findOrFail($id);
-        BitacoraHelper::registrar('Programa', 'Actualizó el programa con ID ' . $programas->idPrograma);
+        $programa = Programa::findOrFail($id);
+        BitacoraHelper::registrar('Programa', 'Actualizó el programa con ID ' . $programa->idPrograma);
         $request->validate([
             'cup' => 'unique:programa,cup',
             'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',
@@ -171,20 +173,20 @@ class ProgramaController extends Controller
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',    
             'idMetaEstrategica' => 'nullable|array',
-            'componentes' => 'nullable|array',
-            'componentes.*.nombre' => 'required_with:componentes|string',
-            'componentes.*.descripcion' => 'nullable|string',
-            'componentes.*.monto' => 'required_with:componentes|numeric',
-            'componentes.*.actividades' => 'nullable|array',
-            'componentes.*.actividades.*.nombre' => 'required_with:componentes.*.actividades|string',
-            'componentes.*.actividades.*.monto' => 'required_with:componentes.*.actividades|numeric',
-            'componentes.*.actividades.*.tareas' => 'nullable|array',
-            'componentes.*.actividades.*.tareas.*.nombre' => 'required_with:componentes.*.actividades.*.tareas|string',
-            'componentes.*.actividades.*.tareas.*.monto' => 'required_with:componentes.*.actividades.*.tareas|numeric',
+            'componentesPrograma' => 'nullable|array',
+            'componentesPrograma.*.nombre' => 'required_with:componentesPrograma|string',
+            'componentesPrograma.*.descripcion' => 'nullable|string',
+            'componentesPrograma.*.monto' => 'required_with:componentesPrograma|numeric',
+            'componentesPrograma.*.actividadesPrograma' => 'nullable|array',
+            'componentesPrograma.*.actividadesPrograma.*.nombre' => 'required_with:componentesPrograma.*.actividadesPrograma|string',
+            'componentesPrograma.*.actividadesPrograma.*.monto' => 'required_with:componentesPrograma.*.actividadesPrograma|numeric',
+            'componentesPrograma.*.actividadesPrograma.*.tareasPrograma' => 'nullable|array',
+            'componentesPrograma.*.actividadesPrograma.*.tareasPrograma.*.nombre' => 'required_with:componentesPrograma.*.actividadesPrograma.*.tareasPrograma|string',
+            'componentesPrograma.*.actividadesPrograma.*.tareasPrograma.*.monto' => 'required_with:componentesPrograma.*.actividadesPrograma.*.tareasPrograma|numeric',
         ]);
          // Actualiza los campos del programa
 
-       $programas->update([
+       $programa->update([
         'idEntidad' => $request->idEntidad,
         'tipo_dictamen' => $request->tipo_dictamen,
         'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
@@ -199,32 +201,32 @@ class ProgramaController extends Controller
        ]);
        // Actualiza la relación con los objetivos estratégicos
        if ($request->has('idObjetivoEstrategico')) {
-           $programas->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+           $programa->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
        }
        // Actualiza la relación con las metas estratégicas
        if ($request->has('idMetaEstrategica')) {
-           $programas->metasEstrategicas()->sync($request->idMetaEstrategica);
+           $programa->metasEstrategicas()->sync($request->idMetaEstrategica);
        }
-        $programas->componentes()->delete();
+        $programa->componentesPrograma()->delete();
 
-        if ($request->has('componentes')) {
-            foreach ($request->input('componentes') as $compData) {
-                $componente = $programas->componentes()->create([
+        if ($request->has('componentesPrograma')) {
+            foreach ($request->input('componentesPrograma') as $compData) {
+                $componente = $programa->componentesPrograma()->create([
                     'nombre' => $compData['nombre'],
                     'descripcion' => $compData['descripcion'] ?? null,
                     'monto' => $compData['monto'],
                 ]);
 
-                if (isset($compData['actividades'])) {
-                    foreach ($compData['actividades'] as $actData) {
-                        $actividad = $componente->actividades()->create([
+                if (isset($compData['actividadesPrograma'])) {
+                    foreach ($compData['actividadesPrograma'] as $actData) {
+                        $actividad = $componente->actividadesPrograma()->create([
                             'nombre' => $actData['nombre'],
                             'monto' => $actData['monto'],
                         ]);
 
-                        if (isset($actData['tareas'])) {
-                            foreach ($actData['tareas'] as $tarData) {
-                                $actividad->tareas()->create([
+                        if (isset($actData['tareasPrograma'])) {
+                            foreach ($actData['tareasPrograma'] as $tarData) {
+                                $actividad->tareasPrograma()->create([
                                     'nombre' => $tarData['nombre'],
                                     'monto' => $tarData['monto'],
                                 ]);

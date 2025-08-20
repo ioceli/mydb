@@ -3,6 +3,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use App\Enums\EstadoRevisionEnum;
 use App\Enums\EstadoAutoridadEnum;
 class programa extends Model
@@ -54,8 +55,8 @@ public function objetivosEstrategicos()
     return $this->belongsToMany(metaEstrategica::class, 'programa_meta_estrategica', 'idPrograma', 
     'idMetaEstrategica');
 }
-    public function componentes()
+    public function componentesPrograma()
     {
-        return $this->hasMany(Componente::class, 'idPrograma', 'idPrograma');
+        return $this->hasMany(ComponentePrograma::class, 'idPrograma', 'idPrograma');
     }
 }

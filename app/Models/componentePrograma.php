@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Componente extends Model
+class ComponentePrograma extends Model
 {
     use HasFactory;
-    protected $table = 'componente';
+    protected $table = 'componente_programa';
     protected $primaryKey = 'idComponente';
     
     protected $fillable = [
@@ -22,9 +22,10 @@ class Componente extends Model
     {
         return $this->belongsTo(Programa::class, 'idPrograma', 'idPrograma');
     }
+    
 
-    public function actividades()
+    public function actividadesPrograma()
     {
-        return $this->hasMany(Actividad::class, 'idComponente', 'idComponente');
+        return $this->hasMany(ActividadPrograma::class, 'idComponente', 'idComponente');
     }
 }
