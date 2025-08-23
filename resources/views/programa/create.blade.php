@@ -156,6 +156,31 @@
     </form>
 </div>
 <script>
+    function validarMontoComponente(input) {
+        const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
+        const componentes = document.querySelectorAll('.componente-monto');
+        let sumaOtros = 0;
+        componentes.forEach(comp => {
+            if (comp !== input) {
+                const val = parseFloat(comp.value);
+                if (!isNaN(val)) sumaOtros += val;
+            }
+        });
+        const valorActual = parseFloat(input.value) || 0;
+        if (valorActual + sumaOtros > montoTotal) {
+            input.value = (montoTotal - sumaOtros > 0) ? (montoTotal - sumaOtros).toFixed(2) : 0;
+            alert('El monto asignado al componente no puede superar el monto total disponible del programa.');
+        }
+        actualizarSaldo();
+        generarCronogramaDesdeComponentes();
+    }
+
+    // Asignar el validador a los inputs existentes y futuros
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('componente-monto')) {
+            validarMontoComponente(e.target);
+        }
+    });
 document.addEventListener('DOMContentLoaded', function () {
     // Tabs
     const buttons = document.querySelectorAll('.tab-button');
