@@ -141,7 +141,6 @@
                                 <th class="border px-2 py-1">Nombre</th>
                                 <th class="border px-2 py-1 text-right">Valor Componente</th>
                                 <th class="border px-2 py-1 text-right">Valor Actividad</th>
-                                <th class="border px-2 py-1 text-right">Valor Tarea</th>
                             </tr>
                         </thead>
                         <tbody id="tablaResumen"></tbody>
@@ -156,31 +155,52 @@
     </form>
 </div>
 <script>
-    function validarMontoComponente(input) {
-        const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
-        const componentes = document.querySelectorAll('.componente-monto');
-        let sumaOtros = 0;
-        componentes.forEach(comp => {
-            if (comp !== input) {
-                const val = parseFloat(comp.value);
-                if (!isNaN(val)) sumaOtros += val;
-            }
-        });
-        const valorActual = parseFloat(input.value) || 0;
-        if (valorActual + sumaOtros > montoTotal) {
-            input.value = (montoTotal - sumaOtros > 0) ? (montoTotal - sumaOtros).toFixed(2) : 0;
-            alert('El monto asignado al componente no puede superar el monto total disponible del programa.');
-        }
-        actualizarSaldo();
-        generarCronogramaDesdeComponentes();
-    }
-
-    // Asignar el validador a los inputs existentes y futuros
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('componente-monto')) {
-            validarMontoComponente(e.target);
+    
+   function validarMontoComponente(input) {
+    const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
+    const componentes = document.querySelectorAll('.componente-monto');
+    let sumaOtros = 0;
+    componentes.forEach(comp => {
+        if (comp !== input) {
+            const val = parseFloat(comp.value);
+            if (!isNaN(val)) sumaOtros += val;
         }
     });
+    const valorActual = parseFloat(input.value) || 0;
+    if (valorActual + sumaOtros > montoTotal) {
+        input.value = (montoTotal - sumaOtros > 0) ? (montoTotal - sumaOtros).toFixed(2) : 0;
+        alert('El monto asignado al componente no puede superar el monto total disponible del programa.');
+    }
+    actualizarSaldo();
+    generarCronogramaDesdeComponentes();
+}
+
+function validarMontoActividad(input){
+    const MontoActividad = parseFloat(document.querySelector('input[name^="componentesPrograma"][name$="[monto]"]').value) || 0;
+    const actividades = document.querySelectorAll('.actividad-monto');
+    let sumaOtros = 0;
+    actividades.forEach(act => {
+        if (act !== input) {
+            const val = parseFloat(act.value);
+            if (!isNaN(val)) sumaOtros += val;
+        }
+    });
+    const valorActual = parseFloat(input.value) || 0;
+    if (valorActual + sumaOtros > MontoActividad) {
+        input.value = (MontoActividad - sumaOtros > 0) ? (MontoActividad - sumaOtros).toFixed(2) : 0;
+        alert('El monto asignado a la actividad no puede superar el monto asignado al componente.');
+    }
+    actualizarSaldo();
+    generarCronogramaDesdeComponentes();
+}
+// Asignar el validador a los inputs existentes y futuros
+document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('componente-monto')) {
+        validarMontoComponente(e.target);
+    } else if (e.target.classList.contains('actividad-monto')) {
+        validarMontoActividad(e.target);
+    }
+});
 document.addEventListener('DOMContentLoaded', function () {
     // Tabs
     const buttons = document.querySelectorAll('.tab-button');
@@ -356,16 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const ultima = actividades[actividades.length - 1];
                     const nombre = ultima.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]')?.value.trim();
                     const monto = ultima.querySelector('input[name^="componentesPrograma"][name$="[monto]"]')?.value;
-                    // Debe existir al menos una tarea y estar llena
-                    const tareas = ultima.querySelectorAll('.tarea');
-                    let tareaCompleta = false;
-                    if (tareas.length > 0) {
-                        const ultimaTarea = tareas[tareas.length - 1];
-                        const nombreTarea = ultimaTarea.querySelector('input[name$="[nombre]"]')?.value.trim();
-                        const montoTarea = ultimaTarea.querySelector('input[name$="[monto]"]')?.value;
-                        tareaCompleta = !!(nombreTarea && montoTarea && parseFloat(montoTarea) > 0);
-                    }
-                    if (!nombre || !monto || parseFloat(monto) <= 0 || !tareaCompleta) {
+                    if (!nombre || !monto || parseFloat(monto) <= 0) {
                         ultimoCompleto = false;
                     }
                 }
@@ -394,15 +405,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     bloque.querySelector('.saldo-componente').classList.add('text-green-600');
                 }
             }
-            bloque.querySelector('.add-actividad').addEventListener('click', () => generarActividadYTarea(i, validarAgregarActividad));
+            bloque.querySelector('.add-actividad').addEventListener('click', () => generarActividad(i, validarAgregarActividad));
             bloque.addEventListener('input', validarAgregarActividad);
             bloque.addEventListener('change', validarAgregarActividad);
             validarAgregarActividad();
         });
         generarTablaResumen();
     }
-    // Generar actividad y tarea
-    function generarActividadYTarea(componenteIndex, validarAgregarActividad) {
+    // Generar actividad
+    function generarActividad(componenteIndex, validarAgregarActividad) {
         const actividadContainer = document.querySelector(`.actividades[data-componente-index="${componenteIndex}"]`);
         const actividadIndex = actividadContainer.querySelectorAll('.actividad').length;
         const nuevaActividad = document.createElement('div');
@@ -410,60 +421,12 @@ document.addEventListener('DOMContentLoaded', function () {
         nuevaActividad.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <label class="font-semibold">Actividad ${actividadIndex + 1}</label>
-                <span class="text-xs font-normal text-gray-500">(Saldo: <span class="saldo-actividad text-green-600 font-bold">$0.00</span>)</span>
+                
             </div>
             <input type="text" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required>
             <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
-            <div class="tareas space-y-1" data-comp="${componenteIndex}" data-act="${actividadIndex}"></div>
-            <button type="button" class="add-tarea mt-2 px-3 py-1 bg-blue-400 text-white rounded text-xs" data-comp="${componenteIndex}" data-act="${actividadIndex}">Agregar Tarea</button>
-            <div class="mensaje-sin-saldo-tarea text-red-600 font-semibold hidden">
-                No hay saldo disponible en esta actividad para agregar más tareas.
-            </div>
         `;
         actividadContainer.appendChild(nuevaActividad);
-        // Validación para habilitar/deshabilitar botón de tarea
-        function validarAgregarTarea() {
-            const tareas = nuevaActividad.querySelectorAll('.tarea');
-            let ultimoCompleto = true;
-            if (tareas.length > 0) {
-                const ultima = tareas[tareas.length - 1];
-                const nombre = ultima.querySelector('input[name$="[nombre]"]')?.value.trim();
-                const monto = ultima.querySelector('input[name$="[monto]"]')?.value;
-                if (!nombre || !monto || parseFloat(monto) <= 0) {
-                    ultimoCompleto = false;
-                }
-            }
-            // Saldo
-            const montoActividadInput = nuevaActividad.querySelector('.actividad-monto');
-            const montoActividad = parseFloat(montoActividadInput.value) || 0;
-            const tareasInputs = nuevaActividad.querySelectorAll('.tarea-monto');
-            let sumaTareas = 0;
-            tareasInputs.forEach(input => sumaTareas += parseFloat(input.value) || 0);
-            const saldoActividad = (montoActividad - sumaTareas).toFixed(2);
-            const btnAgregarTarea = nuevaActividad.querySelector('.add-tarea');
-            const mensajeSinSaldoTarea = nuevaActividad.querySelector('.mensaje-sin-saldo-tarea');
-            nuevaActividad.querySelector('.saldo-actividad').textContent = `$${saldoActividad}`;
-            if (saldoActividad <= 0 || !ultimoCompleto) {
-                btnAgregarTarea.disabled = true;
-                btnAgregarTarea.classList.add('opacity-50', 'cursor-not-allowed');
-                mensajeSinSaldoTarea.classList.remove('hidden');
-            } else {
-                btnAgregarTarea.disabled = false;
-                btnAgregarTarea.classList.remove('opacity-50', 'cursor-not-allowed');
-                mensajeSinSaldoTarea.classList.add('hidden');
-            }
-            if (saldoActividad <= 0) {
-                nuevaActividad.querySelector('.saldo-actividad').classList.add('text-red-600');
-                nuevaActividad.querySelector('.saldo-actividad').classList.remove('text-green-600');
-            } else {
-                nuevaActividad.querySelector('.saldo-actividad').classList.remove('text-red-600');
-                nuevaActividad.querySelector('.saldo-actividad').classList.add('text-green-600');
-            }
-        }
-        nuevaActividad.querySelector('.add-tarea').addEventListener('click', () => generarTarea(componenteIndex, actividadIndex, validarAgregarTarea));
-        nuevaActividad.addEventListener('input', validarAgregarTarea);
-        nuevaActividad.addEventListener('change', validarAgregarTarea);
-        // Mostrar saldo disponible del componente mientras se llena actividad
         nuevaActividad.querySelector('.actividad-monto').addEventListener('input', () => {
             const componenteEl = nuevaActividad.closest('.componente');
             const montoComponenteInput = componenteEl.querySelector('.componente-monto');
@@ -474,45 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const saldoComponente = (montoComponente - sumaActividades).toFixed(2);
             componenteEl.querySelector('.saldo-componente').textContent = `$${saldoComponente}`;
         });
-        // Generar una tarea por defecto
-        generarTarea(componenteIndex, actividadIndex, validarAgregarTarea);
-        validarAgregarTarea();
         if (typeof validarAgregarActividad === 'function') validarAgregarActividad();
-    }
-    function generarTarea(compIdx, actIdx, validarAgregarTarea) {
-        const tareaContainer = document.querySelector(`.tareas[data-comp="${compIdx}"][data-act="${actIdx}"]`);
-        const tareaIndex = tareaContainer.querySelectorAll('.tarea').length;
-        const nuevaTarea = document.createElement('div');
-        nuevaTarea.classList.add('tarea', 'ml-4', 'border-l', 'pl-2');
-        nuevaTarea.innerHTML = `
-            <div class="flex justify-between items-center">
-                <label class="text-sm text-gray-600">Tarea ${tareaIndex + 1}</label>
-            </div>
-            <input type="text" name="componentesPrograma[${compIdx}][actividadesPrograma][${actIdx}][tareasPrograma][${tareaIndex}][nombre]"
-                class="border p-1 w-full mb-1 tarea-nombre" placeholder="Nombre de la tarea" required>
-            <input type="number" step="0.01" name="componentesPrograma[${compIdx}][actividadesPrograma][${actIdx}][tareasPrograma][${tareaIndex}][monto]" 
-                class="border p-1 w-full mb-2 tarea-monto" placeholder="Monto de la tarea" required>
-        `;
-        tareaContainer.appendChild(nuevaTarea);
-        // Mostrar saldo disponible de la actividad mientras se llena tarea
-        nuevaTarea.querySelector('.tarea-monto').addEventListener('input', () => {
-            const actividadEl = nuevaTarea.closest('.actividad');
-            const montoActividadInput = actividadEl.querySelector('.actividad-monto');
-            const montoActividad = parseFloat(montoActividadInput.value) || 0;
-            const tareasInputs = actividadEl.querySelectorAll('.tarea-monto');
-            let sumaTareas = 0;
-            tareasInputs.forEach(input => sumaTareas += parseFloat(input.value) || 0);
-            const saldoActividad = (montoActividad - sumaTareas).toFixed(2);
-            actividadEl.querySelector('.saldo-actividad').textContent = `$${saldoActividad}`;
-        });
-        nuevaTarea.querySelector('.tarea-nombre').addEventListener('input', () => {
-            if (typeof validarAgregarTarea === 'function') validarAgregarTarea();
-        });
-        nuevaTarea.querySelector('.tarea-monto').addEventListener('input', () => {
-            if (typeof validarAgregarTarea === 'function') validarAgregarTarea();
-        });
-
-        if (typeof validarAgregarTarea === 'function') validarAgregarTarea();
     }
     function generarTablaResumen() {
         const tbody = document.getElementById('tablaResumen');
@@ -528,7 +453,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td class="border px-2 py-1 font-semibold text-gray-900">${nombreComponente}</td>
                     <td class="border px-2 py-1 text-right font-bold text-blue-600">$${montoComponente.toFixed(2)}</td>
                     <td class="border px-2 py-1"></td>
-                    <td class="border px-2 py-1"></td>
                 </tr>
             `;
             const actividades = document.querySelectorAll(`.actividades[data-componente-index="${i}"] .actividad`);
@@ -540,22 +464,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td class="border px-2 py-1 pl-6 text-gray-800">== ${nombreAct}</td>
                         <td class="border px-2 py-1"></td>
                         <td class="border px-2 py-1 text-right text-green-600">$${montoAct}</td>
-                        <td class="border px-2 py-1"></td>
                     </tr>
                 `;
-                const tareas = actividadEl.querySelectorAll('.tarea');
-                tareas.forEach((tareaEl, tIdx) => {
-                    const nombreTar = tareaEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][tareasPrograma][${tIdx}][nombre]"]`)?.value || `Tarea ${tIdx + 1}`;
-                    const montoTar = parseFloat(tareaEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][tareasPrograma][${tIdx}][monto]"]`)?.value || 0).toFixed(2);
-                    tbody.innerHTML += `
-                        <tr>
-                            <td class="border px-2 py-1 pl-12 text-gray-700">==== ${nombreTar}</td>
-                            <td class="border px-2 py-1"></td>
-                            <td class="border px-2 py-1"></td>
-                            <td class="border px-2 py-1 text-right text-purple-600">$${montoTar}</td>
-                        </tr>
-                    `;
-                });
             });
         });
     }

@@ -204,7 +204,7 @@
                                 <th class="border px-2 py-1">Nombre</th>
                                 <th class="border px-2 py-1 text-right">Valor Componente</th>
                                 <th class="border px-2 py-1 text-right">Valor Actividad</th>
-                                <th class="border px-2 py-1 text-right">Valor Tarea</th>
+                                
                             </tr>
                         </thead>
                         <tbody id="tablaResumen"></tbody>
@@ -218,147 +218,39 @@
         </div>
     </form>
 </div>
-<script>
-    // Sincronizar ediciones de componente (nombre/monto) con cronograma y evitar componente monto > total disponible
-    document.addEventListener('DOMContentLoaded', function () {
-        const componentesContainer = document.getElementById('componentesContainer');
-        const cronogramaContainer = document.getElementById('cronogramaContainer');
-        const montoTotalInput = document.querySelector('input[name="monto_total"]');
+    <script>
+        // Sincronizar ediciones de componente (nombre/monto) con cronograma y evitar componente monto > total disponible
+        document.addEventListener('DOMContentLoaded', function () {
+            const componentesContainer = document.getElementById('componentesContainer');
+            const cronogramaContainer = document.getElementById('cronogramaContainer');
+            const montoTotalInput = document.querySelector('input[name="monto_total"]');
 
-        function formatoMoneda(v) {
-            return Number(v || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function obtenerMontoTotal() {
-            return parseFloat(montoTotalInput.value) || 0;
-        }
-
-        function sincronizarCronogramaBloqueParaIndex(i) {
-            const componenteEls = Array.from(componentesContainer.querySelectorAll('.componente'));
-            const componenteEl = componenteEls[i];
-            if (!componenteEl) return;
-            const nombre = componenteEl.querySelector('.componente-nombre')?.value || `Componente ${i + 1}`;
-            const montoVal = parseFloat(componenteEl.querySelector('.componente-monto')?.value) || 0;
-
-            //Asegurar que el cronograma tenga bloque en el índice i
-            let cronBlocks = Array.from(cronogramaContainer.children).filter(n => n.classList && n.classList.contains('border'));
-            let bloque = cronBlocks[i];
-            if (!bloque) {
-                // crear estructura de bloque mínima para coincidir con el diseño esperado
-                bloque = document.createElement('div');
-                bloque.className = 'border p-4 rounded shadow';
-                bloque.innerHTML = `
-                    <h3 class="font-bold text-blue-700 mb-2" data-monto="0">
-                        ${nombre} - Monto: $${formatoMoneda(montoVal)}
-                        <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$${formatoMoneda(montoVal)}</span>)</span>
-                    </h3>
-                    <div class="actividades space-y-2 mb-4" data-componente-index="${i}"></div>
-                    <button type="button" class="add-actividad mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" data-componente-index="${i}">Agregar Actividad</button>
-                    <div class="mensaje-sin-saldo-actividad text-red-600 font-semibold hidden">No hay saldo disponible en este componente para agregar más actividades.</div>
-                `;
-                cronogramaContainer.appendChild(bloque);
+            function formatoMoneda(v) {
+                return Number(v || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
 
-            const h3 = bloque.querySelector('h3');
-            // calcular sumaActividades dentro de este bloque
-            const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
-            let sumaActividades = 0;
-            actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-            const saldo = (montoVal - sumaActividades);
-
-            h3.dataset.monto = montoVal;
-            // actualizar innerHTML manteniendo el saldo y las clases consistentes
-            const saldoHtml = `<span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente ${saldo <= 0 ? 'text-red-600' : 'text-green-600'} font-bold">$${formatoMoneda(saldo)}</span>)</span>`;
-            h3.innerHTML = `${escapeHtml(nombre)} - Monto: $${formatoMoneda(montoVal)} ${saldoHtml}`;
-        }
-
-        function escapeHtml(str) {
-            return String(str).replace(/[&<>"'`=\/]/g, function (s) {
-                return ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;',
-                    '/': '&#x2F;',
-                    '`': '&#x60;',
-                    '=': '&#x3D;'
-                })[s];
-            });
-        }
-
-        function limiteComponenteMonto(input) {
-            const inputs = Array.from(componentesContainer.querySelectorAll('.componente-monto'));
-            const montoTotal = obtenerMontoTotal();
-            const currentVal = parseFloat(input.value) || 0;
-            // suma de otros componentes
-            let sumaOtros = 0;
-            inputs.forEach(inp => {
-                if (inp === input) return;
-                sumaOtros += parseFloat(inp.value) || 0;
-            });
-            const allowedMax = Math.max(0, montoTotal - sumaOtros);
-            if (currentVal > allowedMax) {
-                // ajustar al máximo permitido
-                input.value = allowedMax.toFixed(2);
-                // mostrar notificación transitoria junto al input
-                mensajeTransitorio(input, `El monto no puede superar el saldo disponible: $${formatoMoneda(allowedMax)}. Se ajustó al máximo permitido.`, 4000);
+            function obtenerMontoTotal() {
+                return parseFloat(montoTotalInput.value) || 0;
             }
-        }
-        function mensajeTransitorio(targetEl, text, timeout = 3000) {
-            // crear elemento de mensaje pequeño
-            let msg = document.createElement('div');
-            msg.className = 'transient-msg text-sm text-red-600 mt-1';
-            msg.style.maxWidth = '400px';
-            msg.textContent = text;
-            targetEl.parentNode.appendChild(msg);
-            setTimeout(() => {
-                if (msg && msg.parentNode) msg.parentNode.removeChild(msg);
-            }, timeout);
-        }
-        // Escucha de entrada delegada para sincronizar cambios en componentes
-        componentesContainer.addEventListener('input', function (e) {
-            const target = e.target;
-            const componenteEls = Array.from(componentesContainer.querySelectorAll('.componente'));
-            const parent = target.closest('.componente');
-            const index = componenteEls.indexOf(parent);
-            if (index === -1) return;
 
-            if (target.classList.contains('componente-monto')) {
-                limiteComponenteMonto(target);
-                sincronizarCronogramaBloqueParaIndex(index);
-                // recalcular saldo y resumen
-                if (typeof actualizarSaldo === 'function') actualizarSaldo();
-                if (typeof generarCronogramaDesdeComponentes === 'function') generarCronogramaDesdeComponentes();
-                if (typeof generarTablaResumen === 'function') generarTablaResumen();
-            } else if (target.classList.contains('componente-nombre') || target.tagName === 'TEXTAREA') {
-                // nombre o descripción cambiada -> actualizar encabezado del cronograma
-                sincronizarCronogramaBloqueParaIndex(index);
-                if (typeof generarTablaResumen === 'function') generarTablaResumen();
-            }
-        });
-        // Observar adiciones/eliminaciones en componentesContainer para mantener cronograma en sincronía
-        const mo = new MutationObserver(function (mutationsList) {
-            let rebuild = false;
-            for (const m of mutationsList) {
-                if (m.type === 'childList') rebuild = true;
-            }
-            if (!rebuild) return;
-            // Asegúrese de que el cronograma tenga el mismo número de bloques que componentes.
-            const componentes = Array.from(componentesContainer.querySelectorAll('.componente'));
-            const cronBlocks = Array.from(cronogramaContainer.children).filter(n => n.classList && n.classList.contains('border'));
-            // agregar los faltantes
-            for (let i = 0; i < componentes.length; i++) {
-                if (!cronBlocks[i]) {
-                    // crear bloque para este índice
-                    const compNombre = componentes[i].querySelector('.componente-nombre')?.value || `Componente ${i + 1}`;
-                    const compMonto = parseFloat(componentes[i].querySelector('.componente-monto')?.value) || 0;
-                    const bloque = document.createElement('div');
+            function sincronizarCronogramaBloqueParaIndex(i) {
+                const componenteEls = Array.from(componentesContainer.querySelectorAll('.componente'));
+                const componenteEl = componenteEls[i];
+                if (!componenteEl) return;
+                const nombre = componenteEl.querySelector('.componente-nombre')?.value || `Componente ${i + 1}`;
+                const montoVal = parseFloat(componenteEl.querySelector('.componente-monto')?.value) || 0;
+
+                //Asegurar que el cronograma tenga bloque en el índice i
+                let cronBlocks = Array.from(cronogramaContainer.children).filter(n => n.classList && n.classList.contains('border'));
+                let bloque = cronBlocks[i];
+                if (!bloque) {
+                    // crear estructura de bloque mínima para coincidir con el diseño esperado
+                    bloque = document.createElement('div');
                     bloque.className = 'border p-4 rounded shadow';
                     bloque.innerHTML = `
-                        <h3 class="font-bold text-blue-700 mb-2" data-monto="${compMonto}">
-                            ${escapeHtml(compNombre)} - Monto: $${formatoMoneda(compMonto)}
-                            <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$${formatoMoneda(compMonto)}</span>)</span>
+                        <h3 class="font-bold text-blue-700 mb-2" data-monto="0">
+                            ${nombre} - Monto: $${formatoMoneda(montoVal)}
+                            <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$${formatoMoneda(montoVal)}</span>)</span>
                         </h3>
                         <div class="actividades space-y-2 mb-4" data-componente-index="${i}"></div>
                         <button type="button" class="add-actividad mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" data-componente-index="${i}">Agregar Actividad</button>
@@ -366,354 +258,317 @@
                     `;
                     cronogramaContainer.appendChild(bloque);
                 }
-            }
-            // remover extras
-            const newCronBlocks = Array.from(cronogramaContainer.children).filter(n => n.classList && n.classList.contains('border'));
-            if (newCronBlocks.length > componentes.length) {
-                for (let j = newCronBlocks.length - 1; j >= componentes.length; j--) {
-                    newCronBlocks[j].remove();
-                }
-            }
-            // sincronizar datos de todos los bloques existentes
-            componentes.forEach((c, i) => sincronizarCronogramaBloqueParaIndex(i));
-            if (typeof actualizarSaldo === 'function') actualizarSaldo();
-            if (typeof generarCronogramaDesdeComponentes === 'function') generarCronogramaDesdeComponentes();
-            if (typeof generarTablaResumen === 'function') generarTablaResumen();
-        });
-        mo.observe(componentesContainer, { childList: true, subtree: false });
-        // Al cargar la página, sincronizar todos los componentes iniciales con el cronograma
-        (function initialSync() {
-            const componentes = Array.from(componentesContainer.querySelectorAll('.componente'));
-            componentes.forEach((c, i) => sincronizarCronogramaBloqueParaIndex(i));
-            if (typeof generarTablaResumen === 'function') generarTablaResumen();
-        })();
-    });
-document.addEventListener('DOMContentLoaded', function () {
-    // Tabs
-    const buttons = document.querySelectorAll('.tab-button');
-    const contents = document.querySelectorAll('#tabContents > div');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            buttons.forEach(b => {
-                b.classList.remove('border-blue-500', 'text-blue-500');
-                b.classList.add('border-transparent', 'text-gray-600');
-            });
-            contents.forEach(c => c.classList.add('hidden'));
-            this.classList.remove('border-transparent', 'text-gray-600');
-            this.classList.add('border-blue-500', 'text-blue-500');
-            const tabId = this.getAttribute('data-tab');
-            const activeContent = document.getElementById(tabId);
-            if (activeContent) activeContent.classList.remove('hidden');
-        });
-    });
-    // Nombre programa
-    function actualizarNombre() {
-        const accion = document.getElementById('accion').value.trim();
-        const objeto = document.getElementById('objeto').value.trim();
-        if (accion && objeto) {
-            const nombre = `${accion.charAt(0).toUpperCase() + accion.slice(1)} de ${objeto}`;
-            document.getElementById('nombre').value = nombre;
-        }
-    }
-    document.getElementById('accion').addEventListener('change', actualizarNombre);
-    document.getElementById('objeto').addEventListener('input', actualizarNombre);
-    // Inicialización del mapa con valores existentes
-    const lat = parseFloat(document.getElementById('latitud').value) || -0.1807;
-    const lng = parseFloat(document.getElementById('longitud').value) || -78.4678;
-    const map = L.map('map').setView([lat, lng], 10);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-    const marker = L.marker([lat, lng]).addTo(map);
-    map.on('click', function(e) {
-        document.getElementById('latitud').value = e.latlng.lat;
-        document.getElementById('longitud').value = e.latlng.lng;
-        marker.setLatLng([e.latlng.lat, e.latlng.lng]);
-    });
-    // Componentes
-    let componenteIndex = document.querySelectorAll('.componente').length;
-    document.getElementById('removeComponente').addEventListener('click', function () {
-        const container = document.getElementById('componentesContainer');
-        const componentes = container.querySelectorAll('.componente');
-        if (componentes.length > 0) {
-            if (confirm('¿Está seguro de que desea eliminar el último componente?')) {
-                container.removeChild(componentes[componentes.length - 1]);
-                componenteIndex = Math.max(0, componenteIndex - 1);
-                actualizarSaldo();
-                generarCronogramaDesdeComponentes();
-            }
-        }
-    });
 
-    function actualizarSaldo() {
-        const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
-        const inputsMonto = document.querySelectorAll('.componente-monto');
-        let sumaAsignada = 0;
-        inputsMonto.forEach(input => {
-            const val = parseFloat(input.value);
-            if (!isNaN(val)) sumaAsignada += val;
+                const h3 = bloque.querySelector('h3');
+                // calcular sumaActividades dentro de este bloque
+                const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
+                let sumaActividades = 0;
+                actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
+                const saldo = (montoVal - sumaActividades);
+
+                h3.dataset.monto = montoVal;
+                // actualizar innerHTML manteniendo el saldo y las clases consistentes
+                const saldoHtml = `<span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente ${saldo <= 0 ? 'text-red-600' : 'text-green-600'} font-bold">$${formatoMoneda(saldo)}</span>)</span>`;
+                h3.innerHTML = `${escapeHtml(nombre)} - Monto: $${formatoMoneda(montoVal)} ${saldoHtml}`;
+            }
+
+            function escapeHtml(str) {
+                return String(str).replace(/[&<>"'`=\/]/g, function (s) {
+                    return ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;',
+                        '/': '&#x2F;',
+                        '`': '&#x60;',
+                        '=': '&#x3D;'
+                    })[s];
+                });
+            }
+
+            function limiteComponenteMonto(input) {
+                const inputs = Array.from(componentesContainer.querySelectorAll('.componente-monto'));
+                const montoTotal = obtenerMontoTotal();
+                const currentVal = parseFloat(input.value) || 0;
+                // suma de otros componentes
+                let sumaOtros = 0;
+                inputs.forEach(inp => {
+                    if (inp === input) return;
+                    sumaOtros += parseFloat(inp.value) || 0;
+                });
+                const allowedMax = Math.max(0, montoTotal - sumaOtros);
+                if (currentVal > allowedMax) {
+                    // ajustar al máximo permitido
+                    input.value = allowedMax.toFixed(2);
+                    // mostrar notificación transitoria junto al input
+                    mensajeTransitorio(input, `El monto no puede superar el saldo disponible: $${formatoMoneda(allowedMax)}. Se ajustó al máximo permitido.`, 4000);
+                }
+            }
+            function mensajeTransitorio(targetEl, text, timeout = 3000) {
+                // crear elemento de mensaje pequeño
+                let msg = document.createElement('div');
+                msg.className = 'transient-msg text-sm text-red-600 mt-1';
+                msg.style.maxWidth = '400px';
+                msg.textContent = text;
+                targetEl.parentNode.appendChild(msg);
+                setTimeout(() => {
+                    if (msg && msg.parentNode) msg.parentNode.removeChild(msg);
+                }, timeout);
+            }
+            // Escucha de entrada delegada para sincronizar cambios en componentes
+            componentesContainer.addEventListener('input', function (e) {
+                const target = e.target;
+                const componenteEls = Array.from(componentesContainer.querySelectorAll('.componente'));
+                const parent = target.closest('.componente');
+                const index = componenteEls.indexOf(parent);
+                if (index === -1) return;
+
+                if (target.classList.contains('componente-monto')) {
+                    limiteComponenteMonto(target);
+                    sincronizarCronogramaBloqueParaIndex(index);
+                    // recalcular saldo y resumen
+                    if (typeof actualizarSaldo === 'function') actualizarSaldo();
+                    if (typeof generarCronogramaDesdeComponentes === 'function') generarCronogramaDesdeComponentes();
+                    if (typeof generarTablaResumen === 'function') generarTablaResumen();
+                } else if (target.classList.contains('componente-nombre') || target.tagName === 'TEXTAREA') {
+                    // nombre o descripción cambiada -> actualizar encabezado del cronograma
+                    sincronizarCronogramaBloqueParaIndex(index);
+                    if (typeof generarTablaResumen === 'function') generarTablaResumen();
+                }
+            });
+            // Observar adiciones/eliminaciones en componentesContainer para mantener cronograma en sincronía
+            const mo = new MutationObserver(function (mutationsList) {
+                let rebuild = false;
+                for (const m of mutationsList) {
+                    if (m.type === 'childList') rebuild = true;
+                }
+                if (!rebuild) return;
+                // Asegúrese de que el cronograma tenga el mismo número de bloques que componentes.
+                const componentes = Array.from(componentesContainer.querySelectorAll('.componente'));
+                const cronBlocks = Array.from(cronogramaContainer.children).filter(n => n.classList && n.classList.contains('border'));
+                // agregar los faltantes
+                for (let i = 0; i < componentes.length; i++) {
+                    if (!cronBlocks[i]) {
+                        // crear bloque para este índice
+                        const compNombre = componentes[i].querySelector('.componente-nombre')?.value || `Componente ${i + 1}`;
+                        const compMonto = parseFloat(componentes[i].querySelector('.componente-monto')?.value) || 0;
+                        const bloque = document.createElement('div');
+                        bloque.className = 'border p-4 rounded shadow';
+                        bloque.innerHTML = `
+                            <h3 class="font-bold text-blue-700 mb-2" data-monto="${compMonto}">
+                                ${escapeHtml(compNombre)} - Monto: $${formatoMoneda(compMonto)}
+                                <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$${formatoMoneda(compMonto)}</span>)</span>
+                            </h3>
+                            <div class="actividades space-y-2 mb-4" data-componente-index="${i}"></div>
+                            <button type="button" class="add-actividad mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" data-componente-index="${i}">Agregar Actividad</button>
+                            <div class="mensaje-sin-saldo-actividad text-red-600 font-semibold hidden">No hay saldo disponible en este componente para agregar más actividades.</div>
+                        `;
+                        cronogramaContainer.appendChild(bloque);
+                    }
+                }
+                // remover extras
+                const newCronBlocks = Array.from(cronogramaContainer.children).filter(n => n.classList && n.classList.contains('border'));
+                if (newCronBlocks.length > componentes.length) {
+                    for (let j = newCronBlocks.length - 1; j >= componentes.length; j--) {
+                        newCronBlocks[j].remove();
+                    }
+                }
+                // sincronizar datos de todos los bloques existentes
+                componentes.forEach((c, i) => sincronizarCronogramaBloqueParaIndex(i));
+                if (typeof actualizarSaldo === 'function') actualizarSaldo();
+                if (typeof generarCronogramaDesdeComponentes === 'function') generarCronogramaDesdeComponentes();
+                if (typeof generarTablaResumen === 'function') generarTablaResumen();
+            });
+            mo.observe(componentesContainer, { childList: true, subtree: false });
+            // Al cargar la página, sincronizar todos los componentes iniciales con el cronograma
+            (function initialSync() {
+                const componentes = Array.from(componentesContainer.querySelectorAll('.componente'));
+                componentes.forEach((c, i) => sincronizarCronogramaBloqueParaIndex(i));
+                if (typeof generarTablaResumen === 'function') generarTablaResumen();
+            })();
         });
-        const saldo = (montoTotal - sumaAsignada).toFixed(2);
-        document.getElementById('montoTotalDisplay').textContent = `$${montoTotal.toFixed(2)}`;
-        document.getElementById('saldoRestanteDisplay').textContent = `$${saldo}`;
-        const saldoLabel = document.getElementById('saldoRestanteDisplay');
-        const btnAgregar = document.getElementById('addComponente');
-        const mensaje = document.getElementById('mensajeSinSaldo');
-        // Validación para habilitar/deshabilitar botón de agregar componente
-        let puedeAgregar = false;
-        // Verifica si los campos del último componente están llenos
-        const componentes = document.querySelectorAll('.componente');
-        if (saldo > 0) {
-            if (componentes.length === 0) {
-                puedeAgregar = true;
-            } else {
-                const ultimo = componentes[componentes.length - 1];
-                const nombre = ultimo.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]')?.value.trim();
-                const descripcion = ultimo.querySelector('textarea[name^="componentesPrograma"][name$="[descripcion]"]')?.value.trim();
-                const monto = ultimo.querySelector('input[name^="componentesPrograma"][name$="[monto]"]')?.value;
-                if (nombre && descripcion && monto && parseFloat(monto) > 0) {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Tabs
+        const buttons = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('#tabContents > div');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                buttons.forEach(b => {
+                    b.classList.remove('border-blue-500', 'text-blue-500');
+                    b.classList.add('border-transparent', 'text-gray-600');
+                });
+                contents.forEach(c => c.classList.add('hidden'));
+                this.classList.remove('border-transparent', 'text-gray-600');
+                this.classList.add('border-blue-500', 'text-blue-500');
+                const tabId = this.getAttribute('data-tab');
+                const activeContent = document.getElementById(tabId);
+                if (activeContent) activeContent.classList.remove('hidden');
+            });
+        });
+        // Nombre programa
+        function actualizarNombre() {
+            const accion = document.getElementById('accion').value.trim();
+            const objeto = document.getElementById('objeto').value.trim();
+            if (accion && objeto) {
+                const nombre = `${accion.charAt(0).toUpperCase() + accion.slice(1)} de ${objeto}`;
+                document.getElementById('nombre').value = nombre;
+            }
+        }
+        document.getElementById('accion').addEventListener('change', actualizarNombre);
+        document.getElementById('objeto').addEventListener('input', actualizarNombre);
+        // Inicialización del mapa con valores existentes
+        const lat = parseFloat(document.getElementById('latitud').value) || -0.1807;
+        const lng = parseFloat(document.getElementById('longitud').value) || -78.4678;
+        const map = L.map('map').setView([lat, lng], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        const marker = L.marker([lat, lng]).addTo(map);
+        map.on('click', function(e) {
+            document.getElementById('latitud').value = e.latlng.lat;
+            document.getElementById('longitud').value = e.latlng.lng;
+            marker.setLatLng([e.latlng.lat, e.latlng.lng]);
+        });
+        // Componentes
+        let componenteIndex = document.querySelectorAll('.componente').length;
+        document.getElementById('removeComponente').addEventListener('click', function () {
+            const container = document.getElementById('componentesContainer');
+            const componentes = container.querySelectorAll('.componente');
+            if (componentes.length > 0) {
+                if (confirm('¿Está seguro de que desea eliminar el último componente?')) {
+                    container.removeChild(componentes[componentes.length - 1]);
+                    componenteIndex = Math.max(0, componenteIndex - 1);
+                    actualizarSaldo();
+                    generarCronogramaDesdeComponentes();
+                }
+            }
+        });
+
+        function actualizarSaldo() {
+            const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
+            const inputsMonto = document.querySelectorAll('.componente-monto');
+            let sumaAsignada = 0;
+            inputsMonto.forEach(input => {
+                const val = parseFloat(input.value);
+                if (!isNaN(val)) sumaAsignada += val;
+            });
+            const saldo = (montoTotal - sumaAsignada).toFixed(2);
+            document.getElementById('montoTotalDisplay').textContent = `$${montoTotal.toFixed(2)}`;
+            document.getElementById('saldoRestanteDisplay').textContent = `$${saldo}`;
+            const saldoLabel = document.getElementById('saldoRestanteDisplay');
+            const btnAgregar = document.getElementById('addComponente');
+            const mensaje = document.getElementById('mensajeSinSaldo');
+            // Validación para habilitar/deshabilitar botón de agregar componente
+            let puedeAgregar = false;
+            // Verifica si los campos del último componente están llenos
+            const componentes = document.querySelectorAll('.componente');
+            if (saldo > 0) {
+                if (componentes.length === 0) {
                     puedeAgregar = true;
+                } else {
+                    const ultimo = componentes[componentes.length - 1];
+                    const nombre = ultimo.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]')?.value.trim();
+                    const descripcion = ultimo.querySelector('textarea[name^="componentesPrograma"][name$="[descripcion]"]')?.value.trim();
+                    const monto = ultimo.querySelector('input[name^="componentesPrograma"][name$="[monto]"]')?.value;
+                    if (nombre && descripcion && monto && parseFloat(monto) > 0) {
+                        puedeAgregar = true;
+                    }
                 }
             }
-        }
-        if (!puedeAgregar) {
-            btnAgregar.disabled = true;
-            btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
-        } else {
-            btnAgregar.disabled = false;
-            btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-        if (saldo <= 0) {
-            saldoLabel.classList.remove('text-green-600');
-            saldoLabel.classList.add('text-red-600');
-            mensaje.classList.remove('hidden');
-        } else {
-            saldoLabel.classList.add('text-green-600');
-            saldoLabel.classList.remove('text-red-600');
-            mensaje.classList.add('hidden');
-        }
-    }
-    document.querySelector('input[name="monto_total"]').addEventListener('input', () => {
-        actualizarSaldo();
-        generarCronogramaDesdeComponentes();
-    });
-    document.getElementById('addComponente').addEventListener('click', () => {
-        const container = document.getElementById('componentesContainer');
-        const nuevo = document.createElement('div');
-        nuevo.classList.add('componente', 'border', 'p-4', 'rounded', 'shadow');
-        nuevo.innerHTML = `
-            <div class="mb-2">
-                <label class="block text-sm font-bold">Nombre del Componente</label>
-                <input type="text" name="componentesPrograma[${componenteIndex}][nombre]" class="w-full border rounded p-2 componente-nombre" required>
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm font-bold">Descripción</label>
-                <textarea name="componentesPrograma[${componenteIndex}][descripcion]" class="w-full border rounded p-2" rows="3"></textarea>
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm font-bold">Monto asignado</label>
-                <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][monto]" class="w-full border rounded p-2 componente-monto" required>
-            </div>
-        `;
-        container.appendChild(nuevo);
-        nuevo.querySelector('.componente-monto').addEventListener('input', actualizarSaldo);
-        nuevo.querySelector('.componente-nombre').addEventListener('input', actualizarSaldo);
-        nuevo.querySelector('textarea').addEventListener('input', actualizarSaldo);
-        componenteIndex++;
-        actualizarSaldo();
-        generarCronogramaDesdeComponentes();
-    });
-    document.querySelectorAll('.componente-monto').forEach(input => {
-        input.addEventListener('input', actualizarSaldo);
-    });
-    document.querySelectorAll('.componente-nombre').forEach(input => {
-        input.addEventListener('input', actualizarSaldo);
-    });
-    document.querySelectorAll('.componente textarea').forEach(input => {
-        input.addEventListener('input', actualizarSaldo);
-    });
-    window.addEventListener('DOMContentLoaded', () => {
-        actualizarSaldo();
-        generarCronogramaDesdeComponentes();
-    });
-    document.getElementById('componentesContainer').addEventListener('change', generarCronogramaDesdeComponentes);
-function generarCronogramaDesdeComponentes() {
-    const container = document.getElementById('cronogramaContainer');
-    const bloques = container.querySelectorAll('.border.p-4.rounded.shadow');
-    bloques.forEach(bloque => {
-        const montoComponente = parseFloat(bloque.querySelector('h3').dataset.monto) || 0;
-        const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
-        let sumaActividades = 0;
-        actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-        const saldo = (montoComponente - sumaActividades).toFixed(2);
-        bloque.querySelector('.saldo-componente').textContent = `$${saldo}`;
-    });
-    generarTablaResumen();
-}
-    function generarActividadYTarea(componenteIndex, validarAgregarActividad) {
-        const actividadContainer = document.querySelector(`.actividades[data-componente-index="${componenteIndex}"]`);
-        const actividadIndex = actividadContainer.querySelectorAll('.actividad').length;
-        const nuevaActividad = document.createElement('div');
-        nuevaActividad.classList.add('actividad', 'border', 'p-3', 'rounded', 'bg-gray-50');
-        nuevaActividad.innerHTML = `
-            <div class="flex justify-between items-center mb-1">
-                <label class="font-semibold">Actividad ${actividadIndex + 1}</label>
-                <span class="text-xs font-normal text-gray-500">(Saldo: <span class="saldo-actividad text-green-600 font-bold">$0.00</span>)</span>
-                <button type="button" class="eliminar-actividad ml-2 px-2 py-1 bg-red-500 text-white rounded text-xs">Eliminar</button>
-            </div>
-            <input type="text" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required>
-            <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
-            <div class="tareas space-y-1" data-comp="${componenteIndex}" data-act="${actividadIndex}"></div>
-            <button type="button" class="add-tarea mt-2 px-3 py-1 bg-blue-400 text-white rounded text-xs" data-comp="${componenteIndex}" data-act="${actividadIndex}">Agregar Tarea</button>
-            <div class="mensaje-sin-saldo-tarea text-red-600 font-semibold hidden">
-                No hay saldo disponible en esta actividad para agregar más tareas.
-            </div>
-        `;
-        actividadContainer.appendChild(nuevaActividad); 
-        function validarAgregarTarea() {
-            const tareas = nuevaActividad.querySelectorAll('.tarea');
-            let ultimoCompleto = true;
-            if (tareas.length > 0) {
-                const ultima = tareas[tareas.length - 1];
-                const nombre = ultima.querySelector('input[name$="[nombre]"]')?.value.trim();
-                const monto = ultima.querySelector('input[name$="[monto]"]')?.value;
-                if (!nombre || !monto || parseFloat(monto) <= 0) {
-                    ultimoCompleto = false;
-                }
-            }
-            const montoActividadInput = nuevaActividad.querySelector('.actividad-monto');
-            const montoActividad = parseFloat(montoActividadInput.value) || 0;
-            const tareasInputs = nuevaActividad.querySelectorAll('.tarea-monto');
-            let sumaTareas = 0;
-            tareasInputs.forEach(input => sumaTareas += parseFloat(input.value) || 0);
-            const saldoActividad = (montoActividad - sumaTareas).toFixed(2);
-            const btnAgregarTarea = nuevaActividad.querySelector('.add-tarea');
-            const mensajeSinSaldoTarea = nuevaActividad.querySelector('.mensaje-sin-saldo-tarea');
-            nuevaActividad.querySelector('.saldo-actividad').textContent = `$${saldoActividad}`;
-            if (saldoActividad <= 0 || !ultimoCompleto) {
-                btnAgregarTarea.disabled = true;
-                btnAgregarTarea.classList.add('opacity-50', 'cursor-not-allowed');
-                mensajeSinSaldoTarea.classList.remove('hidden');
+            if (!puedeAgregar) {
+                btnAgregar.disabled = true;
+                btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
-                btnAgregarTarea.disabled = false;
-                btnAgregarTarea.classList.remove('opacity-50', 'cursor-not-allowed');
-                mensajeSinSaldoTarea.classList.add('hidden');
+                btnAgregar.disabled = false;
+                btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
             }
-            if (saldoActividad <= 0) {
-                nuevaActividad.querySelector('.saldo-actividad').classList.add('text-red-600');
-                nuevaActividad.querySelector('.saldo-actividad').classList.remove('text-green-600');
+            if (saldo <= 0) {
+                saldoLabel.classList.remove('text-green-600');
+                saldoLabel.classList.add('text-red-600');
+                mensaje.classList.remove('hidden');
             } else {
-                nuevaActividad.querySelector('.saldo-actividad').classList.remove('text-red-600');
-                nuevaActividad.querySelector('.saldo-actividad').classList.add('text-green-600');
+                saldoLabel.classList.add('text-green-600');
+                saldoLabel.classList.remove('text-red-600');
+                mensaje.classList.add('hidden');
             }
         }
-        nuevaActividad.querySelector('.add-tarea').addEventListener('click', () => generarTarea(componenteIndex, actividadIndex, validarAgregarTarea));
-        nuevaActividad.addEventListener('input', validarAgregarTarea);
-        nuevaActividad.addEventListener('change', validarAgregarTarea);
-        nuevaActividad.querySelector('.actividad-monto').addEventListener('input', () => {
-            const componenteEl = nuevaActividad.closest('.componente');
-            const montoComponenteInput = componenteEl?.querySelector('.componente-monto');
-            const montoComponente = parseFloat(montoComponenteInput?.value) || 0;
-            const actividadesInputs = componenteEl?.querySelectorAll('.actividad-monto') || [];
+        document.querySelector('input[name="monto_total"]').addEventListener('input', () => {
+            actualizarSaldo();
+            generarCronogramaDesdeComponentes();
+        });
+        document.getElementById('addComponente').addEventListener('click', () => {
+            const container = document.getElementById('componentesContainer');
+            const nuevo = document.createElement('div');
+            nuevo.classList.add('componente', 'border', 'p-4', 'rounded', 'shadow');
+            nuevo.innerHTML = `
+                <div class="mb-2">
+                    <label class="block text-sm font-bold">Nombre del Componente</label>
+                    <input type="text" name="componentesPrograma[${componenteIndex}][nombre]" class="w-full border rounded p-2 componente-nombre" required>
+                </div>
+                <div class="mb-2">
+                    <label class="block text-sm font-bold">Descripción</label>
+                    <textarea name="componentesPrograma[${componenteIndex}][descripcion]" class="w-full border rounded p-2" rows="3"></textarea>
+                </div>
+                <div class="mb-2">
+                    <label class="block text-sm font-bold">Monto asignado</label>
+                    <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][monto]" class="w-full border rounded p-2 componente-monto" required>
+                </div>
+            `;
+            container.appendChild(nuevo);
+            nuevo.querySelector('.componente-monto').addEventListener('input', actualizarSaldo);
+            nuevo.querySelector('.componente-nombre').addEventListener('input', actualizarSaldo);
+            nuevo.querySelector('textarea').addEventListener('input', actualizarSaldo);
+            componenteIndex++;
+            actualizarSaldo();
+            generarCronogramaDesdeComponentes();
+        });
+        document.querySelectorAll('.componente-monto').forEach(input => {
+            input.addEventListener('input', actualizarSaldo);
+        });
+        document.querySelectorAll('.componente-nombre').forEach(input => {
+            input.addEventListener('input', actualizarSaldo);
+        });
+        document.querySelectorAll('.componente textarea').forEach(input => {
+            input.addEventListener('input', actualizarSaldo);
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            actualizarSaldo();
+            generarCronogramaDesdeComponentes();
+        });
+        document.getElementById('componentesContainer').addEventListener('change', generarCronogramaDesdeComponentes);
+    function generarCronogramaDesdeComponentes() {
+        const container = document.getElementById('cronogramaContainer');
+        const bloques = container.querySelectorAll('.border.p-4.rounded.shadow');
+        bloques.forEach(bloque => {
+            const montoComponente = parseFloat(bloque.querySelector('h3').dataset.monto) || 0;
+            const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
             let sumaActividades = 0;
             actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-            const saldoComponente = (montoComponente - sumaActividades).toFixed(2);
-            if (componenteEl?.querySelector('.saldo-componente')) {
-                componenteEl.querySelector('.saldo-componente').textContent = `$${saldoComponente}`;
-            }
+            const saldo = (montoComponente - sumaActividades).toFixed(2);
+            bloque.querySelector('.saldo-componente').textContent = `$${saldo}`;
         });
-        generarTarea(componenteIndex, actividadIndex, validarAgregarTarea);
-        validarAgregarTarea();
-        if (typeof validarAgregarActividad === 'function') validarAgregarActividad();
+        generarTablaResumen();
     }
-    function generarTarea(compIdx, actIdx, validarAgregarTarea) {
-        const tareaContainer = document.querySelector(`.tareas[data-comp="${compIdx}"][data-act="${actIdx}"]`);
-        const tareaIndex = tareaContainer.querySelectorAll('.tarea').length;
-        const nuevaTarea = document.createElement('div');
-        nuevaTarea.classList.add('tarea', 'ml-4', 'border-l', 'pl-2');
-        nuevaTarea.innerHTML = `
-            <div class="flex justify-between items-center">
-                <label class="text-sm text-gray-600">Tarea ${tareaIndex + 1}</label>
-            </div>
-            <input type="text" name="componentesPrograma[${compIdx}][actividadesPrograma][${actIdx}][tareasPrograma][${tareaIndex}][nombre]"
-                class="border p-1 w-full mb-1 tarea-nombre" placeholder="Nombre de la tarea" required>
-            <input type="number" step="0.01" name="componentesPrograma[${compIdx}][actividadesPrograma][${actIdx}][tareasPrograma][${tareaIndex}][monto]" 
-                class="border p-1 w-full mb-2 tarea-monto" placeholder="Monto de la tarea" required>
-        `;
-        tareaContainer.appendChild(nuevaTarea);
-        nuevaTarea.querySelector('.tarea-monto').addEventListener('input', () => {
-            const actividadEl = nuevaTarea.closest('.actividad');
-            const montoActividadInput = actividadEl.querySelector('.actividad-monto');
-            const montoActividad = parseFloat(montoActividadInput.value) || 0;
-            const tareasInputs = actividadEl.querySelectorAll('.tarea-monto');
-            let sumaTareas = 0;
-            tareasInputs.forEach(input => sumaTareas += parseFloat(input.value) || 0);
-            actividadEl.querySelector('.saldo-actividad').textContent = `$${(montoActividad - sumaTareas).toFixed(2)}`;
-        });
-        nuevaTarea.querySelector('.tarea-nombre').addEventListener('input', () => {
-            if (typeof validarAgregarTarea === 'function') validarAgregarTarea();
-        });
-        nuevaTarea.querySelector('.tarea-monto').addEventListener('input', () => {
-            if (typeof validarAgregarTarea === 'function') validarAgregarTarea();
-        });
-        if (typeof validarAgregarTarea === 'function') validarAgregarTarea();
-    }
-    function generarTablaResumen() {
-        const tbody = document.getElementById('tablaResumen');
-        tbody.innerHTML = '';
-        const componentes = document.querySelectorAll('.componente');
-        componentes.forEach((componenteEl, i) => {
-            const inputNombre = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]');
-            const inputMonto = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
-            const nombreComponente = inputNombre?.value || `Componente ${i + 1}`;
-            const montoComponente = parseFloat(inputMonto?.value) || 0;
-            tbody.innerHTML += `
-                <tr>
-                    <td class="border px-2 py-1 font-semibold text-gray-900">${nombreComponente}</td>
-                    <td class="border px-2 py-1 text-right font-bold text-blue-600">$${montoComponente.toFixed(2)}</td>
-                    <td class="border px-2 py-1"></td>
-                    <td class="border px-2 py-1"></td>
-                </tr>
+        function generarActividad(componenteIndex, validarAgregarActividad) {
+            const actividadContainer = document.querySelector(`.actividades[data-componente-index="${componenteIndex}"]`);
+            const actividadIndex = actividadContainer.querySelectorAll('.actividad').length;
+            const nuevaActividad = document.createElement('div');
+            nuevaActividad.classList.add('actividad', 'border', 'p-3', 'rounded', 'bg-gray-50');
+            nuevaActividad.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <label class="font-semibold">Actividad ${actividadIndex + 1}</label>
+                    <span class="text-xs font-normal text-gray-500">(Saldo: <span class="saldo-actividad text-green-600 font-bold">$0.00</span>)</span>
+                    <button type="button" class="eliminar-actividad ml-2 px-2 py-1 bg-red-500 text-white rounded text-xs">Eliminar</button>
+                </div>
+                <input type="text" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required>
+                <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
             `;
-            const actividades = document.querySelectorAll(`.actividades[data-componente-index="${i}"] .actividad`);
-            actividades.forEach((actividadEl, actIdx) => {
-                const nombreAct = actividadEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][nombre]"]`)?.value || `Actividad ${actIdx + 1}`;
-                const montoAct = parseFloat(actividadEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][monto]"]`)?.value || 0).toFixed(2);
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="border px-2 py-1 pl-6 text-gray-800">== ${nombreAct}</td>
-                        <td class="border px-2 py-1"></td>
-                        <td class="border px-2 py-1 text-right text-green-600">$${montoAct}</td>
-                        <td class="border px-2 py-1"></td>
-                    </tr>
-                `;
-                const tareas = actividadEl.querySelectorAll('.tarea');
-                tareas.forEach((tareaEl, tIdx) => {
-                    const nombreTar = tareaEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][tareasPrograma][${tIdx}][nombre]"]`)?.value || `Tarea ${tIdx + 1}`;
-                    const montoTar = parseFloat(tareaEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][tareasPrograma][${tIdx}][monto]"]`)?.value || 0).toFixed(2);
-                    tbody.innerHTML += `
-                        <tr>
-                            <td class="border px-2 py-1 pl-12 text-gray-700">==== ${nombreTar}</td>
-                            <td class="border px-2 py-1"></td>
-                            <td class="border px-2 py-1"></td>
-                            <td class="border px-2 py-1 text-right text-purple-600">$${montoTar}</td>
-                        </tr>
-                    `;
-                });
-            });
-        });
-    }
-    document.getElementById('cronogramaContainer').addEventListener('change', generarTablaResumen);
-    document.getElementById('componentesContainer').addEventListener('change', generarTablaResumen);
-    window.addEventListener('DOMContentLoaded', generarTablaResumen); 
-    
-    // Delegación para eliminar actividades existentes y futuras
-    document.getElementById('cronogramaContainer').addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('eliminar-actividad')) {
-            const actividad = e.target.closest('.actividad');
-            if (actividad && confirm('¿Está seguro de que desea eliminar esta actividad y todas sus tareas?')) {
-                const componenteEl = actividad.closest('.componente');
+            actividadContainer.appendChild(nuevaActividad); 
+            
+            nuevaActividad.querySelector('.actividad-monto').addEventListener('input', () => {
+                const componenteEl = nuevaActividad.closest('.componente');
                 const montoComponenteInput = componenteEl?.querySelector('.componente-monto');
                 const montoComponente = parseFloat(montoComponenteInput?.value) || 0;
                 const actividadesInputs = componenteEl?.querySelectorAll('.actividad-monto') || [];
@@ -723,14 +578,68 @@ function generarCronogramaDesdeComponentes() {
                 if (componenteEl?.querySelector('.saldo-componente')) {
                     componenteEl.querySelector('.saldo-componente').textContent = `$${saldoComponente}`;
                 }
-                actividad.remove();
-                if (typeof actualizarSaldo === 'function') actualizarSaldo();
-                if (typeof generarCronogramaDesdeComponentes === 'function') generarCronogramaDesdeComponentes();
-                if (typeof generarTablaResumen === 'function') generarTablaResumen();
-            }
+            });
+            
+            if (typeof validarAgregarActividad === 'function') validarAgregarActividad();
         }
-    });
+        
+        function generarTablaResumen() {
+            const tbody = document.getElementById('tablaResumen');
+            tbody.innerHTML = '';
+            const componentes = document.querySelectorAll('.componente');
+            componentes.forEach((componenteEl, i) => {
+                const inputNombre = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]');
+                const inputMonto = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
+                const nombreComponente = inputNombre?.value || `Componente ${i + 1}`;
+                const montoComponente = parseFloat(inputMonto?.value) || 0;
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="border px-2 py-1 font-semibold text-gray-900">${nombreComponente}</td>
+                        <td class="border px-2 py-1 text-right font-bold text-blue-600">$${montoComponente.toFixed(2)}</td>
+                        <td class="border px-2 py-1"></td>
+                    </tr>
+                `;
+                const actividades = document.querySelectorAll(`.actividades[data-componente-index="${i}"] .actividad`);
+                actividades.forEach((actividadEl, actIdx) => {
+                    const nombreAct = actividadEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][nombre]"]`)?.value || `Actividad ${actIdx + 1}`;
+                    const montoAct = parseFloat(actividadEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][monto]"]`)?.value || 0).toFixed(2);
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="border px-2 py-1 pl-6 text-gray-800">== ${nombreAct}</td>
+                            <td class="border px-2 py-1"></td>
+                            <td class="border px-2 py-1 text-right text-green-600">$${montoAct}</td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+        document.getElementById('cronogramaContainer').addEventListener('change', generarTablaResumen);
+        document.getElementById('componentesContainer').addEventListener('change', generarTablaResumen);
+        window.addEventListener('DOMContentLoaded', generarTablaResumen); 
+        
+        // Delegación para eliminar actividades existentes y futuras
+        document.getElementById('cronogramaContainer').addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('eliminar-actividad')) {
+                const actividad = e.target.closest('.actividad');
+                if (actividad && confirm('¿Está seguro de que desea eliminar esta actividad y todas sus tareas?')) {
+                    const componenteEl = actividad.closest('.componente');
+                    const montoComponenteInput = componenteEl?.querySelector('.componente-monto');
+                    const montoComponente = parseFloat(montoComponenteInput?.value) || 0;
+                    const actividadesInputs = componenteEl?.querySelectorAll('.actividad-monto') || [];
+                    let sumaActividades = 0;
+                    actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
+                    const saldoComponente = (montoComponente - sumaActividades).toFixed(2);
+                    if (componenteEl?.querySelector('.saldo-componente')) {
+                        componenteEl.querySelector('.saldo-componente').textContent = `$${saldoComponente}`;
+                    }
+                    actividad.remove();
+                    if (typeof actualizarSaldo === 'function') actualizarSaldo();
+                    if (typeof generarCronogramaDesdeComponentes === 'function') generarCronogramaDesdeComponentes();
+                    if (typeof generarTablaResumen === 'function') generarTablaResumen();
+                }
+            }
+        });
 
-});
-</script>
+    });
+    </script>
 @endsection
