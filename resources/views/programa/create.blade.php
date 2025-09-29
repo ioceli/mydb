@@ -28,7 +28,6 @@
         </div>
         <div id="tabContents">
             <div class="tab-content" id="tab0">
-                
                 <div class="mb-4">
                     <label for="tipo_dictamen" class="block text-sm font-bold text-gray-700">1.1 Tipo de solicitud de dictamen</label>
                     <select name="tipo_dictamen" id="tipo_dictamen" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -155,7 +154,6 @@
     </form>
 </div>
 <script>
-    
    function validarMontoComponente(input) {
     const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
     const componentes = document.querySelectorAll('.componente-monto');
@@ -174,10 +172,12 @@
     actualizarSaldo();
     generarCronogramaDesdeComponentes();
 }
-
-function validarMontoActividad(input){
-    const MontoActividad = parseFloat(document.querySelector('input[name^="componentesPrograma"][name$="[monto]"]').value) || 0;
-    const actividades = document.querySelectorAll('.actividad-monto');
+function validarMontoActividad(input, componenteEl){
+    // Obtener el monto del componente específico
+    const montoComponenteInput = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
+    const montoComponente = parseFloat(montoComponenteInput.value) || 0;
+    
+    const actividades = componenteEl.querySelectorAll('.actividad-monto'); // Solo las de este componente
     let sumaOtros = 0;
     actividades.forEach(act => {
         if (act !== input) {
@@ -186,19 +186,22 @@ function validarMontoActividad(input){
         }
     });
     const valorActual = parseFloat(input.value) || 0;
-    if (valorActual + sumaOtros > MontoActividad) {
-        input.value = (MontoActividad - sumaOtros > 0) ? (MontoActividad - sumaOtros).toFixed(2) : 0;
+    if (valorActual + sumaOtros > montoComponente) { // Usar montoComponente aquí
+        input.value = (montoComponente - sumaOtros > 0) ? (montoComponente - sumaOtros).toFixed(2) : 0;
         alert('El monto asignado a la actividad no puede superar el monto asignado al componente.');
     }
-    actualizarSaldo();
-    generarCronogramaDesdeComponentes();
+    // No es necesario llamar a actualizarSaldo/generarCronograma aquí, ya se hace en el listener
 }
 // Asignar el validador a los inputs existentes y futuros
 document.addEventListener('input', function(e) {
     if (e.target.classList.contains('componente-monto')) {
         validarMontoComponente(e.target);
     } else if (e.target.classList.contains('actividad-monto')) {
-        validarMontoActividad(e.target);
+        // Encontrar el componente padre de la actividad
+        const componenteEl = e.target.closest('.componente'); 
+        if (componenteEl) {
+            validarMontoActividad(e.target, componenteEl);
+        }
     }
 });
 document.addEventListener('DOMContentLoaded', function () {
@@ -370,41 +373,50 @@ document.addEventListener('DOMContentLoaded', function () {
             container.appendChild(bloque);
             // Validación para habilitar/deshabilitar botón de actividad
             function validarAgregarActividad() {
-                const actividades = bloque.querySelectorAll('.actividad');
-                let ultimoCompleto = true;
-                if (actividades.length > 0) {
-                    const ultima = actividades[actividades.length - 1];
-                    const nombre = ultima.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]')?.value.trim();
-                    const monto = ultima.querySelector('input[name^="componentesPrograma"][name$="[monto]"]')?.value;
-                    if (!nombre || !monto || parseFloat(monto) <= 0) {
-                        ultimoCompleto = false;
-                    }
-                }
+              const actividades = bloque.querySelectorAll('.actividad');
+    const saldoComponenteEl = bloque.querySelector('.saldo-componente');
+    const btnAgregar = bloque.querySelector('.add-actividad');
+    const mensaje = bloque.querySelector('.mensaje-sin-saldo-actividad');
+    const montoComponente = parseFloat(inputMonto?.value) || 0; // Usar el monto capturado del componente
+    let ultimoCompleto = true;
+    if (actividades.length > 0) {
+        const ultima = actividades[actividades.length - 1];
+        //  CAMBIO AQUÍ: Buscar los campos de actividad
+        const nombre = ultima.querySelector('.actividad-nombre')?.value.trim();
+        const monto = ultima.querySelector('.actividad-monto')?.value;
+        if (!nombre || !monto || parseFloat(monto) <= 0) {
+            ultimoCompleto = false;
+        }
+    }
                 // Saldo
-                const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
-                let sumaActividades = 0;
-                actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-                const saldo = (montoComponente - sumaActividades).toFixed(2);
-                const btnAgregar = bloque.querySelector('.add-actividad');
-                const mensaje = bloque.querySelector('.mensaje-sin-saldo-actividad');
-                if (saldo <= 0 || !ultimoCompleto) {
-                    btnAgregar.disabled = true;
-                    btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
-                    mensaje.classList.remove('hidden');
-                } else {
-                    btnAgregar.disabled = false;
-                    btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
-                    mensaje.classList.add('hidden');
-                }
-                bloque.querySelector('.saldo-componente').textContent = `$${saldo}`;
-                if (saldo <= 0) {
-                    bloque.querySelector('.saldo-componente').classList.add('text-red-600');
-                    bloque.querySelector('.saldo-componente').classList.remove('text-green-600');
-                } else {
-                    bloque.querySelector('.saldo-componente').classList.remove('text-red-600');
-                    bloque.querySelector('.saldo-componente').classList.add('text-green-600');
-                }
-            }
+const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
+    let sumaActividades = 0;
+    actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
+    const saldo = (montoComponente - sumaActividades).toFixed(2);
+    // Actualizar Saldo Display
+    saldoComponenteEl.textContent = `$${saldo}`;
+    if (saldo <= 0) {
+        saldoComponenteEl.classList.add('text-red-600');
+        saldoComponenteEl.classList.remove('text-green-600');
+    } else {
+        saldoComponenteEl.classList.remove('text-red-600');
+        saldoComponenteEl.classList.add('text-green-600');
+    }
+    // Habilitar/deshabilitar el botón
+    if (parseFloat(saldo) <= 0 || !ultimoCompleto) {
+        btnAgregar.disabled = true;
+        btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
+        if (parseFloat(saldo) <= 0) {
+            mensaje.classList.remove('hidden');
+        } else {
+             mensaje.classList.add('hidden');
+        }
+    } else {
+        btnAgregar.disabled = false;
+        btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
+        mensaje.classList.add('hidden');
+    }
+}
             bloque.querySelector('.add-actividad').addEventListener('click', () => generarActividad(i, validarAgregarActividad));
             bloque.addEventListener('input', validarAgregarActividad);
             bloque.addEventListener('change', validarAgregarActividad);
@@ -421,7 +433,6 @@ document.addEventListener('DOMContentLoaded', function () {
         nuevaActividad.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <label class="font-semibold">Actividad ${actividadIndex + 1}</label>
-                
             </div>
             <input type="text" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required>
             <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
