@@ -144,7 +144,7 @@
                     @endforeach
                 </div>
                 <button type="button" id="addComponente" class="mt-2 px-3 py-1 bg-blue-600 text-white rounded">Agregar Componente</button>
-                <button type="button" id="removeComponente" class="mt-2 px-3 py-1 bg-red-600 text-white rounded">Eliminar Componente</button>
+                
                 <div id="mensajeSinSaldo" class="mt-2 text-red-600 font-semibold hidden">
                     No hay saldo disponible para agregar más componentes.
                 </div>
@@ -164,7 +164,7 @@
                                 <div class="flex justify-between items-center mb-1">
                                     <label class="font-semibold">Actividad {{ $ai + 1 }}</label>
                                     <span class="text-xs font-normal text-gray-500">(Saldo: <span class="saldo-actividad text-green-600 font-bold">${{ number_format($actividad->monto, 2) }}</span>)</span>
-                                    <button type="button" class="eliminar-actividad ml-2 px-2 py-1 bg-red-500 text-white rounded text-xs">Eliminar Actividad</button>
+                                    
                                 </div>
                                 <input type="text" name="componentesPrograma[{{ $ci }}][actividadesPrograma][{{ $ai }}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required value="{{ $actividad->nombre }}">
                                 <input type="number" step="0.01" name="componentesPrograma[{{ $ci }}][actividadesPrograma][{{ $ai }}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required value="{{ $actividad->monto }}">
@@ -218,9 +218,12 @@
     actualizarSaldo();
     generarCronogramaDesdeComponentes();
 }
-function validarMontoActividad(input){
-    const MontoActividad = parseFloat(document.querySelector('input[name^="componentesPrograma"][name$="[monto]"]').value) || 0;
-    const actividades = document.querySelectorAll('.actividad-monto');
+function validarMontoActividad(input, componenteEl){
+    // Obtener el monto del componente específico
+    const montoComponenteInput = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
+    const montoComponente = parseFloat(montoComponenteInput.value) || 0;
+    
+    const actividades = componenteEl.querySelectorAll('.actividad-monto'); // Solo las de este componente
     let sumaOtros = 0;
     actividades.forEach(act => {
         if (act !== input) {
@@ -229,21 +232,23 @@ function validarMontoActividad(input){
         }
     });
     const valorActual = parseFloat(input.value) || 0;
-    if (valorActual + sumaOtros > MontoActividad) {
-        input.value = (MontoActividad - sumaOtros > 0) ? (MontoActividad - sumaOtros).toFixed(2) : 0;
+    if (valorActual + sumaOtros > montoComponente) { // Usar montoComponente aquí
+        input.value = (montoComponente - sumaOtros > 0) ? (montoComponente - sumaOtros).toFixed(2) : 0;
         alert('El monto asignado a la actividad no puede superar el monto asignado al componente.');
     }
-    actualizarSaldo();
-    generarCronogramaDesdeComponentes();
+    // No es necesario llamar a actualizarSaldo/generarCronograma aquí, ya se hace en el listener
 }
-// Asignar el validador a los inputs existentes y futuros
-document.addEventListener('input', function(e) {
-    if (e.target.classList.contains('componente-monto')) {
-        validarMontoComponente(e.target);
-    } else if (e.target.classList.contains('actividad-monto')) {
-        validarMontoActividad(e.target);
-    }
-});
+   // Asignar el validador a los inputs existentes y futuros
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('componente-monto')) {
+            validarMontoComponente(e.target);
+        } else if (e.target.classList.contains('actividad-monto')) {
+            const componenteEl = e.target.closest('.componente');
+            if (componenteEl) {
+                validarMontoActividad(e.target, componenteEl);
+            }
+        }
+    });
 document.addEventListener('DOMContentLoaded', function () {
     // Tabs
     const buttons = document.querySelectorAll('.tab-button');
@@ -429,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         ultimoCompleto = false;
                     }
                 }
-                // Saldo
+                // Saldo del componente
                 const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
                 let sumaActividades = 0;
                 actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);

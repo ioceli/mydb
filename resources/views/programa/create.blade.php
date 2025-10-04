@@ -173,34 +173,31 @@
     generarCronogramaDesdeComponentes();
 }
 function validarMontoActividad(input, componenteEl){
-    // Obtener el monto del componente específico
     const montoComponenteInput = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
     const montoComponente = parseFloat(montoComponenteInput.value) || 0;
-    
     const actividades = componenteEl.querySelectorAll('.actividad-monto'); // Solo las de este componente
     let sumaOtros = 0;
     actividades.forEach(act => {
         if (act !== input) {
             const val = parseFloat(act.value);
             if (!isNaN(val)) sumaOtros += val;
-        }
+        }   
     });
     const valorActual = parseFloat(input.value) || 0;
-    if (valorActual + sumaOtros > montoComponente) { // Usar montoComponente aquí
-        input.value = (montoComponente - sumaOtros > 0) ? (montoComponente - sumaOtros).toFixed(2) : 0;
-        alert('El monto asignado a la actividad no puede superar el monto asignado al componente.');
+    if (valorActual + sumaOtros > montoComponente) { 
+        return true; // Indica que hay un exceso para que el flujo externo lo maneje
     }
-    // No es necesario llamar a actualizarSaldo/generarCronograma aquí, ya se hace en el listener
+    return false;
 }
 // Asignar el validador a los inputs existentes y futuros
 document.addEventListener('input', function(e) {
     if (e.target.classList.contains('componente-monto')) {
         validarMontoComponente(e.target);
     } else if (e.target.classList.contains('actividad-monto')) {
-        // Encontrar el componente padre de la actividad
-        const componenteEl = e.target.closest('.componente'); 
-        if (componenteEl) {
-            validarMontoActividad(e.target, componenteEl);
+        const componenteBloque = e.target.closest('.border.p-4.rounded.shadow'); 
+        if (componenteBloque) {
+            const evento = new Event('change', { bubbles: true });
+            componenteBloque.dispatchEvent(evento);
         }
     }
 });
@@ -372,51 +369,64 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             container.appendChild(bloque);
             // Validación para habilitar/deshabilitar botón de actividad
-            function validarAgregarActividad() {
-              const actividades = bloque.querySelectorAll('.actividad');
-    const saldoComponenteEl = bloque.querySelector('.saldo-componente');
-    const btnAgregar = bloque.querySelector('.add-actividad');
-    const mensaje = bloque.querySelector('.mensaje-sin-saldo-actividad');
-    const montoComponente = parseFloat(inputMonto?.value) || 0; // Usar el monto capturado del componente
-    let ultimoCompleto = true;
-    if (actividades.length > 0) {
-        const ultima = actividades[actividades.length - 1];
-        //  CAMBIO AQUÍ: Buscar los campos de actividad
-        const nombre = ultima.querySelector('.actividad-nombre')?.value.trim();
-        const monto = ultima.querySelector('.actividad-monto')?.value;
-        if (!nombre || !monto || parseFloat(monto) <= 0) {
-            ultimoCompleto = false;
-        }
-    }
-                // Saldo
-const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
-    let sumaActividades = 0;
-    actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-    const saldo = (montoComponente - sumaActividades).toFixed(2);
-    // Actualizar Saldo Display
-    saldoComponenteEl.textContent = `$${saldo}`;
-    if (saldo <= 0) {
-        saldoComponenteEl.classList.add('text-red-600');
-        saldoComponenteEl.classList.remove('text-green-600');
-    } else {
-        saldoComponenteEl.classList.remove('text-red-600');
-        saldoComponenteEl.classList.add('text-green-600');
-    }
-    // Habilitar/deshabilitar el botón
-    if (parseFloat(saldo) <= 0 || !ultimoCompleto) {
-        btnAgregar.disabled = true;
-        btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
-        if (parseFloat(saldo) <= 0) {
-            mensaje.classList.remove('hidden');
-        } else {
-             mensaje.classList.add('hidden');
-        }
-    } else {
-        btnAgregar.disabled = false;
-        btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
-        mensaje.classList.add('hidden');
-    }
-}
+                    function validarAgregarActividad() {
+                const actividades = bloque.querySelectorAll('.actividad');
+                const saldoComponenteEl = bloque.querySelector('.saldo-componente');
+                const btnAgregar = bloque.querySelector('.add-actividad');
+                const mensaje = bloque.querySelector('.mensaje-sin-saldo-actividad');
+                const montoComponente = parseFloat(inputMonto?.value) || 0; 
+                let ultimoCompleto = true;
+                const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
+                let sumaActividades = 0;
+                let hayExceso = false;
+                actividadesInputs.forEach(input => {
+                    const val = parseFloat(input.value) || 0;
+                    let sumaTotalConActual = sumaActividades + val;
+                    if (sumaTotalConActual > montoComponente) {
+                        // 2. Si el valor actual causa un exceso, se ajusta el valor del input
+                        const valorMaximoPermitido = montoComponente - sumaActividades;
+                        input.value = (valorMaximoPermitido > 0) ? valorMaximoPermitido.toFixed(2) : 0;
+                        alert('El monto asignado a la actividad no puede superar el monto asignado al componente.');
+                        hayExceso = true; // Marcamos para mostrar alerta
+                    }
+                    // 3. Recalculamos la suma con el valor ajustado (o el valor original si no hubo exceso)
+                    sumaActividades += parseFloat(input.value) || 0; 
+                });
+                // Validación para el botón de agregar
+                if (actividades.length > 0) {
+                    const ultima = actividades[actividades.length - 1];
+                    const nombre = ultima.querySelector('.actividad-nombre')?.value.trim();
+                    const monto = ultima.querySelector('.actividad-monto')?.value;
+                    if (!nombre || !monto || parseFloat(monto) <= 0) {
+                        ultimoCompleto = false;
+                    }
+                }
+               // Saldo
+                const saldo = (montoComponente - sumaActividades).toFixed(2);
+                // Actualizar Saldo Display
+                saldoComponenteEl.textContent = `$${saldo}`;
+                if (saldo <= 0) {
+                    saldoComponenteEl.classList.add('text-red-600');
+                    saldoComponenteEl.classList.remove('text-green-600');
+                } else {
+                    saldoComponenteEl.classList.remove('text-red-600');
+                    saldoComponenteEl.classList.add('text-green-600');
+                }
+                // Habilitar/deshabilitar el botón
+                if (parseFloat(saldo) <= 0 || !ultimoCompleto) {
+                    btnAgregar.disabled = true;
+                    btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
+                    if (parseFloat(saldo) <= 0) {
+                        mensaje.classList.remove('hidden');
+                    } else {
+                         mensaje.classList.add('hidden');
+                    }
+                } else {
+                    btnAgregar.disabled = false;
+                    btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
+                    mensaje.classList.add('hidden');
+                }
+            }
             bloque.querySelector('.add-actividad').addEventListener('click', () => generarActividad(i, validarAgregarActividad));
             bloque.addEventListener('input', validarAgregarActividad);
             bloque.addEventListener('change', validarAgregarActividad);
@@ -438,16 +448,6 @@ const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
             <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
         `;
         actividadContainer.appendChild(nuevaActividad);
-        nuevaActividad.querySelector('.actividad-monto').addEventListener('input', () => {
-            const componenteEl = nuevaActividad.closest('.componente');
-            const montoComponenteInput = componenteEl.querySelector('.componente-monto');
-            const montoComponente = parseFloat(montoComponenteInput.value) || 0;
-            const actividadesInputs = componenteEl.querySelectorAll('.actividad-monto');
-            let sumaActividades = 0;
-            actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-            const saldoComponente = (montoComponente - sumaActividades).toFixed(2);
-            componenteEl.querySelector('.saldo-componente').textContent = `$${saldoComponente}`;
-        });
         if (typeof validarAgregarActividad === 'function') validarAgregarActividad();
     }
     function generarTablaResumen() {
