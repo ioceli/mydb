@@ -141,7 +141,7 @@
                 <div id="cronogramaContainer" class="space-y-4">
                 </div>
                 <div id="matrizResumen" class="space-y-4">
-                    <h4 class="font-bold text-lg mb-4">Resumen Estructurado del Programa</h4>
+                    <h4 class="font-bold text-lg mb-4">Resumen Estructurado del Proyecto</h4>
                     <table class="w-full table-auto border border-gray-300 text-sm">
                         <thead class="bg-gray-100 text-left">
                             <tr>
