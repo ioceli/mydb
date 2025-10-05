@@ -17,6 +17,7 @@
     <form action="{{ route('programa.update', $programa->idPrograma) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
+        {{-- Barra de Pestañas --}}
         <div>
             @php $tabs = ['Datos Iniciales', 'Diagnóstico', 'Alineación', 'Financiamiento y Cronograma']; @endphp
             <ul class="flex flex-wrap border-b mb-4 font-bold" id="tabs">
@@ -27,7 +28,9 @@
                 @endforeach
             </ul>
         </div>
+        {{-- Contenido de las Pestañas --}}
         <div id="tabContents">
+            {{-- Pestaña 0: Datos Iniciales --}}
             <div class="tab-content" id="tab0">
                 <div class="mb-4">
                     <label for="tipo_dictamen" class="block text-sm font-bold text-gray-700">1.1 Tipo de solicitud de dictamen</label>
@@ -68,9 +71,10 @@
                 </div>
                 <div class="mb-4">
                     <label class="font-bold">1.6 Monto total</label>
-                    <input type="text" name="monto_total" class="w-full border rounded p-2" required value="{{ $programa->monto_total }}">
+                    <input type="number" step="0.01" name="monto_total" class="w-full border rounded p-2" required value="{{ $programa->monto_total }}">
                 </div>
             </div>
+            {{-- Pestaña 1: Diagnóstico --}}
             <div class="tab-content hidden" id="tab1">
                 <label class="font-bold block mb-2">2.1 Descripción de la situación actual del sector</label>
                 <textarea name="diagnostico" class="w-full border rounded p-2" rows="5">{{ $programa->diagnostico }}</textarea>
@@ -89,6 +93,7 @@
                     <input type="text" name="longitud" id="longitud" value="{{ $programa->longitud }}">
                 </div>
             </div>
+            {{-- Pestaña 2: Alineación --}}
             <div class="tab-content hidden" id="tab2">
                 <div class="mb-4">
                     <label class="font-bold">Objetivos Estratégicos</label>
@@ -115,6 +120,7 @@
                     </div>
                 </div>
             </div>
+            {{-- Pestaña 3: Financiamiento y Cronograma --}}
             <div class="tab-content hidden" id="tab3">
                 <h3 class="font-bold text-lg mb-4">Financiamiento y Presupuesto</h3>
                 <div class="mb-4">
@@ -125,9 +131,11 @@
                     <span class="text-sm font-bold">Saldo restante: </span>
                     <span id="saldoRestanteDisplay" class="text-green-600 font-bold">$0.00</span>
                 </div>
+                {{-- Contenedor de Componentes (Financiamiento) --}}
                 <div id="componentesContainer" class="space-y-4">
                     @foreach($programa->componentesPrograma as $ci => $componente)
-                    <div class="componente border p-4 rounded shadow">
+                    <div class="componente border p-4 rounded shadow" data-componente-index="{{ $ci }}">
+                        <input type="hidden" name="componentesPrograma[{{ $ci }}][idComponentePrograma]" value="{{ $componente->idComponentePrograma ?? '' }}">
                         <div class="mb-2">
                             <label class="block text-sm font-bold">Nombre del Componente</label>
                             <input type="text" name="componentesPrograma[{{ $ci }}][nombre]" class="w-full border rounded p-2 componente-nombre" required value="{{ $componente->nombre }}">
@@ -140,31 +148,33 @@
                             <label class="block text-sm font-bold">Monto asignado</label>
                             <input type="number" step="0.01" name="componentesPrograma[{{ $ci }}][monto]" class="w-full border rounded p-2 componente-monto" required value="{{ $componente->monto }}">
                         </div>
+                        <button type="button" class="remove-componente mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm">Eliminar Componente</button>
                     </div>
                     @endforeach
                 </div>
                 <button type="button" id="addComponente" class="mt-2 px-3 py-1 bg-blue-600 text-white rounded">Agregar Componente</button>
-                
                 <div id="mensajeSinSaldo" class="mt-2 text-red-600 font-semibold hidden">
                     No hay saldo disponible para agregar más componentes.
                 </div>
                 <hr class="my-6">
                 <h3 class="font-bold text-lg mb-4">Cronograma y Estructura</h3>
+                {{-- Contenedor de Cronograma (Actividades) - Se construye en JS dinámicamente --}}
                 <div id="cronogramaContainer" class="space-y-4">
-
+                    {{-- El contenido se crea o actualiza con JavaScript --}}
+                    {{-- Por compatibilidad y para inicializar el JS, se dejan los datos precargados --}}
                     @foreach($programa->componentesPrograma as $ci => $componente)
-                    <div class="border p-4 rounded shadow">
-                        <h3 class="font-bold text-blue-700 mb-2" data-monto="{{ $componente->monto }}">
-                            {{ $componente->nombre }} - Monto: ${{ number_format($componente->monto, 2) }}
-                            <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">${{ number_format($componente->monto, 2) }}</span>)</span>
+                    <div class="cronograma-bloque border p-4 rounded shadow" data-componente-index="{{ $ci }}">
+                        <h3 class="font-bold text-blue-700 mb-2">
+                            <span class="componente-titulo">{{ $componente->nombre }}</span> - Monto: $<span class="componente-monto-display">{{ number_format($componente->monto, 2) }}</span>
+                            <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$0.00</span>)</span>
                         </h3>
                         <div class="actividades space-y-2 mb-4" data-componente-index="{{ $ci }}">
                             @foreach($componente->actividadesPrograma as $ai => $actividad)
-                            <div class="actividad border p-3 rounded bg-gray-50">
+                            <div class="actividad border p-3 rounded bg-gray-50" data-actividad-index="{{ $ai }}">
+                                <input type="hidden" name="componentesPrograma[{{ $ci }}][actividadesPrograma][{{ $ai }}][idActividadPrograma]" value="{{ $actividad->idActividadPrograma ?? '' }}">
                                 <div class="flex justify-between items-center mb-1">
                                     <label class="font-semibold">Actividad {{ $ai + 1 }}</label>
-                                    <span class="text-xs font-normal text-gray-500">(Saldo: <span class="saldo-actividad text-green-600 font-bold">${{ number_format($actividad->monto, 2) }}</span>)</span>
-                                    
+                                    <button type="button" class="remove-actividad text-red-500 hover:text-red-700 text-sm font-semibold">Eliminar</button>
                                 </div>
                                 <input type="text" name="componentesPrograma[{{ $ci }}][actividadesPrograma][{{ $ai }}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required value="{{ $actividad->nombre }}">
                                 <input type="number" step="0.01" name="componentesPrograma[{{ $ci }}][actividadesPrograma][{{ $ai }}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required value="{{ $actividad->monto }}">
@@ -178,7 +188,7 @@
                     </div>
                     @endforeach
                 </div>
-                <div id="matrizResumen" class="space-y-4">
+                <div id="matrizResumen" class="space-y-4 pt-6">
                     <h4 class="font-bold text-lg mb-4">Resumen Estructurado del Programa</h4>
                     <table class="w-full table-auto border border-gray-300 text-sm">
                         <thead class="bg-gray-100 text-left">
@@ -193,64 +203,313 @@
                 </div>
             </div>
         </div>
+        {{-- Botones de acción --}}
         <div class="flex justify-between pt-6">
-            <button type="submit" class="btn btn-success font-bold">Actualizar</button>
-            <a href="{{ route('programa.index') }}" class="btn btn-secondary font-bold text-white">Volver</a>
+            <button type="submit" class="btn btn-success font-bold bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Actualizar</button>
+            <a href="{{ route('programa.index') }}" class="btn btn-secondary font-bold bg-gray-500 text-white p-2 rounded hover:bg-gray-600">Volver</a>
         </div>
     </form>
 </div>
 <script>
-   function validarMontoComponente(input) {
-    const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
-    const componentes = document.querySelectorAll('.componente-monto');
-    let sumaOtros = 0;
-    componentes.forEach(comp => {
-        if (comp !== input) {
-            const val = parseFloat(comp.value);
-            if (!isNaN(val)) sumaOtros += val;
+document.addEventListener('DOMContentLoaded', function () {
+    // Inicializa el índice para los nuevos componentes. Debe ser el siguiente al último índice existente.
+    let componenteIndex = {{ count($programa->componentesPrograma) }};
+    function actualizarSaldoPrograma() {
+        const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
+        const componentes = document.querySelectorAll('.componente:not(.eliminado)');
+        let sumaAsignada = 0;
+        componentes.forEach(compEl => {
+            const inputMonto = compEl.querySelector('.componente-monto');
+            const val = parseFloat(inputMonto.value) || 0;
+            // Validación de sobrepasar el monto total (si se edita el monto total)
+            if (sumaAsignada + val > montoTotal) {
+                inputMonto.value = (montoTotal - sumaAsignada).toFixed(2);
+                alert('El monto asignado al componente no puede superar el monto total disponible del programa.');
+            }
+            sumaAsignada += parseFloat(inputMonto.value) || 0;
+        });
+        const saldo = (montoTotal - sumaAsignada);
+        const saldoFixed = saldo.toFixed(2);
+        document.getElementById('montoTotalDisplay').textContent = `$${montoTotal.toFixed(2)}`;
+        document.getElementById('saldoRestanteDisplay').textContent = `$${saldoFixed}`;
+        const saldoLabel = document.getElementById('saldoRestanteDisplay');
+        const btnAgregar = document.getElementById('addComponente');
+        const mensaje = document.getElementById('mensajeSinSaldo');
+        // Estilo de saldo
+        if (saldo <= 0) {
+            saldoLabel.classList.remove('text-green-600');
+            saldoLabel.classList.add('text-red-600');
+            mensaje.classList.remove('hidden');
+        } else {
+            saldoLabel.classList.add('text-green-600');
+            saldoLabel.classList.remove('text-red-600');
+            mensaje.classList.add('hidden');
         }
-    });
-    const valorActual = parseFloat(input.value) || 0;
-    if (valorActual + sumaOtros > montoTotal) {
-        input.value = (montoTotal - sumaOtros > 0) ? (montoTotal - sumaOtros).toFixed(2) : 0;
-        alert('El monto asignado al componente no puede superar el monto total disponible del programa.');
-    }
-    actualizarSaldo();
-    generarCronogramaDesdeComponentes();
-}
-function validarMontoActividad(input, componenteEl){
-    // Obtener el monto del componente específico
-    const montoComponenteInput = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
-    const montoComponente = parseFloat(montoComponenteInput.value) || 0;
-    
-    const actividades = componenteEl.querySelectorAll('.actividad-monto'); // Solo las de este componente
-    let sumaOtros = 0;
-    actividades.forEach(act => {
-        if (act !== input) {
-            const val = parseFloat(act.value);
-            if (!isNaN(val)) sumaOtros += val;
-        }
-    });
-    const valorActual = parseFloat(input.value) || 0;
-    if (valorActual + sumaOtros > montoComponente) { // Usar montoComponente aquí
-        input.value = (montoComponente - sumaOtros > 0) ? (montoComponente - sumaOtros).toFixed(2) : 0;
-        alert('El monto asignado a la actividad no puede superar el monto asignado al componente.');
-    }
-    // No es necesario llamar a actualizarSaldo/generarCronograma aquí, ya se hace en el listener
-}
-   // Asignar el validador a los inputs existentes y futuros
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('componente-monto')) {
-            validarMontoComponente(e.target);
-        } else if (e.target.classList.contains('actividad-monto')) {
-            const componenteEl = e.target.closest('.componente');
-            if (componenteEl) {
-                validarMontoActividad(e.target, componenteEl);
+        // Validación para habilitar/deshabilitar botón de agregar componente
+        let ultimoCompleto = true;
+        if (componentes.length > 0) {
+            const ultimo = componentes[componentes.length - 1];
+            const nombre = ultimo.querySelector('input[name$="[nombre]"]')?.value.trim();
+            const monto = ultimo.querySelector('input[name$="[monto]"]')?.value;
+            if (!nombre || !monto || parseFloat(monto) <= 0) {
+                ultimoCompleto = false;
             }
         }
-    });
-document.addEventListener('DOMContentLoaded', function () {
-    // Tabs
+        const puedeAgregar = (saldo > 0 && ultimoCompleto);
+        if (!puedeAgregar) {
+            btnAgregar.disabled = true;
+            btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            btnAgregar.disabled = false;
+            btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        actualizarCronogramaYResumen();
+    }
+    function actualizarSaldoComponente(bloqueCronograma) {
+        const componenteIndex = bloqueCronograma.dataset.componenteIndex;
+        const componenteEl = document.querySelector(`.componente[data-componente-index="${componenteIndex}"]`);
+        if (!componenteEl) return; 
+        const montoComponente = parseFloat(componenteEl.querySelector('.componente-monto')?.value) || 0;
+        const actividades = bloqueCronograma.querySelectorAll('.actividad:not(.eliminado)');
+        const btnAgregar = bloqueCronograma.querySelector('.add-actividad');
+        const mensaje = bloqueCronograma.querySelector('.mensaje-sin-saldo-actividad');
+        const saldoComponenteEl = bloqueCronograma.querySelector('.saldo-componente');
+        const componenteTituloEl = bloqueCronograma.querySelector('.componente-titulo');
+        const componenteMontoDisplayEl = bloqueCronograma.querySelector('.componente-monto-display');
+        // Actualiza el título y monto del bloque del cronograma
+        componenteTituloEl.textContent = componenteEl.querySelector('.componente-nombre').value;
+        componenteMontoDisplayEl.textContent = montoComponente.toFixed(2);
+        let sumaActividades = 0;
+        let ultimoCompleto = true;
+        actividades.forEach(actividadEl => {
+            const inputMonto = actividadEl.querySelector('.actividad-monto');
+            const val = parseFloat(inputMonto.value) || 0;
+            const nombre = actividadEl.querySelector('.actividad-nombre')?.value.trim();
+            // Validación de sobrepasar el monto del componente
+            if (val > montoComponente - (sumaActividades)) {
+                inputMonto.value = (montoComponente - sumaActividades > 0) ? (montoComponente - sumaActividades).toFixed(2) : 0;
+                alert('El monto asignado a la actividad no puede superar el saldo restante del componente.');
+            }
+            sumaActividades += parseFloat(inputMonto.value) || 0;
+            // Validación para el botón de agregar
+            if (actividadEl === actividades[actividades.length - 1] && (!nombre || parseFloat(inputMonto.value) <= 0)) {
+                ultimoCompleto = false;
+            }
+        });
+        // Calcula y muestra el saldo
+        const saldo = (montoComponente - sumaActividades);
+        const saldoFixed = saldo.toFixed(2);
+        saldoComponenteEl.textContent = `$${saldoFixed}`;
+        // Estilo de saldo
+        if (saldo <= 0) {
+            saldoComponenteEl.classList.add('text-red-600');
+            saldoComponenteEl.classList.remove('text-green-600');
+            mensaje.classList.remove('hidden');
+        } else {
+            saldoComponenteEl.classList.remove('text-red-600');
+            saldoComponenteEl.classList.add('text-green-600');
+            mensaje.classList.add('hidden');
+        }
+        // Habilitar/deshabilitar el botón de agregar actividad
+        const puedeAgregar = (saldo > 0 && ultimoCompleto);
+        if (!puedeAgregar) {
+            btnAgregar.disabled = true;
+            btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            btnAgregar.disabled = false;
+            btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        generarTablaResumen(); // Actualiza la tabla de resumen al cambiar una actividad
+    }
+    function agregarNuevoComponente() {
+        if (document.getElementById('addComponente').disabled) return;
+        const container = document.getElementById('componentesContainer');
+        const ci = componenteIndex; // Usa el índice actual
+        const nuevo = document.createElement('div');
+        nuevo.classList.add('componente', 'border', 'p-4', 'rounded', 'shadow');
+        nuevo.dataset.componenteIndex = ci;
+        nuevo.innerHTML = `
+            <div class="mb-2">
+                <label class="block text-sm font-bold">Nombre del Componente</label>
+                <input type="text" name="componentesPrograma[${ci}][nombre]" class="w-full border rounded p-2 componente-nombre" required>
+            </div>
+            <div class="mb-2">
+                <label class="block text-sm font-bold">Descripción</label>
+                <textarea name="componentesPrograma[${ci}][descripcion]" class="w-full border rounded p-2" rows="3"></textarea>
+            </div>
+            <div class="mb-2">
+                <label class="block text-sm font-bold">Monto asignado</label>
+                <input type="number" step="0.01" name="componentesPrograma[${ci}][monto]" class="w-full border rounded p-2 componente-monto" required>
+            </div>
+            <button type="button" class="remove-componente mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm">Eliminar Componente</button>
+        `;
+        container.appendChild(nuevo);
+        componenteIndex++; // Incrementa el índice para el siguiente componente
+        agregarBloqueCronograma(ci);
+        actualizarSaldoPrograma();
+    }
+    function agregarBloqueCronograma(ci) {
+        const container = document.getElementById('cronogramaContainer');
+        const bloque = document.createElement('div');
+        bloque.classList.add('cronograma-bloque', 'border', 'p-4', 'rounded', 'shadow');
+        bloque.dataset.componenteIndex = ci;
+        bloque.innerHTML = `
+            <h3 class="font-bold text-blue-700 mb-2">
+                <span class="componente-titulo">Componente ${ci + 1}</span> - Monto: $<span class="componente-monto-display">0.00</span>
+                <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$0.00</span>)</span>
+            </h3>
+            <div class="actividades space-y-2 mb-4" data-componente-index="${ci}"></div>
+            <button type="button" class="add-actividad mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" data-componente-index="${ci}">Agregar Actividad</button>
+            <div class="mensaje-sin-saldo-actividad text-red-600 font-semibold hidden">
+                No hay saldo disponible en este componente para agregar más actividades.
+            </div>
+        `;
+        container.appendChild(bloque);
+        // Asignar listener para el botón de agregar actividad
+        bloque.querySelector('.add-actividad').addEventListener('click', function() {
+            agregarNuevaActividad(ci);
+        });
+        // Escucha eventos en el bloque para validar el saldo del componente
+        bloque.addEventListener('input', (e) => {
+            if (e.target.classList.contains('actividad-monto') || e.target.classList.contains('actividad-nombre')) {
+                actualizarSaldoComponente(bloque);
+            }
+        });
+    }
+    function agregarNuevaActividad(componenteIndex) {
+        const actividadContainer = document.querySelector(`.actividades[data-componente-index="${componenteIndex}"]`);
+        const bloqueCronograma = actividadContainer.closest('.cronograma-bloque');
+        if (bloqueCronograma.querySelector('.add-actividad').disabled) return;
+        const actividadIndex = actividadContainer.querySelectorAll('.actividad').length;
+        const nuevaActividad = document.createElement('div');
+        nuevaActividad.classList.add('actividad', 'border', 'p-3', 'rounded', 'bg-gray-50');
+        nuevaActividad.dataset.actividadIndex = actividadIndex;
+        nuevaActividad.innerHTML = `
+            <div class="flex justify-between items-center mb-1">
+                <label class="font-semibold">Actividad ${actividadIndex + 1}</label>
+                <button type="button" class="remove-actividad text-red-500 hover:text-red-700 text-sm font-semibold">Eliminar</button>
+            </div>
+            <input type="text" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required>
+            <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
+        `;
+        actividadContainer.appendChild(nuevaActividad);
+        // Inicializar el listener de eliminación para la nueva actividad
+        nuevaActividad.querySelector('.remove-actividad').addEventListener('click', function() {
+            eliminarActividad(nuevaActividad);
+        });
+        actualizarSaldoComponente(bloqueCronograma);
+    }
+        function eliminarComponente(componenteEl) {
+        if (!confirm('¿Está seguro de eliminar este componente y todas sus actividades asociadas?')) return;
+        const componenteIndex = componenteEl.dataset.componenteIndex;
+        // 1. Eliminar el componente visualmente
+        componenteEl.remove();
+        // 2. Eliminar el bloque de cronograma asociado
+        const bloqueCronograma = document.querySelector(`.cronograma-bloque[data-componente-index="${componenteIndex}"]`);
+        if (bloqueCronograma) bloqueCronograma.remove();
+        reindexarComponentes();
+                actualizarSaldoPrograma();
+    }
+        function eliminarActividad(actividadEl) {
+        const bloqueCronograma = actividadEl.closest('.cronograma-bloque');
+        actividadEl.remove();
+        reindexarActividades(bloqueCronograma);
+        actualizarSaldoComponente(bloqueCronograma);
+    }
+        function reindexarComponentes() {
+        const componentes = document.querySelectorAll('#componentesContainer .componente');
+        const cronogramas = document.querySelectorAll('#cronogramaContainer .cronograma-bloque');
+        componentes.forEach((compEl, newIndex) => {
+            const oldIndex = compEl.dataset.componenteIndex;
+            compEl.dataset.componenteIndex = newIndex;
+            // Reindexar inputs del componente
+            compEl.querySelectorAll('input, textarea').forEach(input => {
+                input.name = input.name.replace(`componentesPrograma[${oldIndex}]`, `componentesPrograma[${newIndex}]`);
+            });
+            // Reindexar actividades dentro del cronograma
+            const bloqueCronograma = Array.from(cronogramas).find(b => b.dataset.componenteIndex === oldIndex);
+            if (bloqueCronograma) {
+                bloqueCronograma.dataset.componenteIndex = newIndex;
+                bloqueCronograma.querySelector('.add-actividad').dataset.componenteIndex = newIndex;
+                reindexarActividades(bloqueCronograma);
+            }
+        });
+        componenteIndex = componentes.length; // Actualiza el índice global
+    }
+        function reindexarActividades(bloqueCronograma) {
+        const componenteIndex = bloqueCronograma.dataset.componenteIndex;
+        const actividades = bloqueCronograma.querySelectorAll('.actividad');
+        const actividadesContainer = bloqueCronograma.querySelector('.actividades');
+        actividades.forEach((actEl, newIndex) => {
+            const oldIndex = actEl.dataset.actividadIndex;
+            actEl.dataset.actividadIndex = newIndex;
+            // Actualizar número de actividad en la etiqueta (si existe)
+            const label = actEl.querySelector('label.font-semibold');
+            if(label) label.textContent = `Actividad ${newIndex + 1}`;
+            // Reindexar inputs de la actividad
+            actEl.querySelectorAll('input').forEach(input => {
+                input.name = input.name.replace(`[actividadesPrograma][${oldIndex}]`, `[actividadesPrograma][${newIndex}]`);
+            });
+        });
+    }
+    function actualizarCronogramaYResumen() {
+        const componentes = document.querySelectorAll('.componente:not(.eliminado)');
+        const cronogramaContainer = document.getElementById('cronogramaContainer');
+        const bloquesCronograma = document.querySelectorAll('.cronograma-bloque');
+        // Mapeo para saber qué bloques existen
+        const existentes = {};
+        bloquesCronograma.forEach(b => {
+            existentes[b.dataset.componenteIndex] = b;
+        });
+        // 1. Sincronizar bloques de cronograma existentes
+        componentes.forEach((compEl, ci) => {
+            const inputNombre = compEl.querySelector('.componente-nombre');
+            const inputMonto = compEl.querySelector('.componente-monto');
+            const bloque = existentes[compEl.dataset.componenteIndex];
+            if (bloque) {
+                // Actualizar visualización del cronograma con los nuevos datos
+                bloque.querySelector('.componente-titulo').textContent = inputNombre.value;
+                bloque.querySelector('.componente-monto-display').textContent = parseFloat(inputMonto.value || 0).toFixed(2);
+                actualizarSaldoComponente(bloque); // Recalcular saldo de actividades
+            } else {
+                // Si el componente se agregó dinámicamente, agregar su bloque de cronograma
+                agregarBloqueCronograma(compEl.dataset.componenteIndex);
+            }
+        });
+        generarTablaResumen();
+    }
+    function generarTablaResumen() {
+        const tbody = document.getElementById('tablaResumen');
+        tbody.innerHTML = '';
+        const componentes = document.querySelectorAll('.componente:not(.eliminado)');
+        componentes.forEach((componenteEl) => {
+            const ci = componenteEl.dataset.componenteIndex;
+            const nombreComponente = componenteEl.querySelector('.componente-nombre')?.value || `Componente ${ci}`;
+            const montoComponente = parseFloat(componenteEl.querySelector('.componente-monto')?.value || 0);
+            let htmlComponente = `
+                <tr>
+                    <td class="border px-2 py-1 font-semibold text-gray-900">${nombreComponente}</td>
+                    <td class="border px-2 py-1 text-right font-bold text-blue-600">$${montoComponente.toFixed(2)}</td>
+                    <td class="border px-2 py-1"></td>
+                </tr>
+            `;
+            tbody.innerHTML += htmlComponente;
+            const actividades = document.querySelectorAll(`.cronograma-bloque[data-componente-index="${ci}"] .actividad:not(.eliminado)`);
+            actividades.forEach((actividadEl, actIdx) => {
+                const nombreAct = actividadEl.querySelector(`.actividad-nombre`)?.value || `Actividad ${actIdx + 1}`;
+                const montoAct = parseFloat(actividadEl.querySelector(`.actividad-monto`)?.value || 0);
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="border px-2 py-1 pl-6 text-gray-800">== ${nombreAct}</td>
+                        <td class="border px-2 py-1"></td>
+                        <td class="border px-2 py-1 text-right text-green-600">$${montoAct.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+        });
+    }
+    // 1. Inicialización de Tabs
     const buttons = document.querySelectorAll('.tab-button');
     const contents = document.querySelectorAll('#tabContents > div');
     buttons.forEach(btn => {
@@ -267,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (activeContent) activeContent.classList.remove('hidden');
         });
     });
-    // Nombre programa
+    // 2. Generación del Nombre del Programa
     function actualizarNombre() {
         const accion = document.getElementById('accion').value.trim();
         const objeto = document.getElementById('objeto').value.trim();
@@ -278,13 +537,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     document.getElementById('accion').addEventListener('change', actualizarNombre);
     document.getElementById('objeto').addEventListener('input', actualizarNombre);
-    // Leaflet map
-    const map = L.map('map').setView([-0.1807, -78.4678], 10);
+    // 3. Leaflet Map
+    const initialLat = parseFloat(document.getElementById('latitud').value) || -0.1807;
+    const initialLng = parseFloat(document.getElementById('longitud').value) || -78.4678;
+    const map = L.map('map').setView([initialLat, initialLng], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
     }).addTo(map);
-    const marker = L.marker([-0.1807, -78.4678]).addTo(map);
+    const marker = L.marker([initialLat, initialLng]).addTo(map);
     map.on('click', function(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
@@ -292,240 +553,47 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('longitud').value = lng;
         marker.setLatLng([lat, lng]);
     });
-    map.on('locationfound', function(e) {
-        const lat = e.latitude;
-        const lng = e.longitude;
-        document.getElementById('latitud').value = lat;
-        document.getElementById('longitud').value = lng;
+    // Listener principal para todo el contenedor de componentes (actualiza saldos del programa y cronograma)
+    document.getElementById('componentesContainer').addEventListener('input', function(e) {
+        if (e.target.classList.contains('componente-monto') || e.target.classList.contains('componente-nombre')) {
+            actualizarSaldoPrograma();
+        }
     });
-    // Componentes
-    
-    function actualizarSaldo() {
-        const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
-        const inputsMonto = document.querySelectorAll('.componente-monto');
-        let sumaAsignada = 0;
-        inputsMonto.forEach(input => {
-            const val = parseFloat(input.value);
-            if (!isNaN(val)) sumaAsignada += val;
+    // Listener para el campo de Monto Total
+    document.querySelector('input[name="monto_total"]').addEventListener('input', actualizarSaldoPrograma);
+    // Botón para agregar componente
+    document.getElementById('addComponente').addEventListener('click', agregarNuevoComponente);
+    // Listeners de eliminación para componentes y actividades precargadas
+    document.querySelectorAll('.remove-componente').forEach(btn => {
+        btn.addEventListener('click', function() {
+            eliminarComponente(this.closest('.componente'));
         });
-        const saldo = (montoTotal - sumaAsignada).toFixed(2);
-        document.getElementById('montoTotalDisplay').textContent = `$${montoTotal.toFixed(2)}`;
-        document.getElementById('saldoRestanteDisplay').textContent = `$${saldo}`;
-        const saldoLabel = document.getElementById('saldoRestanteDisplay');
-        const btnAgregar = document.getElementById('addComponente');
-        const mensaje = document.getElementById('mensajeSinSaldo');
-        // Validación para habilitar/deshabilitar botón de agregar componente
-        let puedeAgregar = false;
-        // Verifica si los campos del último componente están llenos
-        const componentes = document.querySelectorAll('.componente');
-        if (saldo > 0) {
-            if (componentes.length === 0) {
-                puedeAgregar = true;
-            } else {
-                const ultimo = componentes[componentes.length - 1];
-                const nombre = ultimo.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]')?.value.trim();
-                const descripcion = ultimo.querySelector('textarea[name^="componentesPrograma"][name$="[descripcion]"]')?.value.trim();
-                const monto = ultimo.querySelector('input[name^="componentesPrograma"][name$="[monto]"]')?.value;
-                if (nombre && descripcion && monto && parseFloat(monto) > 0) {
-                    puedeAgregar = true;
-                }
+    });
+    document.querySelectorAll('.remove-actividad').forEach(btn => {
+        btn.addEventListener('click', function() {
+            eliminarActividad(this.closest('.actividad'));
+        });
+    });
+    // Listeners de agregar actividad para los bloques de cronograma precargados
+    document.querySelectorAll('.add-actividad').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const ci = parseInt(this.dataset.componenteIndex);
+            agregarNuevaActividad(ci);
+        });
+    });
+        // Listeners de input/change para actividades precargadas
+    document.querySelectorAll('.cronograma-bloque').forEach(bloque => {
+        const ci = bloque.dataset.componenteIndex;
+        // Asignar el listener de validación a las actividades precargadas
+        bloque.addEventListener('input', (e) => {
+            if (e.target.classList.contains('actividad-monto') || e.target.classList.contains('actividad-nombre')) {
+                actualizarSaldoComponente(bloque);
             }
-        }
-        if (!puedeAgregar) {
-            btnAgregar.disabled = true;
-            btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
-        } else {
-            btnAgregar.disabled = false;
-            btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-        if (saldo <= 0) {
-            saldoLabel.classList.remove('text-green-600');
-            saldoLabel.classList.add('text-red-600');
-            mensaje.classList.remove('hidden');
-        } else {
-            saldoLabel.classList.add('text-green-600');
-            saldoLabel.classList.remove('text-red-600');
-            mensaje.classList.add('hidden');
-        }
-    }
-    document.querySelector('input[name="monto_total"]').addEventListener('input', () => {
-        actualizarSaldo();
-        generarCronogramaDesdeComponentes();
-    });
-    document.getElementById('addComponente').addEventListener('click', () => {
-        const container = document.getElementById('componentesContainer');
-        const nuevo = document.createElement('div');
-        nuevo.classList.add('componente', 'border', 'p-4', 'rounded', 'shadow');
-        nuevo.innerHTML = `
-            <div class="mb-2">
-                <label class="block text-sm font-bold">Nombre del Componente</label>
-                <input type="text" name="componentesPrograma[${componenteIndex}][nombre]" class="w-full border rounded p-2 componente-nombre" required>
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm font-bold">Descripción</label>
-                <textarea name="componentesPrograma[${componenteIndex}][descripcion]" class="w-full border rounded p-2" rows="3"></textarea>
-            </div>
-            <div class="mb-2">
-                <label class="block text-sm font-bold">Monto asignado</label>
-                <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][monto]" class="w-full border rounded p-2 componente-monto" required>
-            </div>
-        `;
-        container.appendChild(nuevo);
-        nuevo.querySelector('.componente-monto').addEventListener('input', actualizarSaldo);
-        nuevo.querySelector('.componente-nombre').addEventListener('input', actualizarSaldo);
-        nuevo.querySelector('textarea').addEventListener('input', actualizarSaldo);
-        componenteIndex++;
-        actualizarSaldo();
-        generarCronogramaDesdeComponentes();
-    });
-    document.querySelectorAll('.componente-monto').forEach(input => {
-        input.addEventListener('input', actualizarSaldo);
-    });
-    // También escucha cambios en nombre y descripción para la validación del botón
-    document.querySelectorAll('.componente-nombre').forEach(input => {
-        input.addEventListener('input', actualizarSaldo);
-    });
-    document.querySelectorAll('.componente textarea').forEach(input => {
-        input.addEventListener('input', actualizarSaldo);
-    });
-    window.addEventListener('DOMContentLoaded', () => {
-        actualizarSaldo();
-        generarCronogramaDesdeComponentes();
-    });
-    document.getElementById('componentesContainer').addEventListener('change', generarCronogramaDesdeComponentes);
-    function generarCronogramaDesdeComponentes() {
-        const container = document.getElementById('cronogramaContainer');
-        // Si ya existen actividades cargadas desde el backend, solo actualiza la tabla resumen
-        if (container.querySelector('.actividad')) {
-            generarTablaResumen();
-            return;
-        }
-        // Si no hay actividades cargadas, genera los bloques de componentes vacíos
-        container.innerHTML = '';
-        const componentes = document.querySelectorAll('.componente');
-        componentes.forEach((componenteEl, i) => {
-            const inputNombre = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]');
-            const inputMonto = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
-            const nombreComponente = inputNombre?.value || `Componente ${i + 1}`;
-            const montoComponente = parseFloat(inputMonto?.value) || 0;
-            const bloque = document.createElement('div');
-            bloque.classList.add('border', 'p-4', 'rounded', 'shadow');
-            bloque.innerHTML = `
-                <h3 class="font-bold text-blue-700 mb-2">
-                    ${nombreComponente} - Monto: $${montoComponente.toFixed(2)}
-                    <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$${montoComponente.toFixed(2)}</span>)</span>
-                </h3>
-                <div class="actividades space-y-2 mb-4" data-componente-index="${i}"></div>
-                <button type="button" class="add-actividad mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" data-componente-index="${i}">Agregar Actividad</button>
-                <div class="mensaje-sin-saldo-actividad text-red-600 font-semibold hidden">
-                    No hay saldo disponible en este componente para agregar más actividades.
-                </div>
-            `;
-            container.appendChild(bloque);
-            // Validación para habilitar/deshabilitar botón de actividad
-            function validarAgregarActividad() {
-                const actividades = bloque.querySelectorAll('.actividad');
-                let ultimoCompleto = true;
-                if (actividades.length > 0) {
-                    const ultima = actividades[actividades.length - 1];
-                    const nombre = ultima.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]')?.value.trim();
-                    const monto = ultima.querySelector('input[name^="componentesPrograma"][name$="[monto]"]')?.value;
-                    if (!nombre || !monto || parseFloat(monto) <= 0) {
-                        ultimoCompleto = false;
-                    }
-                }
-                // Saldo del componente
-                const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
-                let sumaActividades = 0;
-                actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-                const saldo = (montoComponente - sumaActividades).toFixed(2);
-                const btnAgregar = bloque.querySelector('.add-actividad');
-                const mensaje = bloque.querySelector('.mensaje-sin-saldo-actividad');
-                if (saldo <= 0 || !ultimoCompleto) {
-                    btnAgregar.disabled = true;
-                    btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
-                    mensaje.classList.remove('hidden');
-                } else {
-                    btnAgregar.disabled = false;
-                    btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
-                    mensaje.classList.add('hidden');
-                }
-                bloque.querySelector('.saldo-componente').textContent = `$${saldo}`;
-                if (saldo <= 0) {
-                    bloque.querySelector('.saldo-componente').classList.add('text-red-600');
-                    bloque.querySelector('.saldo-componente').classList.remove('text-green-600');
-                } else {
-                    bloque.querySelector('.saldo-componente').classList.remove('text-red-600');
-                    bloque.querySelector('.saldo-componente').classList.add('text-green-600');
-                }
-            }
-            bloque.querySelector('.add-actividad').addEventListener('click', () => generarActividad(i, validarAgregarActividad));
-            bloque.addEventListener('input', validarAgregarActividad);
-            bloque.addEventListener('change', validarAgregarActividad);
-            validarAgregarActividad();
         });
-        generarTablaResumen();
-    }
-    // Generar actividad
-    function generarActividad(componenteIndex, validarAgregarActividad) {
-        const actividadContainer = document.querySelector(`.actividades[data-componente-index="${componenteIndex}"]`);
-        const actividadIndex = actividadContainer.querySelectorAll('.actividad').length;
-        const nuevaActividad = document.createElement('div');
-        nuevaActividad.classList.add('actividad', 'border', 'p-3', 'rounded', 'bg-gray-50');
-        nuevaActividad.innerHTML = `
-            <div class="flex justify-between items-center mb-1">
-                <label class="font-semibold">Actividad ${actividadIndex + 1}</label>
-                
-            </div>
-            <input type="text" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required>
-            <input type="number" step="0.01" name="componentesPrograma[${componenteIndex}][actividadesPrograma][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
-        `;
-        actividadContainer.appendChild(nuevaActividad);
-        nuevaActividad.querySelector('.actividad-monto').addEventListener('input', () => {
-            const componenteEl = nuevaActividad.closest('.componente');
-            const montoComponenteInput = componenteEl.querySelector('.componente-monto');
-            const montoComponente = parseFloat(montoComponenteInput.value) || 0;
-            const actividadesInputs = componenteEl.querySelectorAll('.actividad-monto');
-            let sumaActividades = 0;
-            actividadesInputs.forEach(input => sumaActividades += parseFloat(input.value) || 0);
-            const saldoComponente = (montoComponente - sumaActividades).toFixed(2);
-            componenteEl.querySelector('.saldo-componente').textContent = `$${saldoComponente}`;
-        });
-        if (typeof validarAgregarActividad === 'function') validarAgregarActividad();
-    }
-    function generarTablaResumen() {
-        const tbody = document.getElementById('tablaResumen');
-        tbody.innerHTML = '';
-        const componentes = document.querySelectorAll('.componente');
-        componentes.forEach((componenteEl, i) => {
-            const inputNombre = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[nombre]"]');
-            const inputMonto = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
-            const nombreComponente = inputNombre?.value || `Componente ${i + 1}`;
-            const montoComponente = parseFloat(inputMonto?.value) || 0;
-            tbody.innerHTML += `
-                <tr>
-                    <td class="border px-2 py-1 font-semibold text-gray-900">${nombreComponente}</td>
-                    <td class="border px-2 py-1 text-right font-bold text-blue-600">$${montoComponente.toFixed(2)}</td>
-                    <td class="border px-2 py-1"></td>
-                </tr>
-            `;
-            const actividades = document.querySelectorAll(`.actividades[data-componente-index="${i}"] .actividad`);
-            actividades.forEach((actividadEl, actIdx) => {
-                const nombreAct = actividadEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][nombre]"]`)?.value || `Actividad ${actIdx + 1}`;
-                const montoAct = parseFloat(actividadEl.querySelector(`input[name="componentesPrograma[${i}][actividadesPrograma][${actIdx}][monto]"]`)?.value || 0).toFixed(2);
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="border px-2 py-1 pl-6 text-gray-800">== ${nombreAct}</td>
-                        <td class="border px-2 py-1"></td>
-                        <td class="border px-2 py-1 text-right text-green-600">$${montoAct}</td>
-                    </tr>
-                `;
-            });
-        });
-    }
-    document.getElementById('cronogramaContainer').addEventListener('change', generarTablaResumen);
-    document.getElementById('componentesContainer').addEventListener('change', generarTablaResumen);
-    window.addEventListener('DOMContentLoaded', generarTablaResumen);
+    actualizarSaldoComponente(bloque);
+    });
+    actualizarNombre();
+    actualizarSaldoPrograma();
 });
 </script>
 @endsection

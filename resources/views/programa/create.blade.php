@@ -172,23 +172,7 @@
     actualizarSaldo();
     generarCronogramaDesdeComponentes();
 }
-function validarMontoActividad(input, componenteEl){
-    const montoComponenteInput = componenteEl.querySelector('input[name^="componentesPrograma"][name$="[monto]"]');
-    const montoComponente = parseFloat(montoComponenteInput.value) || 0;
-    const actividades = componenteEl.querySelectorAll('.actividad-monto'); // Solo las de este componente
-    let sumaOtros = 0;
-    actividades.forEach(act => {
-        if (act !== input) {
-            const val = parseFloat(act.value);
-            if (!isNaN(val)) sumaOtros += val;
-        }   
-    });
-    const valorActual = parseFloat(input.value) || 0;
-    if (valorActual + sumaOtros > montoComponente) { 
-        return true; // Indica que hay un exceso para que el flujo externo lo maneje
-    }
-    return false;
-}
+
 // Asignar el validador a los inputs existentes y futuros
 document.addEventListener('input', function(e) {
     if (e.target.classList.contains('componente-monto')) {
