@@ -21,7 +21,7 @@
     @csrf
     <!-- Tabs -->
        <div>
-            @php $tabs = ['Datos Iniciales', 'Diagnóstico', 'Alineación', 'Financiamiento y Presupuesto','Cronograma']; @endphp
+            @php $tabs = ['Datos Iniciales', 'Diagnóstico', 'Alineación', 'Financiamiento y Cronograma']; @endphp
             <ul class="flex flex-wrap border-b mb-4 font-bold"  id="tabs">
                 @foreach($tabs as $i => $tab)
                 <li>
@@ -121,7 +121,7 @@
             </div>
             <!-- Tab 3: FINANCIAMIENTO Y PRESUPUESTO -->
             <div class="tab-content hidden" id="tab3">
-               <!-- Monto total y saldo -->
+ <h3 class="font-bold text-lg mb-4">Financiamiento y Presupuesto</h3>
                 <div class="mb-4">
                     <span class="text-sm font-bold">Monto total disponible: </span>
                     <span id="montoTotalDisplay" class="text-blue-600 font-bold">$0.00</span>
@@ -130,71 +130,88 @@
                     <span class="text-sm font-bold">Saldo restante: </span>
                     <span id="saldoRestanteDisplay" class="text-green-600 font-bold">$0.00</span>
                 </div>
-                <!-- Componentes -->
                 <div id="componentesContainer" class="space-y-4">
                 </div>
-                <!-- Botón agregar componente -->
                 <button type="button" id="addComponente" class="mt-2 px-3 py-1 bg-blue-600 text-white rounded">Agregar Componente</button>
                 <div id="mensajeSinSaldo" class="mt-2 text-red-600 font-semibold hidden">
                 No hay saldo disponible para agregar más componentes.
                 </div>
-            </div>
-                <!-- Tab 4: Cronograma -->
-            <div class="tab-content hidden" id="tab4">
-                <label class="font-bold block mb-2">Cronograma General</label>
-                    <div id="cronogramaContainer" class="space-y-4">
-                    </div>
-                    <div id="matrizResumen" class="space-y-4">
-                        <h3 class="font-bold text-lg mb-4">Resumen Estructurado del Proyecto</h3>
-                        <table class="w-full table-auto border border-gray-300 text-sm">
-                            <thead class="bg-gray-100 text-left">
-                                <tr>
-                                    <th class="border px-2 py-1">Nombre</th>
-                                    <th class="border px-2 py-1 text-right">Valor Componente</th>
-                                    <th class="border px-2 py-1 text-right">Valor Actividad</th>
-                                    <th class="border px-2 py-1 text-right">Valor Tarea</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablaResumen"></tbody>
-                        </table>
-                    </div>
+                <hr class="my-6">
+                <h3 class="font-bold text-lg mb-4">Cronograma y Estructura</h3>
+                <div id="cronogramaContainer" class="space-y-4">
+                </div>
+                <div id="matrizResumen" class="space-y-4">
+                    <h4 class="font-bold text-lg mb-4">Resumen Estructurado del Programa</h4>
+                    <table class="w-full table-auto border border-gray-300 text-sm">
+                        <thead class="bg-gray-100 text-left">
+                            <tr>
+                                <th class="border px-2 py-1">Nombre</th>
+                                <th class="border px-2 py-1 text-right">Valor Componente</th>
+                                <th class="border px-2 py-1 text-right">Valor Actividad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaResumen"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <!-- Botones -->
         <div class="flex justify-between pt-6">
-            <button type="submit" class="font-bold btn btn-success">GUARDAR</button>
+            <button type="submit" class="btn btn-success font-bold">Guardar</button>
             <a href="{{route('proyecto.index')}}" class="font-bold btn btn-secondary text-white">VOLVER</a>
         </div>
 </form>
 </div>
-<!-- Scripts -->
 <script>
-    
+ function validarMontoComponente(input) {
+    const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
+    const componentes = document.querySelectorAll('.componente-monto');
+    let sumaOtros = 0;
+    componentes.forEach(comp => {
+        if (comp !== input) {
+            const val = parseFloat(comp.value);
+            if (!isNaN(val)) sumaOtros += val;
+        }
+    });
+    const valorActual = parseFloat(input.value) || 0;
+    if (valorActual + sumaOtros > montoTotal) {
+        input.value = (montoTotal - sumaOtros > 0) ? (montoTotal - sumaOtros).toFixed(2) : 0;
+        alert('El monto asignado al componente no puede superar el monto total disponible del proyecto.');
+    }
+    actualizarSaldo();
+    generarCronogramaDesdeComponentes();
+}
+
+// Asignar el validador a los inputs existentes y futuros
+document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('componente-monto')) {
+        validarMontoComponente(e.target);
+    } else if (e.target.classList.contains('actividad-monto')) {
+        const componenteBloque = e.target.closest('.border.p-4.rounded.shadow'); 
+        if (componenteBloque) {
+            const evento = new Event('change', { bubbles: true });
+            componenteBloque.dispatchEvent(evento);
+        }
+    }
+});
 document.addEventListener('DOMContentLoaded', function () {
-        const buttons = document.querySelectorAll('.tab-button');
-        const contents = document.querySelectorAll('#tabContents > div');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                // Quitar clases activas de todos los botones
-                buttons.forEach(b => {
-                    b.classList.remove('border-blue-500', 'text-blue-500');
-                    b.classList.add('border-transparent', 'text-gray-600');
-                });
-                // Ocultar todos los contenidos
-                contents.forEach(c => c.classList.add('hidden'));
-                // Activar el botón actual
-                this.classList.remove('border-transparent', 'text-gray-600');
-                this.classList.add('border-blue-500', 'text-blue-500');
-                // Mostrar el contenido correspondiente
-                const tabId = this.getAttribute('data-tab');
-                const activeContent = document.getElementById(tabId);
-                if (activeContent) {
-                    activeContent.classList.remove('hidden');
-                }
+    // Tabs
+    const buttons = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('#tabContents > div');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            buttons.forEach(b => {
+                b.classList.remove('border-blue-500', 'text-blue-500');
+                b.classList.add('border-transparent', 'text-gray-600');
             });
+            contents.forEach(c => c.classList.add('hidden'));
+            this.classList.remove('border-transparent', 'text-gray-600');
+            this.classList.add('border-blue-500', 'text-blue-500');
+            const tabId = this.getAttribute('data-tab');
+            const activeContent = document.getElementById(tabId);
+            if (activeContent) activeContent.classList.remove('hidden');
         });
     });
-    // Actualizar nombre del proyecto automáticamente
+    // Nombre proyecto
     function actualizarNombre() {
         const accion = document.getElementById('accion').value.trim();
         const objeto = document.getElementById('objeto').value.trim();
@@ -205,117 +222,124 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     document.getElementById('accion').addEventListener('change', actualizarNombre);
     document.getElementById('objeto').addEventListener('input', actualizarNombre);
-       // Inicializar mapa Leaflet
-    const map = L.map('map').setView([-0.1807, -78.4678], 10); 
+    // Leaflet map
+    const map = L.map('map').setView([-0.1807, -78.4678], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
     }).addTo(map);
-    // Marcador inicial
     const marker = L.marker([-0.1807, -78.4678]).addTo(map);
-    // Manejar clic en el mapa
     map.on('click', function(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
         document.getElementById('latitud').value = lat;
         document.getElementById('longitud').value = lng;
+        marker.setLatLng([lat, lng]);
     });
-    // Manejar cambio de ubicación
-    map.on('locationfound', function(e) {   
+    map.on('locationfound', function(e) {
         const lat = e.latitude;
         const lng = e.longitude;
         document.getElementById('latitud').value = lat;
         document.getElementById('longitud').value = lng;
     });
-    
-    //DISTRIBUCIÓN DE MONTOS
- let componenteIndex = 0;
-// Actualizar etiquetas de saldo
-function actualizarSaldo() {
-    const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
-    const inputsMonto = document.querySelectorAll('.componente-monto');
-    let sumaAsignada = 0;
-    inputsMonto.forEach(input => {
-        const val = parseFloat(input.value);
-        if (!isNaN(val)) sumaAsignada += val;
-    });
-    const saldo = (montoTotal - sumaAsignada).toFixed(2);
-    document.getElementById('montoTotalDisplay').textContent = `$${montoTotal.toFixed(2)}`;
-    document.getElementById('saldoRestanteDisplay').textContent = `$${saldo}`;
-    const saldoLabel = document.getElementById('saldoRestanteDisplay');
-    const btnAgregar = document.getElementById('addComponente');
-    const mensaje = document.getElementById('mensajeSinSaldo');
-        if (saldo <=0) {
-        saldoLabel.classList.remove('text-green-600');
-        saldoLabel.classList.add('text-red-600');
-        btnAgregar.disabled = true;
-        btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
-        mensaje.classList.remove('hidden');
-    } else {
-        saldoLabel.classList.add('text-green-600');
-        saldoLabel.classList.remove('text-red-600');
-        btnAgregar.disabled = false;
-        btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
-        mensaje.classList.add('hidden');
+    // Componentes
+    let componenteIndex = 0;
+    function actualizarSaldo() {
+        const montoTotal = parseFloat(document.querySelector('input[name="monto_total"]').value) || 0;
+        const inputsMonto = document.querySelectorAll('.componente-monto');
+        let sumaAsignada = 0;
+        inputsMonto.forEach(input => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) sumaAsignada += val;
+        });
+        const saldo = (montoTotal - sumaAsignada).toFixed(2);
+        document.getElementById('montoTotalDisplay').textContent = `$${montoTotal.toFixed(2)}`;
+        document.getElementById('saldoRestanteDisplay').textContent = `$${saldo}`;
+        const saldoLabel = document.getElementById('saldoRestanteDisplay');
+        const btnAgregar = document.getElementById('addComponente');
+        const mensaje = document.getElementById('mensajeSinSaldo');
+        // Validación para habilitar/deshabilitar botón de agregar componente
+        let puedeAgregar = false;
+        // Verifica si los campos del último componente están llenos
+        const componentes = document.querySelectorAll('.componente');
+        if (saldo > 0) {
+            if (componentes.length === 0) {
+                puedeAgregar = true;
+            } else {
+                const ultimo = componentes[componentes.length - 1];
+                const nombre = ultimo.querySelector('input[name^="componentesProyecto"][name$="[nombre]"]')?.value.trim();
+                const descripcion = ultimo.querySelector('textarea[name^="componentesProyecto"][name$="[descripcion]"]')?.value.trim();
+                const monto = ultimo.querySelector('input[name^="componentesProyecto"][name$="[monto]"]')?.value;
+                if (nombre && descripcion && monto && parseFloat(monto) > 0) {
+                    puedeAgregar = true;
+                }
+            }
+        }
+        if (!puedeAgregar) {
+            btnAgregar.disabled = true;
+            btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            btnAgregar.disabled = false;
+            btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        if (saldo <= 0) {
+            saldoLabel.classList.remove('text-green-600');
+            saldoLabel.classList.add('text-red-600');
+            mensaje.classList.remove('hidden');
+        } else {
+            saldoLabel.classList.add('text-green-600');
+            saldoLabel.classList.remove('text-red-600');
+            mensaje.classList.add('hidden');
+        }
     }
-}
-// Al cambiar monto total
-document.querySelector('input[name="monto_total"]').addEventListener('input', () => {
-    actualizarSaldo();
-});
-// Agregar componente
-document.getElementById('addComponente').addEventListener('click', () => {
-    const container = document.getElementById('componentesContainer');
-    const nuevo = document.createElement('div');
-    nuevo.classList.add('componente', 'border', 'p-4', 'rounded', 'shadow');
-    nuevo.innerHTML = `
-        <div class="mb-2">
-            <label class="block text-sm font-bold">Nombre del Componente</label>
-            <input type="text" name="componentesProyecto[${componenteIndex}][nombre]" class="w-full border rounded p-2" required>
-        </div>
-        <div class="mb-2">
-            <label class="block text-sm font-bold">Descripción</label>
-            <textarea name="componentesProyecto[${componenteIndex}][descripcion]" class="w-full border rounded p-2" rows="3"></textarea>
-        </div>
-        <div class="mb-2">
-            <label class="block text-sm font-bold">Monto asignado</label>
-            <input type="number" step="0.01" name="componentesProyecto[${componenteIndex}][monto]" class="w-full border rounded p-2 componente-monto" required>
-        </div>
-        <div class="flex justify-end space-x-2">
-            <button type="button" class="btn-eliminar-componente bg-red-600 px-2 py-1 rounded font-bold text-white text-sm">Eliminar</button>
-        </div>
-    `;
-    container.appendChild(nuevo);
-    // Cambios en nuevo input de monto
-    nuevo.querySelector('.componente-monto').addEventListener('input', actualizarSaldo);
-    componenteIndex++;
-    actualizarSaldo();
-    generarCronogramaDesdeComponentes();
-});
-// Eventos sobre contenedor de componentes
-document.getElementById('componentesContainer').addEventListener('click', function (e) {
-    // Eliminar componente
-    if (e.target.classList.contains('btn-eliminar-componente')) {
-        e.target.closest('.componente').remove();
+    document.querySelector('input[name="monto_total"]').addEventListener('input', () => {
         actualizarSaldo();
         generarCronogramaDesdeComponentes();
-        }
     });
-// Cambios en los inputs de monto de los componentes
+    document.getElementById('addComponente').addEventListener('click', () => {
+        const container = document.getElementById('componentesContainer');
+        const nuevo = document.createElement('div');
+        nuevo.classList.add('componente', 'border', 'p-4', 'rounded', 'shadow');
+        nuevo.innerHTML = `
+            <div class="mb-2">
+                <label class="block text-sm font-bold">Nombre del Componente</label>
+                <input type="text" name="componentesProyecto[${componenteIndex}][nombre]" class="w-full border rounded p-2 componente-nombre" required>
+            </div>
+            <div class="mb-2">
+                <label class="block text-sm font-bold">Descripción</label>
+                <textarea name="componentesProyecto[${componenteIndex}][descripcion]" class="w-full border rounded p-2" rows="3"></textarea>
+            </div>
+            <div class="mb-2">
+                <label class="block text-sm font-bold">Monto asignado</label>
+                <input type="number" step="0.01" name="componentesProyecto[${componenteIndex}][monto]" class="w-full border rounded p-2 componente-monto" required>
+            </div>
+        `;
+        container.appendChild(nuevo);
+        nuevo.querySelector('.componente-monto').addEventListener('input', actualizarSaldo);
+        nuevo.querySelector('.componente-nombre').addEventListener('input', actualizarSaldo);
+        nuevo.querySelector('textarea').addEventListener('input', actualizarSaldo);
+        componenteIndex++;
+        actualizarSaldo();
+        generarCronogramaDesdeComponentes();
+    });
     document.querySelectorAll('.componente-monto').forEach(input => {
         input.addEventListener('input', actualizarSaldo);
     });
-//Actualizar nombre del proyecto
+    // También escucha cambios en nombre y descripción para la validación del botón
+    document.querySelectorAll('.componente-nombre').forEach(input => {
+        input.addEventListener('input', actualizarSaldo);
+    });
+    document.querySelectorAll('.componente textarea').forEach(input => {
+        input.addEventListener('input', actualizarSaldo);
+    });
     window.addEventListener('DOMContentLoaded', () => {
         actualizarSaldo();
         generarCronogramaDesdeComponentes();
     });
-//Generar cronograma desde componentes
     document.getElementById('componentesContainer').addEventListener('change', generarCronogramaDesdeComponentes);
     function generarCronogramaDesdeComponentes() {
         const container = document.getElementById('cronogramaContainer');
         container.innerHTML = '';
-
         const componentes = document.querySelectorAll('.componente');
         componentes.forEach((componenteEl, i) => {
             const inputNombre = componenteEl.querySelector('input[name^="componentesProyecto"][name$="[nombre]"]');
@@ -325,137 +349,132 @@ document.getElementById('componentesContainer').addEventListener('click', functi
             const bloque = document.createElement('div');
             bloque.classList.add('border', 'p-4', 'rounded', 'shadow');
             bloque.innerHTML = `
-                <h3 class="font-bold text-blue-700 mb-2">${nombreComponente} - Monto: $${montoComponente.toFixed(2)}</h3>
-                <div class="actividades space-y-2" data-componente-index="${i}"></div>
-                <button type="button" class="btn-actividad bg-blue-600 text-white px-3 py-1 rounded" data-componente-index="${i}">Agregar Actividad</button>
-                               `;
+                <h3 class="font-bold text-blue-700 mb-2">
+                    ${nombreComponente} - Monto: $${montoComponente.toFixed(2)}
+                    <span class="text-xs font-normal text-gray-500 ml-2">(Saldo: <span class="saldo-componente text-green-600 font-bold">$${montoComponente.toFixed(2)}</span>)</span>
+                </h3>
+                <div class="actividades space-y-2 mb-4" data-componente-index="${i}"></div>
+                <button type="button" class="add-actividad mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm" data-componente-index="${i}">Agregar Actividad</button>
+                <div class="mensaje-sin-saldo-actividad text-red-600 font-semibold hidden">
+                    No hay saldo disponible en este componente para agregar más actividades.
+                </div>
+            `;
             container.appendChild(bloque);
+            // Validación para habilitar/deshabilitar botón de actividad
+                    function validarAgregarActividad() {
+                const actividades = bloque.querySelectorAll('.actividad');
+                const saldoComponenteEl = bloque.querySelector('.saldo-componente');
+                const btnAgregar = bloque.querySelector('.add-actividad');
+                const mensaje = bloque.querySelector('.mensaje-sin-saldo-actividad');
+                const montoComponente = parseFloat(inputMonto?.value) || 0; 
+                let ultimoCompleto = true;
+                const actividadesInputs = bloque.querySelectorAll('.actividad-monto');
+                let sumaActividades = 0;
+                let hayExceso = false;
+                actividadesInputs.forEach(input => {
+                    const val = parseFloat(input.value) || 0;
+                    let sumaTotalConActual = sumaActividades + val;
+                    if (sumaTotalConActual > montoComponente) {
+                        // 2. Si el valor actual causa un exceso, se ajusta el valor del input
+                        const valorMaximoPermitido = montoComponente - sumaActividades;
+                        input.value = (valorMaximoPermitido > 0) ? valorMaximoPermitido.toFixed(2) : 0;
+                        alert('El monto asignado a la actividad no puede superar el monto asignado al componente.');
+                        hayExceso = true; // Marcamos para mostrar alerta
+                    }
+                    // 3. Recalculamos la suma con el valor ajustado (o el valor original si no hubo exceso)
+                    sumaActividades += parseFloat(input.value) || 0; 
+                });
+                // Validación para el botón de agregar
+                if (actividades.length > 0) {
+                    const ultima = actividades[actividades.length - 1];
+                    const nombre = ultima.querySelector('.actividad-nombre')?.value.trim();
+                    const monto = ultima.querySelector('.actividad-monto')?.value;
+                    if (!nombre || !monto || parseFloat(monto) <= 0) {
+                        ultimoCompleto = false;
+                    }
+                }
+               // Saldo
+                const saldo = (montoComponente - sumaActividades).toFixed(2);
+                // Actualizar Saldo Display
+                saldoComponenteEl.textContent = `$${saldo}`;
+                if (saldo <= 0) {
+                    saldoComponenteEl.classList.add('text-red-600');
+                    saldoComponenteEl.classList.remove('text-green-600');
+                } else {
+                    saldoComponenteEl.classList.remove('text-red-600');
+                    saldoComponenteEl.classList.add('text-green-600');
+                }
+                // Habilitar/deshabilitar el botón
+                if (parseFloat(saldo) <= 0 || !ultimoCompleto) {
+                    btnAgregar.disabled = true;
+                    btnAgregar.classList.add('opacity-50', 'cursor-not-allowed');
+                    if (parseFloat(saldo) <= 0) {
+                        mensaje.classList.remove('hidden');
+                    } else {
+                         mensaje.classList.add('hidden');
+                    }
+                } else {
+                    btnAgregar.disabled = false;
+                    btnAgregar.classList.remove('opacity-50', 'cursor-not-allowed');
+                    mensaje.classList.add('hidden');
+                }
+            }
+            bloque.querySelector('.add-actividad').addEventListener('click', () => generarActividad(i, validarAgregarActividad));
+            bloque.addEventListener('input', validarAgregarActividad);
+            bloque.addEventListener('change', validarAgregarActividad);
+            validarAgregarActividad();
         });
-        activarBotonesActividad();
+        generarTablaResumen();
     }
-    function activarBotonesActividad() {
-document.querySelectorAll('.btn-actividad').forEach(btn => {
-        btn.onclick = () => {
-            const idx = btn.dataset.componenteIndex;
-            const actividadContainer = btn.previousElementSibling;
-            const actividades = actividadContainer.querySelectorAll('.actividad');
-            const componenteEl = document.querySelectorAll('.componente')[idx];
-            const montoComponente = parseFloat(componenteEl.querySelector('input[name^="componentesProyecto"][name$="[monto]"]').value) || 0;
-            let totalAsignado = 0;
-            actividades.forEach(a => {
-                const monto = parseFloat(a.querySelector('input[name$="[monto]"]').value) || 0;
-                totalAsignado += monto;
-            });
-            const saldoComponente = montoComponente - totalAsignado;
-            if (saldoComponente <= 0) {
-                alert('No hay saldo disponible para agregar más actividades en este componente.');
-                return;
-            }
-            const nuevaActividad = document.createElement('div');
-            nuevaActividad.classList.add('actividad', 'border', 'p-3', 'rounded', 'bg-gray-50');
-            nuevaActividad.innerHTML = `
-                <label class="font-semibold block mb-1">Actividad ${actividades.length + 1}</label>
-                <label class="text-sm text-gray-600">Saldo de la actividad: $${saldoComponente.toFixed(2)}</label>
-                <input type="text" name="componentesProyecto[${idx}][actividadesProyecto][${actividades.length}][nombre]" class="border p-2 w-full my-1" placeholder="Nombre de la actividad" required>
-                <input type="number" step="0.01" name="componentesProyecto[${idx}][actividadesProyecto][${actividades.length}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
-                <div class="tareas space-y-1"></div>
-                <button type="button" class="btn-tarea bg-blue-500 text-white px-2 py-1 rounded" data-comp="${idx}" data-act="${actividades.length}">Agregar Tarea</button>
-            `;
-            actividadContainer.appendChild(nuevaActividad);
-            activarBotonesTarea();
-        };
-    });
-}
-    function activarBotonesTarea() {
-   document.querySelectorAll('.btn-tarea').forEach(btn => {
-        btn.onclick = () => {
-            const compIdx = btn.dataset.comp;
-            const actIdx = btn.dataset.act;
-            const tareaContainer = btn.previousElementSibling;
-            const tareas = tareaContainer.querySelectorAll('.tarea');
-            const actividadEl = tareaContainer.closest('.actividad');
-            const montoActividad = parseFloat(actividadEl.querySelector('input[name$="[monto]"]').value) || 0;
-            let totalAsignado = 0;
-            tareas.forEach(t => {
-                const monto = parseFloat(t.querySelector('input[name$="[monto]"]').value) || 0;
-                totalAsignado += monto;
-            });
-            const saldoActividad = montoActividad - totalAsignado;
-            if (saldoActividad <= 0) {
-                alert('No hay saldo disponible para agregar más tareas en esta actividad.');
-                return;
-            }
-            const nuevaTarea = document.createElement('div');
-            nuevaTarea.classList.add('tarea', 'ml-4', 'border-l', 'pl-2');
-            nuevaTarea.innerHTML = `
-                <label class="text-sm text-gray-600">Saldo de la tarea: $${saldoActividad.toFixed(2)}</label>
-                <input type="text" name="componentesProyecto[${compIdx}][actividadesProyecto][${actIdx}][tareasProyecto][${tareas.length}][nombre]"
-                    class="border p-1 w-full mb-1" placeholder="Nombre de la tarea" required>
-                <input type="number" step="0.01" name="componentesProyecto[${compIdx}][actividadesProyecto][${actIdx}][tareasProyecto][${tareas.length}][monto]"
-                    class="border p-1 w-full mb-2" placeholder="Monto de la tarea" required>
-            `;
-            tareaContainer.appendChild(nuevaTarea);
-        };
-    });
-}
-document.getElementById('componentesContainer').addEventListener('change', generarTablaResumen);
-function generarTablaResumen() {
-    const tbody = document.getElementById('tablaResumen');
-    tbody.innerHTML = ''; // limpiar tabla
-
-    const componentes = document.querySelectorAll('.componente');
+    // Generar actividad
+    function generarActividad(componenteIndex, validarAgregarActividad) {
+        const actividadContainer = document.querySelector(`.actividades[data-componente-index="${componenteIndex}"]`);
+        const actividadIndex = actividadContainer.querySelectorAll('.actividad').length;
+        const nuevaActividad = document.createElement('div');
+        nuevaActividad.classList.add('actividad', 'border', 'p-3', 'rounded', 'bg-gray-50');
+        nuevaActividad.innerHTML = `
+            <div class="flex justify-between items-center mb-1">
+                <label class="font-semibold">Actividad ${actividadIndex + 1}</label>
+            </div>
+            <input type="text" name="componentesProyecto[${componenteIndex}][actividadesProyecto][${actividadIndex}][nombre]" class="border p-2 w-full my-1 actividad-nombre" placeholder="Nombre de la actividad" required>
+            <input type="number" step="0.01" name="componentesProyecto[${componenteIndex}][actividadesProyecto][${actividadIndex}][monto]" class="border p-2 w-full mb-2 actividad-monto" placeholder="Monto de la actividad" required>
+        `;
+        actividadContainer.appendChild(nuevaActividad);
+        if (typeof validarAgregarActividad === 'function') validarAgregarActividad();
+    }
+    function generarTablaResumen() {
+        const tbody = document.getElementById('tablaResumen');
+        tbody.innerHTML = '';
+        const componentes = document.querySelectorAll('.componente');
         componentes.forEach((componenteEl, i) => {
             const inputNombre = componenteEl.querySelector('input[name^="componentesProyecto"][name$="[nombre]"]');
-            const inputMonto = componenteEl.querySelector('input[name^="componentesProyecto"][name$="[monto]"]');   
+            const inputMonto = componenteEl.querySelector('input[name^="componentesProyecto"][name$="[monto]"]');
             const nombreComponente = inputNombre?.value || `Componente ${i + 1}`;
             const montoComponente = parseFloat(inputMonto?.value) || 0;
-
-        // Fila componente
-        tbody.innerHTML += `
-            <tr>
-                <td class="border px-2 py-1 font-semibold text-gray-900">${nombreComponente}</td>
-                <td class="border px-2 py-1 text-right font-bold text-blue-600">$${montoComponente.toFixed(2)}</td>
-                <td class="border px-2 py-1"></td>
-                <td class="border px-2 py-1"></td>
-            </tr>
-        `;
-
-        const actividades = document.querySelectorAll(`.actividadesProyecto[data-componente-index="${i}"] .actividad`);
-        actividades.forEach((actividadEl, actIdx) => {
-            const nombreAct = actividadEl.querySelector(`input[name="componentesProyecto[${i}][actividadesProyecto][${actIdx}][nombre]"]`)?.value || `Actividad ${actIdx + 1}`;
-            const montoAct = parseFloat(actividadEl.querySelector(`input[name="componentesProyecto[${i}][actividadesProyecto][${actIdx}][monto]"]`)?.value || 0).toFixed(2);
-
-            // Fila actividad
             tbody.innerHTML += `
                 <tr>
-                    <td class="border px-2 py-1 pl-6 text-gray-800">== ${nombreAct}</td>
-                    <td class="border px-2 py-1"></td>
-                    <td class="border px-2 py-1 text-right text-green-600">$${montoAct}</td>
+                    <td class="border px-2 py-1 font-semibold text-gray-900">${nombreComponente}</td>
+                    <td class="border px-2 py-1 text-right font-bold text-blue-600">$${montoComponente.toFixed(2)}</td>
                     <td class="border px-2 py-1"></td>
                 </tr>
             `;
-
-            const tareas = actividadEl.querySelectorAll('.tarea');
-            tareas.forEach((tareaEl, tIdx) => {
-                const nombreTar = tareaEl.querySelector(`input[name="componentesProyecto[${i}][actividadesProyecto][${actIdx}][tareasProyecto][${tIdx}][nombre]"]`)?.value || `Tarea ${tIdx + 1}`;
-                const montoTar = parseFloat(tareaEl.querySelector(`input[name="componentesProyecto[${i}][actividadesProyecto][${actIdx}][tareasProyecto][${tIdx}][monto]"]`)?.value || 0).toFixed(2);
-
-                // Fila tarea
+            const actividades = document.querySelectorAll(`.actividades[data-componente-index="${i}"] .actividad`);
+            actividades.forEach((actividadEl, actIdx) => {
+                const nombreAct = actividadEl.querySelector(`input[name="componentesProyecto[${i}][actividadesProyecto][${actIdx}][nombre]"]`)?.value || `Actividad ${actIdx + 1}`;
+                const montoAct = parseFloat(actividadEl.querySelector(`input[name="componentesProyecto[${i}][actividadesProyecto][${actIdx}][monto]"]`)?.value || 0).toFixed(2);
                 tbody.innerHTML += `
                     <tr>
-                        <td class="border px-2 py-1 pl-12 text-gray-700">==== ${nombreTar}</td>
+                        <td class="border px-2 py-1 pl-6 text-gray-800">== ${nombreAct}</td>
                         <td class="border px-2 py-1"></td>
-                        <td class="border px-2 py-1"></td>
-                        <td class="border px-2 py-1 text-right text-purple-600">$${montoTar}</td>
+                        <td class="border px-2 py-1 text-right text-green-600">$${montoAct}</td>
                     </tr>
                 `;
             });
         });
-    });
-}
-// Recalcular tabla siempre que haya cambios en cronograma o componentes
-document.getElementById('cronogramaContainer').addEventListener('change', generarTablaResumen);
-document.getElementById('componentesContainer').addEventListener('change', generarTablaResumen);
-window.addEventListener('DOMContentLoaded', generarTablaResumen);
+    }
+    document.getElementById('cronogramaContainer').addEventListener('change', generarTablaResumen);
+    document.getElementById('componentesContainer').addEventListener('change', generarTablaResumen);
+    window.addEventListener('DOMContentLoaded', generarTablaResumen);
+});
 </script>
 @endsection
