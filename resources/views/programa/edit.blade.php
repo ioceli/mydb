@@ -12,18 +12,23 @@
     </ul>
 </div>
 @endif
-<h2 class="text-xl font-bold mb-4">Editar Programa</h2>
-<div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
-    <form action="{{ route('programa.update', $programa->idPrograma) }}" method="POST" class="space-y-6">
+<h2 class="text-2xl font-extrabold text-gray-800 mb-6 border-b pb-2">Editar Programa</h2>
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
+    <form action="{{ route('programa.update', $programa->idPrograma) }}" method="POST" class="space-y-8">
         @csrf
         @method('PUT')
         {{-- Barra de Pestañas --}}
-        <div>
-            @php $tabs = ['Datos Iniciales', 'Diagnóstico', 'Alineación', 'Financiamiento y Cronograma']; @endphp
-            <ul class="flex flex-wrap border-b mb-4 font-bold" id="tabs">
-                @foreach($tabs as $i => $tab)
-                <li>
-                    <button type="button" class="px-4 py-2 text-sm font-semibold border-b-2 tab-button {{ $i === 0 ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-600' }}" data-tab="tab{{ $i }}">{{ $tab }}</button>
+        <div class="sticky top-0 bg-white z-10 pt-4 -mt-4">
+            @php $tabs = ['tab0' => 'Datos Iniciales', 'tab1' => 'Diagnóstico', 'tab2' => 'Alineación', 'tab3' => 'Financiamiento y Cronograma']; @endphp
+            <ul class="flex flex-wrap border-b mb-6 font-extrabold text-sm sm:text-base" id="tabs">
+                @foreach($tabs as $id => $tab)
+                <li class="mr-2">
+                    <button type="button" 
+                            class="px-4 py-3 -mb-px text-center border-b-2 tab-button transition-colors duration-200 
+                            {{ $loop->first ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-blue-500 hover:border-blue-300' }}" 
+                            data-tab="{{ $id }}">
+                        {{ $tab }}
+                    </button>
                 </li>
                 @endforeach
             </ul>
@@ -32,55 +37,75 @@
         <div id="tabContents">
             {{-- Pestaña 0: Datos Iniciales --}}
             <div class="tab-content" id="tab0">
-                <div class="mb-4">
-                    <label for="tipo_dictamen" class="block text-sm font-bold text-gray-700">1.1 Tipo de solicitud de dictamen</label>
-                    <select name="tipo_dictamen" id="tipo_dictamen" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="">-- Seleccione una opción --</option>
-                        <option value="prioridad" {{ $programa->tipo_dictamen == 'prioridad' ? 'selected' : '' }}>Dictamen de prioridad</option>
-                        <option value="aprobacion" {{ $programa->tipo_dictamen == 'aprobacion' ? 'selected' : '' }}>Dictamen de aprobación</option>
-                        <option value="actualizacion_prioridad" {{ $programa->tipo_dictamen == 'actualizacion_prioridad' ? 'selected' : '' }}>Actualización de prioridad</option>
-                        <option value="actualizacion_aprobacion" {{ $programa->tipo_dictamen == 'actualizacion_aprobacion' ? 'selected' : '' }}>Actualización de aprobación</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <input type="hidden" name="nombre" id="nombre" value="{{ $programa->nombre }}">
-                    <label for="accion" class="block text-sm font-bold text-gray-700">1.2 ¿Qué se va a hacer?</label>
-                    <select name="accion" id="accion" class="w-full border rounded p-2" required>
-                        <option value="">Seleccione una acción</option>
-                        @foreach(['adquisición', 'construcción', 'adecuación', 'ampliación', 'dotación', 'habilitación', 'instalación', 'mejoramiento', 'implementación', 'recuperación', 'rehabilitación', 'renovación', 'reparación', 'reposicion', 'investigación', 'generación de información', 'saneamiento'] as $accion)
-                            <option value="{{ $accion }}" {{ $programa->accion == $accion ? 'selected' : '' }}>{{ ucfirst($accion) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="objeto" class="block text-sm font-bold text-gray-700">1.3 ¿Sobre qué se va a hacer?</label>
-                    <input type="text" name="objeto" id="objeto" class="w-full border rounded p-2" placeholder="Ej: carretera, hospital, unidad educativa" required value="{{ $programa->objeto }}">
-                </div>
-                <div class="mb-4">
-                    <label class="font-bold">1.4 Subsector</label>
-                    <select name="idEntidad" class="w-full border rounded p-2" required>
-                        <option value="">Seleccione una Entidad</option>
-                        @foreach ($entidad as $e)
-                            <option value="{{ $e->idEntidad }}" {{ $programa->idEntidad == $e->idEntidad ? 'selected' : '' }}>{{ $e->subSector }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="font-bold">1.5 Plazo de ejecución</label>
-                    <input type="text" name="plazo_ejecucion" class="w-full border rounded p-2" required value="{{ $programa->plazo_ejecucion }}">
-                </div>
-                <div class="mb-4">
-                    <label class="font-bold">1.6 Monto total</label>
-                    <input type="number" step="0.01" name="monto_total" class="w-full border rounded p-2" required value="{{ $programa->monto_total }}">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <label for="tipo_dictamen" class="block text-sm font-bold text-gray-700">1.1 Tipo de solicitud de dictamen</label>
+                                <select name="tipo_dictamen" id="tipo_dictamen" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <option value="">-- Seleccione una opción --</option>
+                                    <option value="prioridad" {{ $programa->tipo_dictamen == 'prioridad' ? 'selected' : '' }}>Dictamen de prioridad</option>
+                                    <option value="aprobacion" {{ $programa->tipo_dictamen == 'aprobacion' ? 'selected' : '' }}>Dictamen de aprobación</option>
+                                    <option value="actualizacion_prioridad" {{ $programa->tipo_dictamen == 'actualizacion_prioridad' ? 'selected' : '' }}>Actualización de prioridad</option>
+                                    <option value="actualizacion_aprobacion" {{ $programa->tipo_dictamen == 'actualizacion_aprobacion' ? 'selected' : '' }}>Actualización de aprobación</option>
+                                </select>
+                                <p class="text-xs text-blue-500 mt-1">Define el proposito de está solicitud ante la autoridad competente.</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <input type="hidden" name="nombre" id="nombre" value="{{ $programa->nombre }}">
+                            <label for="accion" class="block text-sm font-bold text-gray-700">1.2 ¿Qué se va a hacer?</label>
+                            <select name="accion" id="accion" class="w-full border rounded p-2" required>
+                                <option value="">Seleccione una acción</option>
+                                @foreach(['adquisición', 'construcción', 'adecuación', 'ampliación', 'dotación', 'habilitación', 'instalación', 'mejoramiento', 'implementación', 'recuperación', 'rehabilitación', 'renovación', 'reparación', 'reposicion', 'investigación', 'generación de información', 'saneamiento'] as $accion)
+                                    <option value="{{ $accion }}" {{ $programa->accion == $accion ? 'selected' : '' }}>{{ ucfirst($accion) }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-blue-500 mt-1">Ej: Construcción, Mejoramiento, Adquisición.</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <label for="objeto" class="block text-sm font-bold text-gray-700">1.3 ¿Sobre qué se va a hacer?</label>
+                            <input type="text" name="objeto" id="objeto" class="w-full border rounded p-2" placeholder="Ej: carretera, hospital, unidad educativa" required value="{{ $programa->objeto }}">
+                            <p class="text-xs text-blue-500 mt-1">El nombre del Programa se genera automáticamente: <span id="nombreProgramaPreview" class="font-semibold text-blue-500">...</span></p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <label class="font-bold">1.4 Subsector</label>
+                                <select name="idEntidad" class="w-full border rounded p-2" required>
+                                    <option value="">Seleccione una Entidad</option>
+                                        @foreach ($entidad as $e)
+                                            <option value="{{ $e->idEntidad }}" {{ $programa->idEntidad == $e->idEntidad ? 'selected' : '' }}>{{ $e->subSector }}</option>
+                                        @endforeach
+                                </select>
+                                <p class="text-xs text-blue-500 mt-1">Entidad responsable de la ejecución del programa.</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <label class="font-bold">1.5 Plazo de ejecución</label>
+                            <input type="text" name="plazo_ejecucion" class="w-full border rounded p-2" required value="{{ $programa->plazo_ejecucion }}">
+                        <p class="text-xs text-blue-500 mt-1">Tiempo estimado en meses para completar el programa.</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <label class="font-bold">1.6 Monto total</label>
+                            <input type="number" step="0.01" name="monto_total" class="w-full border rounded p-2" required value="{{ $programa->monto_total }}">
+                        <p class="text-xs text-green-500 mt-1">Costo total estimado del programa. Este monto será distribuido en los componentes.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             {{-- Pestaña 1: Diagnóstico --}}
             <div class="tab-content hidden" id="tab1">
-                <label class="font-bold block mb-2">2.1 Descripción de la situación actual del sector</label>
-                <textarea name="diagnostico" class="w-full border rounded p-2" rows="5">{{ $programa->diagnostico }}</textarea>
-                <div class="mb-4">
-                    <label class="font-bold block mb-2">2.2 Identificación, descripción y diagnóstico del problema</label>
-                    <textarea name="problema" class="w-full border rounded p-2" rows="5">{{ $programa->problema }}</textarea>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="mb-6 bg-blue-50 p-4 rounded-lg">
+                            <label class="font-bold block mb-2">2.1 Descripción de la situación actual del sector</label>
+                            <textarea name="diagnostico" class="w-full border rounded p-2" rows="5">{{ $programa->diagnostico }}</textarea>
+                        </div>
+                    </div>
+                   <div class="space-y-4">
+                        <div class="mb-6 bg-blue-50 p-4 rounded-lg">
+                            <label class="font-bold block mb-2">2.2 Identificación, descripción y diagnóstico del problema</label>
+                            <textarea name="problema" class="w-full border rounded p-2" rows="5">{{ $programa->problema }}</textarea>
+                        </div>
+                    </div>
                 </div>
                 <div class="mb-4">
                     <label class="font-bold block mb-2">2.3 Ubicación geográfica e impacto territorial</label>
@@ -95,42 +120,47 @@
             </div>
             {{-- Pestaña 2: Alineación --}}
             <div class="tab-content hidden" id="tab2">
-                <div class="mb-4">
-                    <label class="font-bold">Objetivos Estratégicos</label>
-                    <div class="grid grid-cols-1 gap-2">
+                <div class="mb-8 bg-blue-50 p-5 rounded-lg border border-blue-200">
+                    <label class="font-bold text-blue-700 block mb-3 text-lg">Objetivos Estratégicos</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($objetivosEstrategicos as $objetivo)
-                            <label class="inline-flex items-center space-x-2">
-                                <input type="checkbox" name="idObjetivoEstrategico[]" value="{{ $objetivo->idObjetivoEstrategico }}" class="form-checkbox text-blue-600"
+                            <label class="inline-flex items-start space-x-3 cursor-pointer p-2 bg-white rounded shadow-sm hover:bg-blue-100 transition-colors">
+                                <input type="checkbox" name="idObjetivoEstrategico[]" value="{{ $objetivo->idObjetivoEstrategico }}" class="form-checkbox h-5 w-5 text-blue-600 rounded mt-1"
                                 {{ in_array($objetivo->idObjetivoEstrategico, $programa->objetivosEstrategicos->pluck('idObjetivoEstrategico')->toArray() ?? []) ? 'checked' : '' }}>
-                                <span>{{ $objetivo->descripcion }}</span>
+                                <span class="text-sm text-gray-700">{{ $objetivo->descripcion }}</span>
                             </label>
                         @endforeach
                     </div>
+                    <p class="text-xs text-blue-500 mt-3">Seleccione todos los objetivos estratégicos a los que el programa contribuye.</p>
                 </div>
-                <div class="mb-4">
-                    <label class="font-bold">Alineación con Metas Estratégicas</label>
-                    <div class="grid grid-cols-1 gap-2">
+                <div class="mb-4 bg-green-50 p-5 rounded-lg border border-green-200">
+                    <label class="font-bold text-green-700 block mb-3 text-lg">Alineación con Metas Estratégicas</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($metasEstrategicas as $meta)
-                            <label class="inline-flex items-center space-x-2">
-                                <input type="checkbox" name="idMetaEstrategica[]" value="{{ $meta->idMetaEstrategica }}" class="form-checkbox text-blue-600"
+                            <label class="inline-flex items-start space-x-3 cursor-pointer p-2 bg-white rounded shadow-sm hover:bg-green-100 transition-colors">
+                                <input type="checkbox" name="idMetaEstrategica[]" value="{{ $meta->idMetaEstrategica }}" class="form-checkbox h-5 w-5 text-green-600 rounded mt-1"
                                 {{ in_array($meta->idMetaEstrategica, $programa->metasEstrategicas->pluck('idMetaEstrategica')->toArray() ?? []) ? 'checked' : '' }}>
-                                <span>{{ $meta->descripcion }}</span>
+                                <span class="text-sm text-gray-700">{{ $meta->descripcion }}</span>
                             </label>
                         @endforeach
                     </div>
+                    <p class="text-xs text-green-500 mt-3">Indique las metas específicas que serán impactadas por el programa.</p>
                 </div>
             </div>
             {{-- Pestaña 3: Financiamiento y Cronograma --}}
             <div class="tab-content hidden" id="tab3">
-                <h3 class="font-bold text-lg mb-4">Financiamiento y Presupuesto</h3>
-                <div class="mb-4">
-                    <span class="text-sm font-bold">Monto total disponible: </span>
-                    <span id="montoTotalDisplay" class="text-blue-600 font-bold">${{ number_format($programa->monto_total, 2) }}</span>
+                <h3 class="text-xl font-bold text-gray-700 mb-6 border-b pb-2">4. Estructura Presupuestaria y Cronograma</h3>
+                <div class="flex justify-start space-x-8 mb-6 p-4 bg-indigo-50 rounded-lg shadow-inner">
+                    <div class="mb-4">
+                        <span class="text-indigo-700 font-bold">Monto total disponible: </span>
+                        <span id="montoTotalDisplay" class="text-blue-600 font-bold">${{ number_format($programa->monto_total, 2) }}</span>
+                    </div>
+                    <div class="mb-4">
+                        <span class="text-sm font-bold">Saldo restante: </span>
+                        <span id="saldoRestanteDisplay" class="text-green-600 font-bold">$0.00</span>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <span class="text-sm font-bold">Saldo restante: </span>
-                    <span id="saldoRestanteDisplay" class="text-green-600 font-bold">$0.00</span>
-                </div>
+                <h4 class="font-bold text-lg mb-4">4.1 Desglose por Componente (Presupuesto)</h4>
                 {{-- Contenedor de Componentes (Financiamiento) --}}
                 <div id="componentesContainer" class="space-y-4">
                     @foreach($programa->componentesPrograma as $ci => $componente)
@@ -160,8 +190,6 @@
                 <h3 class="font-bold text-lg mb-4">Cronograma y Estructura</h3>
                 {{-- Contenedor de Cronograma (Actividades) - Se construye en JS dinámicamente --}}
                 <div id="cronogramaContainer" class="space-y-4">
-                    {{-- El contenido se crea o actualiza con JavaScript --}}
-                    {{-- Por compatibilidad y para inicializar el JS, se dejan los datos precargados --}}
                     @foreach($programa->componentesPrograma as $ci => $componente)
                     <div class="cronograma-bloque border p-4 rounded shadow" data-componente-index="{{ $ci }}">
                         <h3 class="font-bold text-blue-700 mb-2">

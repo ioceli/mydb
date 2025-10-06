@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/revisor', fn() => view('dashboard.revisor'))->name('dashboard.revisor');
     Route::get('/dashboard/autoridad', fn() => view('dashboard.autoridad'))->name('dashboard.autoridad');
     Route::get('/dashboard/externo', fn() => view('dashboard.externo'))->name('dashboard.externo');
+    Route::get('/dashboard/externo', [App\Http\Controllers\ExternoController::class, 'index'])->name('dashboard.externo');
     Route::get('/dashboard/auditor', fn() => view('dashboard.auditor'))->name('dashboard.auditor');
     Route::get('/revision', [RevisionController::class, 'index'])->name('revision.index');
     Route::put('/revision/{tipo}/{id}/estado_revision', [RevisionController::class, 'cambiarEstado'])->name('revision.estado');

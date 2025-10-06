@@ -14,18 +14,23 @@
     </ul>
 </div>
 @endif
-<h2 class="text-xl font-bold mb-4">Registrar nuevo Proyecto </h2>
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+<h2 class="text-2xl font-extrabold text-gray-800 mb-6 border-b pb-2">Registrar nuevo Proyecto </h2>
+    <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
 {{--FORMULARIO PARA LA CREACION DE PROYECTOS--}}
-<form action="{{ route ('proyecto.store')}} "method="POST" class="space-y-6">
+<form action="{{ route ('proyecto.store')}} "method="POST" class="space-y-8">
     @csrf
     <!-- Tabs -->
-       <div>
-            @php $tabs = ['Datos Iniciales', 'Diagnóstico', 'Alineación', 'Financiamiento y Cronograma']; @endphp
-            <ul class="flex flex-wrap border-b mb-4 font-bold"  id="tabs">
-                @foreach($tabs as $i => $tab)
-                <li>
-                    <button type="button" class="px-4 py-2 text-sm font-semibold border-b-2 tab-button {{ $i === 0 ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-600' }}" data-tab="tab{{ $i }}">{{ $tab }}</button>
+        <div class="sticky top-0 bg-white z-10 pt-4 -mt-4">
+            @php $tabs = ['tab0' => 'Datos Iniciales', 'tab1' => 'Diagnóstico', 'tab2' => 'Alineación', 'tab3' => 'Financiamiento y Cronograma']; @endphp
+            <ul class="flex flex-wrap border-b mb-6 font-extrabold text-sm sm:text-base" id="tabs">
+                @foreach($tabs as $id => $tab)
+                <li class="mr-2">
+                    <button type="button" 
+                            class="px-4 py-3 -mb-px text-center border-b-2 tab-button transition-colors duration-200 
+                            {{ $loop->first ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-blue-500 hover:border-blue-300' }}" 
+                            data-tab="{{ $id }}">
+                        {{ $tab }}
+                    </button>
                 </li>
                 @endforeach
             </ul>
@@ -33,130 +38,164 @@
         <!-- Tab Contenido-->
         <div id="tabContents">
             <!-- Tab 0: DATOS INICIALES -->
-        <div class="tab-content" id="tab0">
-        <div class="mb-4">
-            <label for="tipo_dictamen" class="block text-sm font-bold text-gray-700">1.1 Tipo de solicitud de dictamen</label>
-                    <select name="tipo_dictamen" id="tipo_dictamen" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="">-- Seleccione una opción --</option>
-                        <option value="prioridad">Dictamen de prioridad</option>
-                        <option value="aprobacion">Dictamen de aprobación</option>
-                        <option value="actualizacion_prioridad">Actualización de prioridad</option>
-                        <option value="actualizacion_aprobacion">Actualización de aprobación</option>
-                    </select>
+            <div class="tab-content" id="tab0">
+                <h3 class="text-xl font-bold text-gray-700 mb-4">1. Información General del Proyecto</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4"> 
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <label for="tipo_dictamen" class="block text-sm font-bold text-gray-700">1.1 Tipo de solicitud de dictamen</label>
+                            <select name="tipo_dictamen" id="tipo_dictamen" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2">
+                                <option value="">-- Seleccione una opción --</option>
+                                <option value="prioridad">Dictamen de prioridad</option>
+                                <option value="aprobacion">Dictamen de aprobación</option>
+                                <option value="actualizacion_prioridad">Actualización de prioridad</option>
+                                <option value="actualizacion_aprobacion">Actualización de aprobación</option>
+                            </select>
+                            <p class="text-xs text-blue-500 mt-1">Define el proposito de está solicitud ante la autoridad competente.</p>
+                        </div>
+                <div class="bg-blue-50 p-4 rounded-lg">
+                            <input type="hidden" name="nombre" id="nombre">
+                            <label for="accion" class="block text-sm font-bold text-gray-700">1.2 ¿Qué se va a hacer?</label>
+                            <select name="accion" id="accion" class="w-full border-gray-300 rounded-md shadow-sm p-2" required>
+                                <option value="">Seleccione una acción</option>
+                                    @foreach(['adquisición', 'construcción', 'adecuación', 'ampliación', 'dotación', 'habilitación', 'instalación', 'mejoramiento', 'implementación', 'recuperación', 'rehabilitación', 'renovación', 'reparación', 'reposicion', 'investigación', 'generación de información', 'saneamiento'] as $accion)
+                                        <option value="{{ $accion }}">{{ ucfirst($accion) }}</option>
+                                    @endforeach
+                            </select>
+                            <p class="text-xs text-blue-500 mt-1">Ej: Construcción, Mejoramiento, Adquisición.</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <label for="objeto" class="block text-sm font-bold text-gray-700">1.3 ¿Sobre qué se va a hacer?</label>
+                            <input type="text" name="objeto" id="objeto" class="w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Ej: carretera, hospital, unidad educativa" required>
+                                <p class="text-xs text-blue-500 mt-1">El nombre del Proyecto se genera automáticamente: <span id="nombreProyectoPreview" class="font-semibold text-blue-500">...</span></p>
+                        </div>   
+                    </div>   
+                    <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <label class="block text-sm font-bold text-gray-700">1.4 Subsector</label>
+                        <select name="idEntidad" class="w-full border-gray-300 rounded-md shadow-sm p-2" required>
+                            <option value="">Seleccione una Entidad</option>
+                                @foreach ($entidad as $e)
+                                    <option value="{{ $e->idEntidad }}">{{ $e->subSector }}</option>
+                                @endforeach
+                        </select>
+                        <p class="text-xs text-blue-500 mt-1">Entidad responsable de la ejecución del proyecto.</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <label class="block text-sm font-bold text-gray-700">1.5 Plazo de ejecución</label>
+                        <input type="number" name="plazo_ejecucion" class="w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Ej: 12, 24" required min="1">
+                            <p class="text-xs text-blue-500 mt-1">Tiempo estimado en meses para completar el proyecto.</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <label class="block text-sm font-bold text-gray-700">1.6 Monto total (USD)</label>
+                        <input type="number" step="0.01" name="monto_total" class="w-full border-green-300 rounded-md shadow-sm p-2 font-bold text-lg" placeholder="Ej: 150000.00" required min="0.01">
+                        <p class="text-xs text-green-500 mt-1">Costo total estimado del proyecto. Este monto será distribuido en los componentes.</p>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <input type="hidden" name="nombre" id="nombre">
-                    <label for="accion" class="block text-sm font-bold text-gray-700">1.2 ¿Qué se va a hacer?</label>
-                    <select name="accion" id="accion" class="w-full border rounded p-2" required>
-                        <option value="">Seleccione una acción</option>
-                            @foreach(['adquisición', 'construcción', 'adecuación', 'ampliación', 'dotación', 'habilitación', 'instalación', 'mejoramiento', 'implementación', 'recuperación', 'rehabilitación', 'renovación', 'reparación', 'reposicion', 'investigación', 'generación de información', 'saneamiento'] as $accion)
-                                <option value="{{ $accion }}">{{ ucfirst($accion) }}</option>
-                            @endforeach
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="objeto" class="block text-sm font-bold text-gray-700">1.3 ¿Sobre qué se va a hacer?</label>
-                    <input type="text" name="objeto" id="objeto" class="w-full border rounded p-2" placeholder="Ej: carretera, hospital, unidad educativa" required>
-                </div> 
-                <div class="mb-4">
-                    <label class="font-bold">1.4 Subsector</label>
-                    <select name="idEntidad" class="w-full border rounded p-2" required>
-                    <option value="">Seleccione una Entidad</option>
-                        @foreach ($entidad as $e)
-                            <option value="{{ $e->idEntidad }}">{{ $e->subSector }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                          <div class="mb-4">
-                    <label class="font-bold">1.5 Plazo de ejecución</label>
-                    <input type="text" name="plazo_ejecucion" class="w-full border rounded p-2" required>
-                </div>
-                <div class="mb-4">
-                    <label class="font-bold">1.6 Monto total</label>
-                    <input type="text" name="monto_total" class="w-full border rounded p-2" required>
-                </div>
-            </div><!-- Tab 1: DIAGNÓSTICO -->
+            </div>
+        </div>
             <div class="tab-content hidden" id="tab1">
-                <label class="font-bold block mb-2">2.1 Descripción de la situación actual del sector</label>
-                <textarea name="diagnostico" class="w-full border rounded p-2" rows="5"></textarea>
-                <div class="mb-4">
-                    <label class="font-bold block mb-2">2.2 Identificación, descripción y diagnóstico del problema</label>
-                    <textarea name="problema" class="w-full border rounded p-2" rows="5"></textarea>
+                <h3 class="text-xl font-bold text-gray-700 mb-4">2. Diagnóstico, Problema y Ubicación</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="mb-6 bg-blue-50 p-4 rounded-lg">
+                            <label class="font-bold block mb-2 text-gray-700">2.1 Descripción de la Situación Actual del Sector</label>
+                            <textarea name="diagnostico" class="w-full border-gray-300 rounded-md shadow-sm p-3" rows="4" placeholder="Describa el contexto sectorial y su estado actual."></textarea>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="mb-6 bg-blue-50 p-4 rounded-lg">
+                            <label class="font-bold block mb-2 text-gray-700">2.2 Identificación, Descripción y Diagnóstico del Problema</label>
+                            <textarea name="problema" class="w-full border-gray-300 rounded-md shadow-sm p-3" rows="4" placeholder="Defina claramente el problema que el proyecto busca resolver y sus causas/efectos."></textarea>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label class="font-bold block mb-2">2.3 Ubicación geográfica e impacto territorial</label>
-                    <div id="map" style="height: 400px;" class="rounded shadow border"></div>
-                </div>
-                <div class="mb-4">
-                    <label>Latitud</label>
-                    <input type="text" name="latitud" id="latitud">
-                    <label >Longitud</label>
-                    <input type="text" name="longitud" id="longitud">
+                <div class="mb-6">
+                    <h4 class="font-bold block mb-2 text-gray-700">2.3 Ubicación Geográfica e Impacto Territorial</h4>
+                    <p class="text-sm text-gray-500 mb-2">Haga clic en el mapa para establecer la ubicación (Latitud y Longitud).</p>
+                    <div id="map" style="height: 400px;" class="rounded-lg shadow-lg border border-gray-300"></div>
+                    <div class="mt-4 flex space-x-4">
+                        <div class="flex-1">
+                            <label for="latitud" class="block text-sm font-semibold text-gray-700">Latitud</label>
+                            <input type="text" name="latitud" id="latitud" class="w-full border-gray-300 rounded-md shadow-sm p-2" readonly placeholder="Coordenada N/S">
+                        </div>
+                        <div class="flex-1">
+                            <label for="longitud" class="block text-sm font-semibold text-gray-700">Longitud</label>
+                            <input type="text" name="longitud" id="longitud" class="w-full border-gray-300 rounded-md shadow-sm p-2" readonly placeholder="Coordenada E/O">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- Tab 2: ALINEACIÓN CON PLANIFICACIÓN -->
-            <div class="tab-content hidden" id="tab2">
-                                <div class="mb-4">
-                    <label class="font-bold">Objetivos Estratégicos</label>
-                    <div class="grid grid-cols-1 gap-2">
+                        <div class="tab-content hidden" id="tab2">
+                <h3 class="text-xl font-bold text-gray-700 mb-6">3. Alineación con Planificación Nacional/Sectorial</h3>
+                <div class="mb-8 bg-blue-50 p-5 rounded-lg border border-blue-200">
+                    <label class="font-bold text-blue-700 block mb-3 text-lg">3.1 Objetivos Estratégicos</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($objetivoEstrategico as $objetivo)
-                            <label class="inline-flex items-center space-x-2">
-                                <input type="checkbox" name="idObjetivoEstrategico[]" value="{{ $objetivo->idObjetivoEstrategico }}" class="form-checkbox text-blue-600">
-                                <span>{{ $objetivo->descripcion }}</span>
+                            <label class="inline-flex items-start space-x-3 cursor-pointer p-2 bg-white rounded shadow-sm hover:bg-blue-100 transition-colors">
+                                <input type="checkbox" name="idObjetivoEstrategico[]" value="{{ $objetivo->idObjetivoEstrategico }}" class="form-checkbox h-5 w-5 text-blue-600 rounded mt-1">
+                                <span class="text-sm text-gray-700">{{ $objetivo->descripcion }}</span>
                             </label>
                         @endforeach
                     </div>
+                    <p class="text-xs text-blue-500 mt-3">Seleccione todos los objetivos estratégicos a los que el programa contribuye.</p>
                 </div>
-                <div class="mb-4">
-                    <label class="font-bold">Alineación con Metas Estratégicas</label>
-                    <div class="grid grid-cols-1 gap-2">
+                <div class="mb-4 bg-green-50 p-5 rounded-lg border border-green-200">
+                    <label class="font-bold text-green-700 block mb-3 text-lg">3.2 Alineación con Metas Estratégicas</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($metasEstrategicas as $meta)
-                            <label class="inline-flex items-center space-x-2">
-                                <input type="checkbox" name="idMetaEstrategica[]" value="{{ $meta->idMetaEstrategica }}" class="form-checkbox text-blue-600">
-                                <span>{{ $meta->descripcion }}</span>
+                            <label class="inline-flex items-start space-x-3 cursor-pointer p-2 bg-white rounded shadow-sm hover:bg-green-100 transition-colors">
+                                <input type="checkbox" name="idMetaEstrategica[]" value="{{ $meta->idMetaEstrategica }}" class="form-checkbox h-5 w-5 text-green-600 rounded mt-1">
+                                <span class="text-sm text-gray-700">{{ $meta->descripcion }}</span>
                             </label>
                         @endforeach
                     </div>
+                    <p class="text-xs text-green-500 mt-3">Indique las metas específicas que serán impactadas por el programa.</p>
                 </div>
             </div>
-            <!-- Tab 3: FINANCIAMIENTO Y PRESUPUESTO -->
             <div class="tab-content hidden" id="tab3">
- <h3 class="font-bold text-lg mb-4">Financiamiento y Presupuesto</h3>
-                <div class="mb-4">
-                    <span class="text-sm font-bold">Monto total disponible: </span>
-                    <span id="montoTotalDisplay" class="text-blue-600 font-bold">$0.00</span>
+                <h3 class="text-xl font-bold text-gray-700 mb-6 border-b pb-2">4. Estructura Presupuestaria y Cronograma</h3>
+                <div class="flex justify-start space-x-8 mb-6 p-4 bg-indigo-50 rounded-lg shadow-inner">
+                    <div class="text-lg">
+                        <span class="font-bold text-indigo-700">Monto Total Proyecto: </span>
+                        <span id="montoTotalDisplay" class="font-extrabold text-2xl text-indigo-600">$0.00</span>
+                    </div>
+                    <div class="text-lg">
+                        <span class="font-bold text-gray-700">Saldo Restante: </span>
+                        <span id="saldoRestanteDisplay" class="font-extrabold text-2xl text-green-600">$0.00</span>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <span class="text-sm font-bold">Saldo restante: </span>
-                    <span id="saldoRestanteDisplay" class="text-green-600 font-bold">$0.00</span>
+                <h4 class="font-bold text-lg text-gray-700 mb-3 border-b pb-1">4.1 Desglose por Componente (Presupuesto)</h4>
+                <div id="componentesContainer" class="space-y-6">
+                    </div>
+                <button type="button" id="addComponente" class="mt-4 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">Agregar Componente</button>
+                <div id="mensajeSinSaldo" class="mt-3 p-2 bg-red-100 text-red-700 rounded-lg font-semibold hidden"> 🛑 El saldo disponible ha sido agotado o el último componente no está completo.
                 </div>
-                <div id="componentesContainer" class="space-y-4">
+                <hr class="my-8 border-gray-200">
+                <h4 class="font-bold text-lg text-gray-700 mb-4 border-b pb-1">4.2 Cronograma y Detalle de Actividades</h4>
+                <div id="cronogramaContainer" class="space-y-6">
+                    <p class="text-gray-500 italic">Agregue componentes para definir sus actividades.</p>
                 </div>
-                <button type="button" id="addComponente" class="mt-2 px-3 py-1 bg-blue-600 text-white rounded">Agregar Componente</button>
-                <div id="mensajeSinSaldo" class="mt-2 text-red-600 font-semibold hidden">
-                No hay saldo disponible para agregar más componentes.
-                </div>
-                <hr class="my-6">
-                <h3 class="font-bold text-lg mb-4">Cronograma y Estructura</h3>
-                <div id="cronogramaContainer" class="space-y-4">
-                </div>
+                <hr class="my-8 border-gray-200">
                 <div id="matrizResumen" class="space-y-4">
-                    <h4 class="font-bold text-lg mb-4">Resumen Estructurado del Proyecto</h4>
-                    <table class="w-full table-auto border border-gray-300 text-sm">
-                        <thead class="bg-gray-100 text-left">
+                    <h4 class="font-bold text-lg text-gray-700 mb-4">4.3 Matriz Resumen Estructurada</h4>
+                    <table class="w-full table-auto border border-gray-300 text-sm rounded-lg overflow-hidden shadow-lg">
+                        <thead class="bg-gray-200 text-left">
                             <tr>
-                                <th class="border px-2 py-1">Nombre</th>
-                                <th class="border px-2 py-1 text-right">Valor Componente</th>
-                                <th class="border px-2 py-1 text-right">Valor Actividad</th>
+                                <th class="border px-3 py-2">Estructura</th>
+                                <th class="border px-3 py-2 text-right">Valor Componente (USD)</th>
+                                <th class="border px-3 py-2 text-right">Valor Actividad (USD)</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaResumen"></tbody>
+                        <tbody id="tablaResumen" class="bg-white">
+                            <tr><td colspan="3" class="text-center py-4 text-gray-500">Agregue componentes y actividades para ver el resumen.</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="flex justify-between pt-6">
-            <button type="submit" class="btn btn-success font-bold">Guardar</button>
+        <div class="flex justify-between pt-8 border-t border-gray-200">
+            <button type="submit" class="px-6 py-2 bg-green-600 text-white font-extrabold rounded-lg shadow-lg hover:bg-green-700 transition duration-150 ease-in-out"> Guardar </button>
             <a href="{{route('proyecto.index')}}" class="font-bold btn btn-secondary text-white">VOLVER</a>
         </div>
 </form>
@@ -180,7 +219,6 @@
     actualizarSaldo();
     generarCronogramaDesdeComponentes();
 }
-
 // Asignar el validador a los inputs existentes y futuros
 document.addEventListener('input', function(e) {
     if (e.target.classList.contains('componente-monto')) {
