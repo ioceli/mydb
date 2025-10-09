@@ -17,13 +17,38 @@ class EntidadController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $entidad =entidad::all(); 
-        return view('entidad.index',compact('entidad'));
-
+ public function index(Request $request)
+{
+    $estado = $request->input('estado');
+    $nivelGobierno = $request->input('nivelGobierno');
+    $fechaDesde = $request->input('fecha_desde');
+    
+    $perPage = $request->input('per_page', 10); // Valor por defecto: 10
+    // Consulta base
+    $query = Entidad::query();
+    // Aplicar filtros condicionalmente
+    if ($request->filled('estado')) {
+        $query->where('estado', $estado);
     }
-
+    if ($request->filled('nivelGobierno')) {
+        // Asegúrate de que 'subSector' coincida con el nombre de la columna en tu BD
+        $query->where('nivelGobierno', $nivelGobierno); 
+    }
+     // Filtro por rango de fecha de creación
+    if ($request->filled('fecha_desde')) {
+        $query->whereDate('fechaCreacion', '>=', $fechaDesde);
+    }
+    
+     // Obtener resultados paginados
+    $entidad = $query->orderBy('idEntidad', 'asc')->paginate($perPage);
+    // Mantener todos los parámetros de la solicitud (filtros y per_page) en los enlaces de paginación
+    $entidad->appends($request->all());
+    // Obtener valores únicos para los filtros de dropdown (mejora la UX)
+    $estados = Entidad::select('estado')->distinct()->pluck('estado');
+    $nivelesGobierno = Entidad::select('nivelGobierno')->distinct()->pluck('nivelGobierno');
+        // Pasar datos a la vista
+    return view('entidad.index', compact('entidad', 'perPage', 'estados', 'nivelesGobierno'));
+}
     /**
      * Show the form for creating a new resource.
      */
