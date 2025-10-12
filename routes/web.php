@@ -50,6 +50,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/bitacora', [AuditoriaController::class, 'index'])->name('auditoria.index');
     Route::get('/auditoria/pdf', [AuditoriaController::class, 'exportPdf'])->name('auditoria.pdf');
     Route::get('/auditoria/excel', [AuditoriaController::class, 'exportExcel'])->name('auditoria.excel');
+    Route::get('/revision/detalle/{tipo}/{id}', [RevisionController::class, 'getDetalle'])->name('revision.detalle');
+    Route::get('/revision/pdf/{tipo}/{id}', [RevisionController::class, 'downloadPdf'])->name('revision.download');
     // Módulos protegidos
     Route::resources([
         'persona' => PersonaController::class,

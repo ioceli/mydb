@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Helpers\BitacoraHelper;
 use App\Models\Plan;
@@ -8,7 +8,6 @@ use App\Models\Programa;
 use App\Models\Proyecto;
 use App\Models\Entidad;
 use App\Enums\EstadoRevisionEnum; // Asegúrate de que esta línea esté presente si usas Enums
-
 class RevisionController extends Controller
 {
     public function index(Request $request)
@@ -17,7 +16,6 @@ class RevisionController extends Controller
         $planes = collect();
         $programas = collect();
         $proyectos = collect();
-        
         // Parámetros de la solicitud
         $tipoRevision = $request->input('tipo_revision'); // E.g., 'proyectos'
         $filtroSubsector = $request->input('subsector');
@@ -72,7 +70,6 @@ class RevisionController extends Controller
         // Retornar la vista con todas las variables necesarias
         return view('revision.index', compact('planes', 'programas', 'proyectos', 'subsectores', 'estadosRevision','tipoRevision', 'perPage'         ));
     } 
-
     public function cambiarEstado(Request $request, $tipo, $id)
     {
         $request->validate([            
@@ -83,13 +80,11 @@ class RevisionController extends Controller
             'page' => 'nullable|integer', 
             'per_page' => 'nullable|integer',
         ]);
-        
         $modelos = [
             'planes' => \App\Models\Plan::class,
             'programas' => \App\Models\Programa::class,
             'proyectos' => \App\Models\Proyecto::class,
         ];
-
         if (!array_key_exists($tipo, $modelos)) {
             abort(404, 'Tipo inválido');
         }
@@ -98,7 +93,6 @@ class RevisionController extends Controller
         $instancia = $modelo::findOrFail($id);
         $instancia->estado_revision = $request->estado_revision;
         $instancia->save();
-
         BitacoraHelper::registrar(
             'Revisión', 
             'Cambio de Estado', 
@@ -106,5 +100,61 @@ class RevisionController extends Controller
         );
         // Redirigir de vuelta al index manteniendo todos los filtros de la URL (incluida la paginación y per_page)
         return redirect()->route('revision.index', $request->only(['tipo_revision', 'subsector', 'estado_revision_filtro', 'page', 'per_page']))->with('success', ucfirst($tipo) . ' actualizado correctamente.');
+    }
+      public function getDetalle($tipo, $id)
+    {
+        $modelos = [
+            'planes' => \App\Models\Plan::class,
+            'programas' => \App\Models\Programa::class,
+            'proyectos' => \App\Models\Proyecto::class,
+        ];
+        if (!array_key_exists($tipo, $modelos)) {
+            return response()->json(['error' => 'Tipo de documento inválido'], 404);
+        }
+        $modelo = $modelos[$tipo];
+        $item = $modelo::with([
+                'entidad', 
+                'objetivosEstrategicos', 
+                'metasEstrategicas',
+            ])
+            ->findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'data' => $item,
+            'tipo' => $tipo,
+        ]);
+    }
+    public function downloadPdf($tipo, $id)
+    {
+        $modelos = [
+            'planes' => \App\Models\Plan::class,
+            'programas' => \App\Models\Programa::class,
+            'proyectos' => \App\Models\Proyecto::class,
+        ];
+
+        if (!array_key_exists($tipo, $modelos)) {
+            abort(404, 'Tipo de documento inválido');
+        }
+
+        $modelo = $modelos[$tipo];
+        
+        // Usar la misma lógica de carga que en getDetalle
+        $item = $modelo::with([
+                'entidad', 
+                'objetivosEstrategicos', 
+                'metasEstrategicas',
+            ])->findOrFail($id);
+
+        // La vista 'pdf.detalle' debe ser creada por ti para el formato del PDF
+        $pdf = PDF::loadView('pdf.detalle', compact('item', 'tipo'));
+        
+        $nombreDocumento = $item->nombre ? \Illuminate\Support\Str::slug($item->nombre) : $tipo . '-' . $id;
+
+        BitacoraHelper::registrar(
+             'Revisión', 
+             'Descarga PDF', 
+             'Descargó PDF de ' . ucfirst($tipo) . ' con ID ' . $id
+        );
+        return $pdf->download($nombreDocumento . '.pdf');
     }
 }
