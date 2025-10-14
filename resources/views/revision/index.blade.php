@@ -194,11 +194,9 @@
         <i class="fas fa-arrow-left mr-2"></i> VOLVER AL DASHBOARD
     </a>
 </div>
-
 {{-- MODAL PARA EL DETALLE DEL DOCUMENTO --}}
 <div id="detail-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-95" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        
         {{-- Encabezado del Modal --}}
         <div class="p-5 border-b flex justify-between items-center bg-indigo-600 text-white">
             <h3 id="modal-title" class="text-xl font-bold flex items-center">
@@ -209,12 +207,10 @@
                 <i class="fas fa-times text-2xl"></i>
             </button>
         </div>
-
         {{-- Contenido del Modal (Scrollable) --}}
         <div class="p-6 overflow-y-auto flex-grow" id="modal-content-body">
             {{-- Contenido inyectado por JS --}}
         </div>
-        
         {{-- Footer del Modal --}}
         <div class="p-4 border-t flex justify-end items-center bg-gray-50 space-x-3">
              <a id="download-pdf-btn" href="#" target="_blank" 
@@ -228,7 +224,6 @@
         </div>
     </div>
 </div>
-
 {{-- Íconos Font Awesome --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script>
@@ -237,7 +232,6 @@
     const modalDocTitle = document.getElementById('modal-doc-title');
     const downloadPdfBtn = document.getElementById('download-pdf-btn');
     let highlightedRow = null;
-    
     // Función de formato de moneda (simplificada)
     const formatCurrency = (amount) => {
         // Asumiendo formato de USD, si el monto es un número
@@ -247,20 +241,17 @@
         }
         return amount || '-';
     };
-
     // Función para cerrar el modal
     function closeModal() {
         detailModal.classList.add('hidden');
         detailModal.classList.remove('flex');
     }
-
     // Evento para cerrar el modal al hacer clic fuera de él
     detailModal.addEventListener('click', (e) => {
         if (e.target === detailModal) {
             closeModal();
         }
     });
-
     function showPreview(tipo, id, nombre) {
         // 1. Mostrar título de carga
         modalDocTitle.textContent = nombre;
@@ -269,11 +260,9 @@
                 <i class="fas fa-spinner fa-spin text-4xl text-indigo-500 mb-4"></i>
                 <p class="text-indigo-500">Cargando detalle de ${nombre}...</p>
             </div>`;
-
         // 2. Mostrar el modal
         detailModal.classList.remove('hidden');
         detailModal.classList.add('flex');
-
         // 3. Resaltar fila seleccionada (Opcional, pero bueno para UX)
         if (highlightedRow) {
             highlightedRow.classList.remove('bg-indigo-100', 'shadow-inner');
@@ -282,7 +271,6 @@
         if (highlightedRow) {
             highlightedRow.classList.add('bg-indigo-100', 'shadow-inner');
         } 
-        
         // 4. Petición AJAX (asumiendo que esta ruta devuelve el JSON con todos los datos)
         fetch(`{{ url('revision/detalle') }}/${tipo}/${id}`)
             .then(response => {
@@ -304,14 +292,11 @@
                 modalContentBody.innerHTML = `<p class="text-red-500 p-4">Error al contactar el servidor. Revise la consola.</p>`;
             });
     }
-
     // 5. Renderizado del detalle DENTRO del modal - MODIFICADO para incluir TODOS los campos
     function renderDetail(item, tipo) {
         const primaryKey = tipo === 'planes' ? 'idPlan' : (tipo === 'programas' ? 'idPrograma' : 'idProyecto');
         const estadoRevision = item.estado_revision ? item.estado_revision.charAt(0).toUpperCase() + item.estado_revision.slice(1) : 'Pendiente';
-        // Asumo que item.estado_autoridad existe y es un string
         const estadoAutoridad = item.estado_autoridad ? item.estado_autoridad.charAt(0).toUpperCase() + item.estado_autoridad.slice(1) : 'N/A';
-
         // Helper para renderizar un campo (valor predeterminado a '-' si es nulo)
         const renderField = (label, value) => `
             <div>
@@ -319,7 +304,6 @@
                 <p class="text-base text-gray-800 font-medium whitespace-pre-wrap">${value || '-'}</p>
             </div>
         `;
-
         // Helper para renderizar un campo de monto
         const renderMontoField = (label, amount) => `
             <div>
@@ -327,18 +311,13 @@
                 <p class="text-base text-green-600 font-extrabold">${formatCurrency(amount)}</p>
             </div>
         `;
-        
         // --- SECCIÓN DE COMPONENTES/ACTIVIDADES ---
-        // Identificar la clave de los componentes (asumo que se llama componentesPrograma o componentesProyecto)
         const componentesKey = tipo === 'programas' ? 'componentesPrograma' : (tipo === 'proyectos' ? 'componentesProyecto' : null);
         let componentesHtml = '';
-
         if (componentesKey && item[componentesKey] && item[componentesKey].length > 0) {
-            
             // Renderizar Actividades anidadas
             const renderActividades = (actividades) => {
                 if (!actividades || actividades.length === 0) return '';
-                
                 return `
                     <div class="mt-3 ml-4 border-l pl-4 space-y-2">
                         <h5 class="text-sm font-bold text-gray-700">Actividades:</h5>
@@ -351,7 +330,6 @@
                     </div>
                 `;
             };
-
             // Renderizar Componentes
             componentesHtml = `
                 <div class="p-5 border rounded-xl bg-white shadow-md">
@@ -371,7 +349,6 @@
                 </div>
             `;
         }
-
         // --- ESTRUCTURA PRINCIPAL DEL MODAL ---
         let html = `
             <div class="space-y-8">
@@ -397,7 +374,6 @@
                         }">${estadoRevision}</span>
                     </div>
                 </div>
-                
                 {{-- 2. Datos Generales --}}
                 <div class="p-5 border rounded-xl bg-white shadow-md">
                     <h3 class="font-bold text-xl text-gray-800 mb-4 border-b pb-2"><i class="fas fa-info-circle mr-2 text-indigo-500"></i> Datos Generales del Documento</h3>
@@ -412,7 +388,6 @@
                         ${renderField('Estado Autoridad', estadoAutoridad)}
                     </div>
                 </div>
-
                 {{-- 3. Contexto y Ubicación --}}
                 <div class="p-5 border rounded-xl bg-white shadow-md">
                     <h3 class="font-bold text-xl text-gray-800 mb-4 border-b pb-2"><i class="fas fa-map-marked-alt mr-2 text-indigo-500"></i> Contexto y Ubicación Geográfica</h3>
@@ -425,14 +400,11 @@
                         ${renderField('Longitud', item.longitud)}
                     </div>
                 </div>
-                
                 {{-- 4. Componentes y Actividades (Solo para Programas/Proyectos) --}}
                 ${componentesHtml}
-
                 {{-- 5. Alineación Estratégica --}}
                 <div class="p-5 border rounded-xl bg-white shadow-md">
                     <h3 class="font-bold text-xl text-gray-800 mb-4 border-b pb-2"><i class="fas fa-link mr-2 text-indigo-500"></i> Alineación Estratégica</h3>
-                    
                     <div>
                         <h4 class="font-semibold text-lg text-gray-700 mb-2">Objetivos Estratégicos (${item.objetivos_estrategicos ? item.objetivos_estrategicos.length : 0})</h4>
                         <ul class="list-disc list-outside ml-6 text-base space-y-1 text-gray-600">
@@ -441,7 +413,6 @@
                                 : '<p class="text-gray-400 italic text-sm">Sin objetivos asociados.</p>'}
                         </ul>
                     </div>
-
                     <div class="mt-4 pt-4 border-t">
                         <h4 class="font-semibold text-lg text-gray-700 mb-2">Metas Estratégicas (${item.metas_estrategicas ? item.metas_estrategicas.length : 0})</h4>
                         <ul class="list-disc list-outside ml-6 text-base space-y-1 text-gray-600">
@@ -456,7 +427,6 @@
         `;
         modalContentBody.innerHTML = html;
     }
-    
     // 6. Configuración de la descarga de PDF
     function setupPdfDownload(item, tipo) {
         const primaryKey = tipo === 'planes' ? 'idPlan' : (tipo === 'programas' ? 'idPrograma' : 'idProyecto');

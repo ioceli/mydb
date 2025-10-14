@@ -7,7 +7,7 @@ use App\Models\Plan;
 use App\Models\Programa;
 use App\Models\Proyecto;
 use App\Models\Entidad;
-use App\Enums\EstadoRevisionEnum; // Asegúrate de que esta línea esté presente si usas Enums
+use App\Enums\EstadoRevisionEnum; 
 class RevisionController extends Controller
 {
     public function index(Request $request)
@@ -20,7 +20,6 @@ class RevisionController extends Controller
         $tipoRevision = $request->input('tipo_revision'); // E.g., 'proyectos'
         $filtroSubsector = $request->input('subsector');
         $filtroEstado = $request->input('estado_revision');
-
         // Establecer el número de elementos por página, por defecto 10
         $perPage = $request->input('per_page', 10);
                 // Datos para filtros dropdown (se cargan siempre)
@@ -88,7 +87,6 @@ class RevisionController extends Controller
         if (!array_key_exists($tipo, $modelos)) {
             abort(404, 'Tipo inválido');
         }
-        
         $modelo = $modelos[$tipo];
         $instancia = $modelo::findOrFail($id);
         $instancia->estado_revision = $request->estado_revision;
@@ -131,25 +129,19 @@ class RevisionController extends Controller
             'programas' => \App\Models\Programa::class,
             'proyectos' => \App\Models\Proyecto::class,
         ];
-
         if (!array_key_exists($tipo, $modelos)) {
             abort(404, 'Tipo de documento inválido');
         }
-
         $modelo = $modelos[$tipo];
-        
         // Usar la misma lógica de carga que en getDetalle
         $item = $modelo::with([
                 'entidad', 
                 'objetivosEstrategicos', 
                 'metasEstrategicas',
             ])->findOrFail($id);
-
         // La vista 'pdf.detalle' debe ser creada por ti para el formato del PDF
-        $pdf = PDF::loadView('pdf.detalle', compact('item', 'tipo'));
-        
+        $pdf = PDF::loadView('revision.detalle', compact('item', 'tipo'));
         $nombreDocumento = $item->nombre ? \Illuminate\Support\Str::slug($item->nombre) : $tipo . '-' . $id;
-
         BitacoraHelper::registrar(
              'Revisión', 
              'Descarga PDF', 
