@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Enums\EstadoRevisionEnum;
 use App\Enums\EstadoAutoridadEnum;
+use Illuminate\Support\Facades\Auth;
 class PlanController extends Controller
 {
     /**
@@ -17,11 +18,19 @@ class PlanController extends Controller
      */
     public function index()
     {
-         $plan =plan::with(['entidad','objetivosEstrategicos','metasEstrategicas'])->get(); 
-    if ($plan->isEmpty()) {
-        return view('plan.index', ['plan' => $plan, 'message' => 'No hay planes registrados.']);
-    }
-        return view('plan.index',compact('plan'));
+        // 1. Obtener el ID de la Entidad del usuario logueado
+        $idEntidad = Auth::user()->idEntidad; 
+        // 2. Definir la consulta base filtrada por idEntidad
+        $planesQuery = Plan::with(['entidad', 'objetivosEstrategicos', 'metasEstrategicas'])
+                           ->where('idEntidad', $idEntidad);
+        // 3. Obtener los resultados
+        $plan = $planesQuery->get();
+        // 4. Manejo de resultados (si no hay planes para esa entidad)
+        if ($plan->isEmpty()) {
+            return view('plan.index', ['plan' => $plan, 'message' => 'No hay planes registrados para su Entidad.']);
+        }
+        // 5. Retornar la vista con los planes filtrados
+        return view('plan.index', compact('plan'));
     }
 
     /**

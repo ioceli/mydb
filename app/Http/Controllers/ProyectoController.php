@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Enums\EstadoRevisionEnum; 
 use App\Enums\EstadoAutoridadEnum;
+use Illuminate\Support\Facades\Auth;
 class ProyectoController extends Controller
 {
     /**
@@ -17,11 +18,19 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-         $proyecto =proyecto::with('entidad','objetivosEstrategicos','metasEstrategicas')->get(); 
+// 1. Obtener el ID de la Entidad del usuario logueado
+        $idEntidad = Auth::user()->idEntidad; 
+        // 2. Definir la consulta base filtrada por idEntidad
+        $proyectosQuery = Proyecto::with(['entidad', 'objetivosEstrategicos', 'metasEstrategicas'])
+                           ->where('idEntidad', $idEntidad);
+        // 3. Obtener los resultados
+        $proyecto = $proyectosQuery->get();
+        // 4. Manejo de resultados (si no hay proyectos para esa entidad)
         if ($proyecto->isEmpty()) {
-            return view('proyecto.index', ['proyecto' => $proyecto, 'mensaje' => 'No hay proyectos registrados.']);
+            return view('proyecto.index', ['proyecto' => $proyecto, 'message' => 'No hay proyectos registrados para su Entidad.']);
         }
-         return view('proyecto.index',compact('proyecto'));
+        // 5. Retornar la vista con los proyectos filtrados
+        return view('proyecto.index', compact('proyecto'));
     }
 
     /**

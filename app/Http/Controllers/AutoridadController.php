@@ -4,9 +4,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Helpers\BitacoraHelper;
 use App\Models\Plan;
+use App\Models\User;
 use App\Models\Programa;
 use App\Models\Proyecto;
 use App\Models\Entidad;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DocumentoEstadoMail;
 class AutoridadController extends Controller
 {
     public function index(Request $request)
@@ -68,35 +71,76 @@ class AutoridadController extends Controller
         // Retornar la vista con todas las variables necesarias
         return view('autoridad.index', compact('planes', 'programas', 'proyectos', 'subsectores', 'estadosAutoridad','tipoRevision', 'perPage'         ));
     } 
-    public function cambiarEstado(Request $request, $tipo, $id)
+  public function cambiarEstado(Request $request, $tipo, $id)
     {
-        $request->validate([            
+        // 1. VALIDACIÓN AJUSTADA: Observaciones requeridas si el estado es 'Devuelto'
+        $request->validate([
             'estado_autoridad' => 'required|in:pendiente,Aprobado,Devuelto',
-            'tipo_autorizacion' => 'required|in:planes,programas,proyectos', 
+            'tipo_autorizacion' => 'required|in:planes,programas,proyectos',
             'subsector' => 'nullable|string',
             'estado_autoridad_filtro' => 'nullable|string',
-            'page' => 'nullable|integer', 
+            'page' => 'nullable|integer',
             'per_page' => 'nullable|integer',
+            // NUEVA REGLA: Debe agregar un campo en el formulario para estas observaciones.
+            'observaciones_autoridad' => 'required_if:estado_autoridad,Devuelto|string|max:1000',
         ]);
+
         $modelos = [
             'planes' => \App\Models\Plan::class,
             'programas' => \App\Models\Programa::class,
             'proyectos' => \App\Models\Proyecto::class,
         ];
+        
         if (!array_key_exists($tipo, $modelos)) {
             abort(404, 'Tipo inválido');
         }
+
         $modelo = $modelos[$tipo];
         $instancia = $modelo::findOrFail($id);
-        $instancia->estado_autoridad = $request->estado_autoridad;
+        
+        $estadoNuevo = $request->estado_autoridad;
+        $observaciones = null;
+
+        // 2. ACTUALIZACIÓN DEL ESTADO Y OBSERVACIONES
+        $instancia->estado_autoridad = $estadoNuevo;
+        
+        if ($estadoNuevo === 'Devuelto') {
+            // Asumiendo que la columna se llama observaciones_autoridad
+            $instancia->observaciones_autoridad = $request->observaciones_autoridad;
+            $observaciones = $request->observaciones_autoridad;
+        }
+
         $instancia->save();
+        
+        // 3. LÓGICA DE NOTIFICACIÓN A LA ENTIDAD
+        $idEntidad = $instancia->idEntidad; // Obtener la Entidad del documento
+        $rol = 'Autoridad Validante';
+
+        if ($idEntidad) {
+            $usuariosEntidad = User::where('idEntidad', $idEntidad)->get();
+
+            if ($usuariosEntidad->isNotEmpty()) {
+                try {
+                    // Enviar el Mailable a cada usuario de la Entidad
+                    foreach ($usuariosEntidad as $user) {
+                        Mail::to($user->email)->send(new DocumentoEstadoMail($instancia, $rol, $estadoNuevo, $observaciones));
+                    }
+                } catch (\Exception $e) {
+                    \Log::error("Error de Mailable de Autoridad (Entidad: {$idEntidad}): " . $e->getMessage());
+                }
+            }
+        }
+        
+        // 4. Registro en Bitácora y Redirección
         BitacoraHelper::registrar(
             'Autoridad', 
             'Cambio de Estado', 
-            'Se actualizó el estado de ' . ucfirst($tipo) . ' con ID ' . $id . ' a: ' . $request->estado_autoridad
+            'Se actualizó el estado de ' . ucfirst($tipo) . ' con ID ' . $id . ' a: ' . $estadoNuevo
         );
+        
         // Redirigir de vuelta al index manteniendo todos los filtros de la URL (incluida la paginación y per_page)
-        return redirect()->route('autoridad.index', $request->only(['tipo_autorizacion', 'subsector', 'estado_autoridad_filtro', 'page', 'per_page']))->with('success', ucfirst($tipo) . ' actualizado correctamente.');
+        return redirect()->route('autoridad.index', $request->only(['tipo_autorizacion', 'subsector', 'estado_autoridad_filtro', 'page', 'per_page']))
+                         ->with('success', ucfirst($tipo) . ' actualizado y notificado a los usuarios de la entidad.');
     }
       public function getDetalle($tipo, $id)
     {

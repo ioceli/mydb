@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Enums\EstadoRevisionEnum; 
 use App\Enums\EstadoAutoridadEnum;
+use Illuminate\Support\Facades\Auth;
 class ProgramaController extends Controller
 {
     /**
@@ -17,11 +18,19 @@ class ProgramaController extends Controller
      */
     public function index()
     {
-         $programa = programa::with('entidad','objetivosEstrategicos','metasEstrategicas')->get(); 
-       if ($programa->isEmpty()) {
-        return view('programa.index', ['programa' => $programa, 'message' => 'No hay programas registrados.']);
-       }
-         return view('programa.index',compact('programa'));
+// 1. Obtener el ID de la Entidad del usuario logueado
+        $idEntidad = Auth::user()->idEntidad; 
+        // 2. Definir la consulta base filtrada por idEntidad
+        $programaQuery = Programa::with(['entidad', 'objetivosEstrategicos', 'metasEstrategicas'])
+                           ->where('idEntidad', $idEntidad);
+        // 3. Obtener los resultados
+        $programa = $programaQuery->get();
+        // 4. Manejo de resultados (si no hay programas para esa entidad)
+        if ($programa->isEmpty()) {
+            return view('programa.index', ['programa' => $programa, 'message' => 'No hay programas registrados para su Entidad.']);
+        }
+        // 5. Retornar la vista con los programas filtrados
+        return view('programa.index', compact('programa'));
     }
 
     /**
