@@ -10,6 +10,7 @@ use App\Models\Proyecto;
 use App\Models\Entidad;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\DocumentoEstadoMail;
+use Illuminate\Support\Facades\Log;
 class AutoridadController extends Controller
 {
     public function index(Request $request)
@@ -73,7 +74,7 @@ class AutoridadController extends Controller
     } 
   public function cambiarEstado(Request $request, $tipo, $id)
     {
-        // 1. VALIDACIÓN AJUSTADA: Observaciones requeridas si el estado es 'Devuelto'
+        // 1. VALIDACIÓN DE LA SOLICITUD
         $request->validate([
             'estado_autoridad' => 'required|in:pendiente,Aprobado,Devuelto',
             'tipo_autorizacion' => 'required|in:planes,programas,proyectos',
@@ -81,44 +82,27 @@ class AutoridadController extends Controller
             'estado_autoridad_filtro' => 'nullable|string',
             'page' => 'nullable|integer',
             'per_page' => 'nullable|integer',
-            // NUEVA REGLA: Debe agregar un campo en el formulario para estas observaciones.
-            'observaciones_autoridad' => 'required_if:estado_autoridad,Devuelto|string|max:1000',
-        ]);
-
+            ]);
         $modelos = [
             'planes' => \App\Models\Plan::class,
             'programas' => \App\Models\Programa::class,
             'proyectos' => \App\Models\Proyecto::class,
         ];
-        
         if (!array_key_exists($tipo, $modelos)) {
             abort(404, 'Tipo inválido');
         }
-
         $modelo = $modelos[$tipo];
         $instancia = $modelo::findOrFail($id);
-        
         $estadoNuevo = $request->estado_autoridad;
         $observaciones = null;
-
         // 2. ACTUALIZACIÓN DEL ESTADO Y OBSERVACIONES
         $instancia->estado_autoridad = $estadoNuevo;
-        
-        if ($estadoNuevo === 'Devuelto') {
-            // Asumiendo que la columna se llama observaciones_autoridad
-            $instancia->observaciones_autoridad = $request->observaciones_autoridad;
-            $observaciones = $request->observaciones_autoridad;
-        }
-
         $instancia->save();
-        
         // 3. LÓGICA DE NOTIFICACIÓN A LA ENTIDAD
         $idEntidad = $instancia->idEntidad; // Obtener la Entidad del documento
         $rol = 'Autoridad Validante';
-
         if ($idEntidad) {
             $usuariosEntidad = User::where('idEntidad', $idEntidad)->get();
-
             if ($usuariosEntidad->isNotEmpty()) {
                 try {
                     // Enviar el Mailable a cada usuario de la Entidad
@@ -126,18 +110,16 @@ class AutoridadController extends Controller
                         Mail::to($user->email)->send(new DocumentoEstadoMail($instancia, $rol, $estadoNuevo, $observaciones));
                     }
                 } catch (\Exception $e) {
-                    \Log::error("Error de Mailable de Autoridad (Entidad: {$idEntidad}): " . $e->getMessage());
+                    Log::error("Error de Mailable de Autoridad (Entidad: {$idEntidad}): " . $e->getMessage());
                 }
             }
         }
-        
         // 4. Registro en Bitácora y Redirección
         BitacoraHelper::registrar(
             'Autoridad', 
             'Cambio de Estado', 
             'Se actualizó el estado de ' . ucfirst($tipo) . ' con ID ' . $id . ' a: ' . $estadoNuevo
         );
-        
         // Redirigir de vuelta al index manteniendo todos los filtros de la URL (incluida la paginación y per_page)
         return redirect()->route('autoridad.index', $request->only(['tipo_autorizacion', 'subsector', 'estado_autoridad_filtro', 'page', 'per_page']))
                          ->with('success', ucfirst($tipo) . ' actualizado y notificado a los usuarios de la entidad.');

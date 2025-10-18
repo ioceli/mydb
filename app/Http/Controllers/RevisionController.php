@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Helpers\BitacoraHelper;
 use App\Models\Plan;
 use App\Models\Programa;
@@ -74,7 +75,7 @@ class RevisionController extends Controller
     } 
     public function cambiarEstado(Request $request, $tipo, $id)
     {
-        // 1. VALIDACIÓN AJUSTADA: Observaciones requeridas si el estado es 'Devuelto'
+        // 1. VALIDACIÓN DE ENTRADA
         $request->validate([
             'estado_revision' => 'required|in:pendiente,Aprobado,Devuelto',
             'tipo_revision' => 'required|in:planes,programas,proyectos', 
@@ -82,44 +83,27 @@ class RevisionController extends Controller
             'estado_revision_filtro' => 'nullable|string',
             'page' => 'nullable|integer', 
             'per_page' => 'nullable|integer',
-            // NUEVA REGLA: Observaciones requeridas si el estado es Devuelto
-            'observaciones_revision' => 'nullable|required_if:estado_revision,Devuelto|string|max:1000',
         ]);
-        
         $modelos = [
             'planes' => \App\Models\Plan::class,
             'programas' => \App\Models\Programa::class,
             'proyectos' => \App\Models\Proyecto::class,
         ];
-        
         if (!array_key_exists($tipo, $modelos)) {
             abort(404, 'Tipo inválido');
         }
-
         $modelo = $modelos[$tipo];
         $instancia = $modelo::findOrFail($id);
-
         $estadoNuevo = $request->estado_revision;
         $observaciones = null;
-        
         // 2. ACTUALIZACIÓN DEL ESTADO Y OBSERVACIONES
         $instancia->estado_revision = $estadoNuevo;
-        
-        if ($estadoNuevo === 'Devuelto') {
-            // Asumiendo que la columna se llama observaciones_revision
-            $instancia->observaciones_revision = $request->observaciones_revision;
-            $observaciones = $request->observaciones_revision;
-        }
-
         $instancia->save();
-        
         // 3. LÓGICA DE NOTIFICACIÓN A LA ENTIDAD
         $idEntidad = $instancia->idEntidad; // Obtener la Entidad del documento (asumiendo esta columna)
         $rol = 'Revisor Institucional';
-
         if ($idEntidad) {
             $usuariosEntidad = User::where('idEntidad', $idEntidad)->get();
-
             if ($usuariosEntidad->isNotEmpty()) {
                 try {
                     // Enviar el Mailable a cada usuario de la Entidad
@@ -127,18 +111,16 @@ class RevisionController extends Controller
                         Mail::to($user->email)->send(new DocumentoEstadoMail($instancia, $rol, $estadoNuevo, $observaciones));
                     }
                 } catch (\Exception $e) {
-                    \Log::error("Error de Mailable de Revisor (Entidad: {$idEntidad}): " . $e->getMessage());
+                    Log::error("Error de Mailable de Revisor (Entidad: {$idEntidad}): " . $e->getMessage());
                 }
             }
         }
-        
         // 4. Registro en Bitácora y Redirección
         BitacoraHelper::registrar(
             'Revisión', 
             'Cambio de Estado', 
             'Se actualizó el estado de ' . ucfirst($tipo) . ' con ID ' . $id . ' a: ' . $estadoNuevo
         );
-        
         // Redirigir de vuelta al index manteniendo todos los filtros de la URL (incluida la paginación y per_page)
         return redirect()->route('revision.index', $request->only(['tipo_revision', 'subsector', 'estado_revision_filtro', 'page', 'per_page']))
                          ->with('success', ucfirst($tipo) . ' actualizado y notificado a los usuarios de la entidad.');

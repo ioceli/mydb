@@ -138,7 +138,7 @@
                                             <td class="border p-3 text-center">
                                                 <button 
                                                     type="button" 
-                                                    onclick="showPreview('{{ $tipo }}', {{ $item->$primaryKey }}, '{{ $item->nombre ?? 'Documento sin nombre' }}')"
+                                                    onclick="showPreview('{{ $tipo }}', '{{ $item->$primaryKey }}', '{{ $item->nombre ?? 'Documento sin nombre' }}')"
                                                     class="text-sm bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600 transition duration-150 font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                     <i class="fas fa-eye mr-1"></i> Previsualizar
                                                 </button>
