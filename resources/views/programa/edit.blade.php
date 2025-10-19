@@ -68,16 +68,12 @@
                         </div>
                     </div>
                     <div class="space-y-4">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <label class="font-bold">1.4 Subsector</label>
-                                <select name="idEntidad" class="w-full border rounded p-2" required>
-                                    <option value="">Seleccione una Entidad</option>
-                                        @foreach ($entidad as $e)
-                                            <option value="{{ $e->idEntidad }}" {{ $programa->idEntidad == $e->idEntidad ? 'selected' : '' }}>{{ $e->subSector }}</option>
-                                        @endforeach
-                                </select>
-                                <p class="text-xs text-blue-500 mt-1">Entidad responsable de la ejecución del programa.</p>
-                        </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <label class="block text-sm font-bold text-gray-700">1.4 ENTIDAD ASIGNADA</label>
+                        <input class="w-full border-gray-300 rounded-md shadow-sm p-2" type="text" value="{{ $entidad->subSector }}" readonly aria-describedby="entidad-info">
+                        <p id="entidad-info" class="mt-1 text-xs text-blue-500 mt-1">Este programa se asociará automáticamente a su entidad.</p>
+                        {{-- <input type="hidden" name="idEntidad" value="{{ $entidad->idEntidad }}"> --}}
+                    </div>
                         <div class="bg-blue-50 p-4 rounded-lg">
                             <label class="font-bold">1.5 Plazo de ejecución</label>
                             <input type="text" name="plazo_ejecucion" class="w-full border rounded p-2" required value="{{ $programa->plazo_ejecucion }}">

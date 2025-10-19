@@ -32,114 +32,116 @@ class PlanController extends Controller
         // 5. Retornar la vista con los planes filtrados
         return view('plan.index', compact('plan'));
     }
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        $entidad = entidad::all();
+        $idEntidad = Auth::user()->idEntidad;
+        $entidad = entidad::findOrFail($idEntidad);         
         $objetivoEstrategico = objetivoEstrategico::all();
         $metasEstrategicas = metaEstrategica::all();
-               return view('plan.create', compact('entidad','objetivoEstrategico','metasEstrategicas') );
-      }
-
+        return view('plan.create', compact('entidad','objetivoEstrategico','metasEstrategicas') );
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-     {
-          $request->validate([
-            'idEntidad'=>'nullable|exists:entidad,idEntidad',
+    {
+        $idEntidad = Auth::user()->idEntidad; 
+        $request->validate([
             'nombre'=>'required|string|unique:plan,nombre',
             'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
-      ]);
-   BitacoraHelper::registrar('Plan', 'Creó un nuevo plan');
+        ]);
+        BitacoraHelper::registrar('Plan', 'Creó un nuevo plan');
         $plan=plan::create([
-        'idEntidad' => $request->idEntidad,
-        'nombre' => $request->nombre,   
-        'estado_revision' => 'pendiente',
-        'estado_autoridad' => 'pendiente',
-    ]);
-
-      // Asocia objetivos estratégicos al plan
-    if ($request->has('idObjetivoEstrategico')) {
-        $plan->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+            'idEntidad' => $idEntidad, 
+            'nombre' => $request->nombre, 
+            'estado_revision' => 'pendiente',
+            'estado_autoridad' => 'pendiente',
+        ]);
+        // Asocia objetivos estratégicos al plan
+        if ($request->has('idObjetivoEstrategico')) {
+            $plan->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+        }
+        // Asocia metas estratégicas al plan
+        if ($request->has('idMetaEstrategica')) {
+            $plan->metasEstrategicas()->sync($request->idMetaEstrategica);
+        }
+        return redirect()->route('plan.index')->with('success','Plan Creado satisfactoriamente');
     }
-    // Asocia metas estratégicas al plan
-    if ($request->has('idMetaEstrategica')) {
-        $plan->metasEstrategicas()->sync($request->idMetaEstrategica);
-    }
-    return redirect()->route('plan.index')->with('success','Plan Creado satisfactoriamente');
-    }
-
     /**
      * Display the specified resource.
      */
     public function show(plan $plan)
     {
-        //
     }
-
     /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
     {
-
-         $plan = plan::findOrfail($id);
-        $entidad = entidad::all();
+        $plan = plan::findOrFail($id);
+        $idEntidadUsuario = Auth::user()->idEntidad;
+        if ($plan->idEntidad !== $idEntidadUsuario) {
+             abort(403, 'Acceso no autorizado para editar este plan.');
+        }
+        $entidad = entidad::findOrFail($idEntidadUsuario); 
         $objetivoEstrategico = objetivoEstrategico::all();
         $metasEstrategicas = metaEstrategica::all();
-                return view('plan.edit',compact('plan','entidad','objetivoEstrategico','metasEstrategicas'));
+        return view('plan.edit',compact('plan','entidad','objetivoEstrategico','metasEstrategicas'));
     }
-
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
     {
+        $idEntidad = Auth::user()->idEntidad; 
+        $plan = plan::findOrFail($id);
+        if ($plan->idEntidad !== $idEntidad) {
+             abort(403, 'Acceso no autorizado para actualizar este plan.');
+        }
         $request->validate([
-            'idEntidad'=>'nullable|exists:entidad,idEntidad',
             'nombre'=>'required|string|unique:plan,nombre,' . $id . ',idPlan',
             'estado_revision'=>['nullable', Rule::in(EstadoRevisionEnum::values())],
             'estado_autoridad'=>['nullable', Rule::in(EstadoAutoridadEnum::values())],
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
-            
         ]);
         BitacoraHelper::registrar('Plan', 'Actualizó el plan con ID ' . $id);
-       $plan = plan::findOrfail($id);
-     $plan->update([
-        'idEntidad' => $request->idEntidad,
-        'nombre' => $request->nombre,
-        'estado_revision' => 'pendiente',
-        'estado_autoridad' => 'pendiente',
-    ]);
-      // Asocia objetivos estratégicos al plan
-    if ($request->has('idObjetivoEstrategico')) {
-        $plan->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+        $plan->update([
+            'idEntidad' => $idEntidad,
+            'nombre' => $request->nombre,
+            'estado_revision' => 'pendiente',
+            'estado_autoridad' => 'pendiente',
+        ]);
+        // Asocia objetivos estratégicos al plan
+        if ($request->has('idObjetivoEstrategico')) {
+            $plan->objetivosEstrategicos()->sync($request->idObjetivoEstrategico);
+        }
+        // Asocia metas estratégicas al plan
+        if ($request->has('idMetaEstrategica')) {
+            $plan->metasEstrategicas()->sync($request->idMetaEstrategica);
+        }
+        return redirect()->route('plan.index')->with('success','Plan Actualizado satisfactoriamente');
     }
-    // Asocia metas estratégicas al plan
-    if ($request->has('idMetaEstrategica')) {
-        $plan->metasEstrategicas()->sync($request->idMetaEstrategica);
-    }
-    return redirect()->route('plan.index')->with('success','Plan Actualizado satisfactoriamente');
-    }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy( $id)
     {
+        $plan = plan::findOrFail($id);
+        $idEntidadUsuario = Auth::user()->idEntidad;
+        if ($plan->idEntidad !== $idEntidadUsuario) {
+             abort(403, 'Acceso no autorizado para eliminar este plan.');
+        }
         BitacoraHelper::registrar('Plan', 'Eliminó el plan con ID ' . $id);
-        $plan = plan::findOrfail($id);
         $plan->delete();
-return redirect()->route('plan.index')->with('success','Plan Eliminado satisfactoriamente');
+        return redirect()->route('plan.index')->with('success','Plan Eliminado satisfactoriamente');
     }
 }

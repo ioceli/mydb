@@ -32,28 +32,26 @@ class ProyectoController extends Controller
         // 5. Retornar la vista con los proyectos filtrados
         return view('proyecto.index', compact('proyecto'));
     }
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        $entidad = entidad::all();
+        $idEntidad = Auth::user()->idEntidad;
+        $entidad = entidad::findOrFail($idEntidad);  
         $objetivoEstrategico = objetivoEstrategico::all();
         $metasEstrategicas = metaEstrategica::all();
        return view('proyecto.create', compact('entidad', 'objetivoEstrategico', 'metasEstrategicas'));
     }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
      {
         BitacoraHelper::registrar('Proyecto', 'Creó un nuevo proyecto');
-          $request->validate([
-            'cup' => 'unique:proyecto,cup',
+        $idEntidad = Auth::user()->idEntidad;
+        $request->validate([
             'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',
-            'idEntidad'=>'required|exists:entidad,idEntidad',
             'accion' => 'required|string',
             'objeto' => 'required|string',
             'nombre'=>'required|string|max:255',
@@ -68,6 +66,7 @@ class ProyectoController extends Controller
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
+            'idMetaEstrategica.*'=>'nullable|exists:meta_estrategica,idMetaEstrategica',
             'componentesProyecto' => 'nullable|array',
             'componentesProyecto.*.nombre' => 'required|string',
             'componentesProyecto.*.descripcion' => 'nullable|string',
@@ -81,7 +80,7 @@ class ProyectoController extends Controller
         ]);
        $proyecto = proyecto::create([
         'cup' => proyecto::generarCUP(),
-        'idEntidad' => $request->idEntidad,
+        'idEntidad' => $idEntidad,
         'tipo_dictamen' => $request->tipo_dictamen,
         'accion' => $request->accion,
         'objeto' => $request->objeto,
@@ -111,14 +110,12 @@ class ProyectoController extends Controller
                 'descripcion' => $compData['descripcion'] ?? null,
                 'monto' => $compData['monto'],
             ]);
-
             if (isset($compData['actividadesProyecto'])) {
                 foreach ($compData['actividadesProyecto'] as $actData) {
                     $actividadProyecto = $componenteProyecto->actividadesProyecto()->create([
                         'nombre' => $actData['nombre'],
                         'monto' => $actData['monto'],
                     ]);
-
                     if (isset($actData['tareasProyecto'])) {
                         foreach ($actData['tareasProyecto'] as $tarData) {
                             $actividadProyecto->tareasProyecto()->create([
@@ -133,39 +130,39 @@ class ProyectoController extends Controller
     }
     return redirect()->route('proyecto.index')->with('success','Proyecto Creado satisfactoriamente');
     }
-
     /**
      * Display the specified resource.
      */
     public function show(proyecto $proyecto)
     {
-        //
     }
-
     /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
     {
          $proyecto = proyecto::with(['componentesProyecto.actividadesProyecto.tareasProyecto','objetivosEstrategicos','metasEstrategicas'])->findOrFail($id);
-        $entidad = entidad::all();
+        $entidad = Auth::user()->entidad;
         $objetivoEstrategico = objetivoEstrategico::all();
         $metasEstrategicas = metaEstrategica::all();
         return view('proyecto.edit',compact('proyecto','entidad','objetivoEstrategico','metasEstrategicas'));
     }
-
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
     {
-         BitacoraHelper::registrar('Proyecto', 'Actualizó el proyecto con ID ' . $id);
+        $idEntidad = Auth::user()->idEntidad;
+        $proyecto = proyecto::findOrfail($id);
+        if ($proyecto->idEntidad !== $idEntidad) {
+            abort(403, 'Acceso no autorizado para actualizar este proyecto.');
+        }
+        BitacoraHelper::registrar('Proyecto', 'Actualizó el proyecto con ID ' . $id);
         $request->validate([
-            'cup' => 'unique:proyecto,cup',
             'tipo_dictamen' => 'required|in:prioridad,aprobacion,actualizacion_prioridad,actualizacion_aprobacion',    
-            'idEntidad'=>'required|exists:entidad,idEntidad',
             'accion' => 'required|string',
             'objeto' => 'required|string',
+            'nombre' => 'required|string|max:255',
             'plazo_ejecucion' => 'required|string|max:50',
             'monto_total' => 'required|numeric|min:0',
             'diagnostico' => 'nullable|string',
@@ -177,6 +174,7 @@ class ProyectoController extends Controller
             'idObjetivoEstrategico' => 'nullable|array',
             'idObjetivoEstrategico.*'=>'nullable|exists:objetivo_estrategico,idObjetivoEstrategico',
             'idMetaEstrategica' => 'nullable|array',
+            'idMetaEstrategica.*'=>'nullable|exists:meta_estrategica,idMetaEstrategica',
             'componentesProyecto' => 'nullable|array',
             'componentesProyecto.*.nombre' => 'required|string',
             'componentesProyecto.*.descripcion' => 'nullable|string',
@@ -190,7 +188,7 @@ class ProyectoController extends Controller
         ]);
        $proyecto = proyecto::findOrfail($id);
        $proyecto->update([
-         'idEntidad' => $request->idEntidad,
+         'idEntidad' => $idEntidad,
          'tipo_dictamen' => $request->tipo_dictamen,
          'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
                   'plazo_ejecucion' => $request->plazo_ejecucion,
@@ -218,14 +216,12 @@ class ProyectoController extends Controller
                     'descripcion' => $compData['descripcion'] ?? null,
                     'monto' => $compData['monto'],
                 ]);
-
                 if (isset($compData['actividadesProyecto'])) {
                     foreach ($compData['actividadesProyecto'] as $actData) {
                         $actividadProyecto = $componenteProyecto->actividadesProyecto()->create([
                             'nombre' => $actData['nombre'],
                             'monto' => $actData['monto'],
                         ]);
-
                         if (isset($actData['tareasProyecto'])) {
                             foreach ($actData['tareasProyecto'] as $tarData) {
                                 $actividadProyecto->tareasProyecto()->create([
@@ -240,7 +236,6 @@ class ProyectoController extends Controller
         }
     return redirect()->route('proyecto.index')->with('success','Proyecto Actualizado satisfactoriamente');
     }
-
     /**
      * Remove the specified resource from storage.
      */
