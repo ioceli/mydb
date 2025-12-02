@@ -19,21 +19,6 @@
                     Gestión de Entidades
                 </a>
             </li>
-            <li>
-                <a href="{{ route('objetivoDesarrolloSostenible.index') }}" class="block p-2 rounded hover:bg-gray-200">
-                    Gestión de Objetivos ODS
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('objetivoPlanNacional.index') }}" class="block p-2 rounded hover:bg-gray-200">
-                    Gestión de Objetivos PND
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('objetivoEstrategico.index') }}" class="block p-2 rounded hover:bg-gray-200">
-                    Gestión de Objetivos EStratégicos
-                </a>
-            </li>
         </ul>
     </aside>
     {{-- Contenido principal --}}

@@ -7,6 +7,21 @@
         <h3 class="text-lg font-bold mb-4">Menú Técnico</h3>
              <p class="mb-4 font-bold" >Acciones disponibles:</p>
                 <ul class="list-disc ml-6 text-blue-700 space-y-2">
+                    <li>
+                <a href="{{ route('objetivoDesarrolloSostenible.index') }}" class="block p-2 rounded hover:bg-gray-200">
+                    Gestión de Objetivos ODS
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('objetivoPlanNacional.index') }}" class="block p-2 rounded hover:bg-gray-200">
+                    Gestión de Objetivos PND
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('objetivoEstrategico.index') }}" class="block p-2 rounded hover:bg-gray-200">
+                    Gestión de Objetivos EStratégicos
+                </a>
+            </li>
                     <li><a href="{{ route('metaEstrategica.index') }}"class="block p-2 rounded hover:bg-gray-200">Cargar Metas Estratégicas</a></li>
                     <li><a href="{{ route('metaPlanNacional.index') }}"class="block p-2 rounded hover:bg-gray-200">Cargar Metas Plan Nacional</a></li>
                     <li><a href="{{ route('indicador.index') }}"class="block p-2 rounded hover:bg-gray-200">Cargar Indicadores</a></li>
