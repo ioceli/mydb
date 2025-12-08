@@ -40,13 +40,23 @@
                 <td class="p-2 flex gap-2">
 
     {{-- Enlace para Editar --}}
-    <a href="{{ route('objetivoPlanNacional.edit', $objetivoPlanNacional->idObjetivoPlanNacional) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
+    <a href="{{ route('objetivoPlanNacional.edit', $objetivoPlanNacional->idObjetivoPlanNacional) }}" 
+    class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white text-xs font-bold rounded hover:bg-yellow-600 transition duration-150 shadow-sm" title="Editar objetivo de plan nacional">
+        <i class="fas fa-edit mr-1"></i>
+        Editar
+    </a>
 
     {{-- Enlace para Eliminar --}}
-        <form method="POST" action="{{ route('objetivoPlanNacional.destroy', $objetivoPlanNacional->idObjetivoPlanNacional) }}" onsubmit="return confirm('¿Está seguro de eliminar este Objetivo de Plan Nacional?')">
+        <form method="POST" action="{{ route('objetivoPlanNacional.destroy', $objetivoPlanNacional->idObjetivoPlanNacional) }}" 
+        class="inline"   
+        onsubmit="return confirmDelete(event, '{{ addslashes($objetivoPlanNacional->nombre) }}')">
             @csrf
             @method('DELETE')
-            <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
+            <button type="submit"
+            class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-150 shadow-sm" title="Eliminar objetivo de plan nacional">
+                <i class="fas fa-trash-alt mr-1"></i>
+                Eliminar
+            </button>
         </form>
 
     </td>
@@ -57,6 +67,35 @@
 </table>
 </div>
 <div class="mt-4">
-<a href="{{ route('dashboard.admin') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
+<a href="{{ route('dashboard.tecnico') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
 </div>
+
+{{-- SweetAlert2 CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{-- JavaScript para confirmación de eliminación --}}
+<script>
+    function confirmDelete(event, nombre) {
+        event.preventDefault();
+        const form = event.target;
+        Swal.fire({
+            title: '¿Está seguro?',
+            html: `Esta acción eliminará permanentemente el objetivo:<br><strong>"${nombre}"</strong><br>y no podrá revertirse`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+        return false;
+    }
+</script>
+
+{{-- Íconos Font Awesome --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 @endsection

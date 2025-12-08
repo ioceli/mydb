@@ -71,12 +71,22 @@
                     <td class="border p-2">{{ $meta->unidadMedida }}</td>
                     <td class="p-2 flex gap-2">
                     {{-- Enlace para Editar --}}   
-                    <a href="{{ route('metaEstrategica.edit', $meta->idMetaEstrategica) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
+                    <a href="{{ route('metaEstrategica.edit', $meta->idMetaEstrategica) }}" 
+                    class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white text-xs font-bold rounded hover:bg-yellow-600 transition duration-150 shadow-sm" title="Editar meta estratégica">
+                        <i class="fas fa-edit mr-1"></i>
+                        Editar
+                    </a>
                         {{-- Enlace para Eliminar --}}
-                        <form method="POST" action="{{ route('metaEstrategica.destroy', $meta->idMetaEstrategica) }}" onsubmit="return confirm('¿Está seguro de eliminar esta Meta Estratégico?')">
-                            @csrf
+                        <form method="POST" action="{{ route('metaEstrategica.destroy', $meta->idMetaEstrategica) }}"
+                        class="inline"
+                        onsubmit="return confirmDelete(event, '{{ addslashes($meta->nombre) }}')">
+                           @csrf
                             @method('DELETE')
-                             <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
+                             <button type="submit"
+                             class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-150 shadow-sm" title="Eliminar meta estratégica">
+                                <i class="fas fa-trash-alt mr-1"></i>
+                                Eliminar
+                                </button>
                         </form>
                     </td>
                 </tr>
@@ -91,4 +101,31 @@
     <div class="mt-4">
         <a href="{{ route('dashboard.tecnico') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a>
     </div>
+    {{-- SweetAlert2 CDN --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- JavaScript para confirmación de eliminación --}}
+    <script>
+        function confirmDelete(event, nombre) {
+            event.preventDefault();
+            const form = event.target;
+            Swal.fire({
+                title: '¿Está seguro?',
+                html: `Esta acción eliminará permanentemente la meta estratégica:<br><strong>"${nombre}"</strong><br>y no podrá revertirse`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
+    </script>
+    {{-- Íconos Font Awesome --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 @endsection

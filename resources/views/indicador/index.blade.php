@@ -48,12 +48,22 @@
 <td class="border border-gray-300 px-4 py-2">{{$indicador->valorMeta}}</td>
 <td class="p-2 flex gap-2">
     {{-- Enlace para Editar --}}
-    <a href="{{ route('indicador.edit', $indicador->idIndicador) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"> Editar</a>
+    <a href="{{ route('indicador.edit', $indicador->idIndicador) }}" 
+    class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white text-xs font-bold rounded hover:bg-yellow-600 transition duration-150 shadow-sm" title="Editar indicador">
+        <i class="fas fa-edit mr-1"></i>
+        Editar
+    </a>
     {{-- Enlace para Eliminar --}}
-   <form method="POST" action="{{ route('indicador.destroy', $indicador->idIndicador) }}" onsubmit="return confirm('¿Está seguro de eliminar este Indicador?')">
+   <form method="POST" action="{{ route('indicador.destroy', $indicador->idIndicador) }}"
+    class="inline"
+    onsubmit="return confirmDelete(event, '{{ addslashes($indicador->nombre) }}')">
         @csrf
         @method('DELETE')
-        <button class="bg-red-600 px-2 py-1 text-white rounded hover:bg-red-700">Eliminar</button>
+        <button type="submit"
+        class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-150 shadow-sm" title="Eliminar indicador">
+            <i class="fas fa-trash-alt mr-1"></i>
+            Eliminar
+        </button>
     </form>
 </td>
 </tr>
@@ -68,4 +78,28 @@
 <div class="mt-4">
     <a href="{{ route('dashboard.tecnico') }}" class="font-bold bg-gray-500 text-white rounded hover:bg-gray-600 py-2 px-4">REGRESAR</a>
 </div>
+   {{-- SweetAlert2 CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(event, nombre) {
+        event.preventDefault(); // Evita el envío del formulario por defecto
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            html: `¿Deseas eliminar el indicador: <br><strong>"${nombre}"</strong> <br> Esta acción no se puede deshacer.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                event.target.submit(); // Envía el formulario si se confirma
+            }
+        });
+    }
+</script>   
+{{-- Íconos Font Awesome --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 @endsection

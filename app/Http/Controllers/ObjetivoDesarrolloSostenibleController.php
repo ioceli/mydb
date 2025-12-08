@@ -13,8 +13,8 @@ class ObjetivoDesarrolloSostenibleController extends Controller
      */
     public function index()
     {
-         $objetivoDesarrolloSostenible =objetivoDesarrolloSostenible::all(); 
-        return view('objetivoDesarrolloSostenible.index',compact('objetivoDesarrolloSostenible'));
+         $objetivos =objetivoDesarrolloSostenible::all(); 
+        return view('objetivoDesarrolloSostenible.index',compact('objetivos'));
     }
 
     /**

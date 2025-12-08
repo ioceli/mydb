@@ -112,7 +112,7 @@
                                         <th class="px-4 py-3 text-center">Actualizar Estado</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody> 
                                     @foreach ($items as $item)
                                     @php
                                         $primaryKey = $tipo === 'planes' ? 'idPlan' : ($tipo === 'programas' ? 'idPrograma' : 'idProyecto');
