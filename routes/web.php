@@ -71,7 +71,7 @@ Route::middleware(['auth', 'two_factor_verified'])->group(function () {
 
     //  AUTORIDAD VALIDANTE
     Route::middleware(['role:Autoridad Validante'])->group(function () {
-        Route::get('/dashboard/autoridad', fn() => view('dashboard.autoridad'))->name('dashboard.autoridad');
+            Route::get('/dashboard/autoridad', [AutoridadController::class, 'dashboard'])->name('dashboard.autoridad');
         
         // Módulo de autoridad
         Route::get('/autoridad', [AutoridadController::class, 'index'])->name('autoridad.index');

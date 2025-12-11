@@ -174,4 +174,28 @@ class AutoridadController extends Controller
         );
         return $pdf->download($nombreDocumento . '.pdf');
     }
+   public function dashboard()
+{
+    // Conteo total de planes por estado usando GROUP BY (más eficiente)
+    $conteoEstados = Plan::selectRaw('estado_autoridad, COUNT(*) as total')
+        ->groupBy('estado_autoridad')
+        ->pluck('total', 'estado_autoridad')
+        ->toArray();
+    
+    // Conteo total de planes
+    $totalPlanes = Plan::count();
+    
+    // Obtener valores individuales (con valores por defecto)
+    $pendientes = $conteoEstados['pendiente'] ?? 0;
+    $aprobados = $conteoEstados['Aprobado'] ?? 0;
+    $devueltos = $conteoEstados['Devuelto'] ?? 0;
+    
+    return view('dashboard.autoridad', [
+        'total_planes' => $totalPlanes,
+        'pendientes_count' => $pendientes,
+        'aprobados_count' => $aprobados,
+        'devueltos_count' => $devueltos,
+        'conteo_estados' => $conteoEstados, // Array completo por si necesitas más datos
+            ]);
+}
 }
