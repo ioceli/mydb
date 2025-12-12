@@ -1,6 +1,12 @@
 @extends('layouts.master')
 @section('title','Inicio')
 @section('content')
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-tecnico-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-2xl font-bold mb-4"> Listado de Indicador   </h2>
     {{--VALIDACION--}}
     @if (session ('success'))
@@ -78,6 +84,8 @@
 <div class="mt-4">
     <a href="{{ route('dashboard.tecnico') }}" class="font-bold bg-gray-500 text-white rounded hover:bg-gray-600 py-2 px-4">REGRESAR</a>
 </div>
+        </div>
+    </div>
    {{-- SweetAlert2 CDN --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

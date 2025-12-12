@@ -1,17 +1,19 @@
 @extends('layouts.master')
 @section('title','Nueva Meta Plan Nacional')
 @section('content')
-@if ($errors->any())
-<div>
-    <ul>
-        @foreach($errors->all() as $error )
-        <li>-{{$error}}
-@endforeach
-        </li>
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-tecnico-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-xl font-bold mb-4">Registrar nueva Meta Plan Nacional</h2>
+    {{-- VALIDACION --}}
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
 <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
 {{--FORMULAIO PARA LA CREACION DE META PLAN NACIONAL--}}
 <form action="{{ route ('metaPlanNacional.store')}} "method="POST" class="space-y-4">
@@ -31,4 +33,7 @@
 <button type="submit" class="bg-green-500 text-white rounded px-4 py-2">GUARDAR</button>
 <a href="{{route('metaPlanNacional.index')}}" class="bg-gray-500 text-white rounded px-4 py-2">VOLVER</a>
 </form>
+    </div>
+        </div>
+    </div>
 @endsection

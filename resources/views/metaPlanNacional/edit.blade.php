@@ -1,6 +1,12 @@
 @extends('layouts.master')
 @section('title','Editar Meta Plan Nacional')
 @section('content')
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-tecnico-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-xl font-bold mb-4"> EDITAR META PLAN NACIONAL   </h2>
 @if ($errors->any())
     <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
@@ -40,4 +46,7 @@
 <button type="submit" class="bg-green-500 text-white rounded px-4 py-2">ACTUALIZAR</button>
 <a href="{{route('metaPlanNacional.index')}}" class="bg-gray-500 text-white rounded px-4 py-2">CANCELAR</a>
 </form>
+    </div>
+        </div>
+    </div>
 @endsection
