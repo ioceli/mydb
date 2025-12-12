@@ -60,7 +60,7 @@ Route::middleware(['auth', 'two_factor_verified'])->group(function () {
 
     //  REVISOR INSTITUCIONAL
     Route::middleware(['role:Revisor Institucional'])->group(function () {
-        Route::get('/dashboard/revisor', fn() => view('dashboard.revisor'))->name('dashboard.revisor');
+        Route::get('/dashboard/revisor', [RevisionController::class, 'dashboard'])->name('dashboard.revisor');
         
         // Módulo de revisión
         Route::get('/revision', [RevisionController::class, 'index'])->name('revision.index');

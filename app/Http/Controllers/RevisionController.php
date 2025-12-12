@@ -175,4 +175,26 @@ class RevisionController extends Controller
         );
         return $pdf->download($nombreDocumento . '.pdf');
     }
+public function dashboard()
+{
+    $totales = [
+        'planes' => [
+            'pendientes' => \App\Models\Plan::where('estado_revision', 'pendiente')->count(),
+            'aprobados'  => \App\Models\Plan::where('estado_revision', 'aprobado')->count(),
+            'devueltos'  => \App\Models\Plan::where('estado_revision', 'devuelto')->count(),
+        ],
+        'programas' => [
+            'pendientes' => \App\Models\Programa::where('estado_revision', 'pendiente')->count(),
+            'aprobados'  => \App\Models\Programa::where('estado_revision', 'aprobado')->count(),
+            'devueltos'  => \App\Models\Programa::where('estado_revision', 'devuelto')->count(),
+        ],
+        'proyectos' => [
+            'pendientes' => \App\Models\Proyecto::where('estado_revision', 'pendiente')->count(),
+            'aprobados'  => \App\Models\Proyecto::where('estado_revision', 'aprobado')->count(),
+            'devueltos'  => \App\Models\Proyecto::where('estado_revision', 'devuelto')->count(),
+        ],
+    ];
+
+    return view('dashboard.revisor', compact('totales'));
+}
 }

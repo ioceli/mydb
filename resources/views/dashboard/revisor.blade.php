@@ -3,27 +3,7 @@
 @section('content')
 <div class="flex min-h-screen bg-gray-50">
     {{-- Menú Lateral --}}
-    <aside class="w-64 bg-blue-100 p-6 shadow-xl border-r border-gray-200">
-        <h3 class="text-xl font-extrabold text-blue-800 mb-6 border-b pb-2">
-            Panel de Control
-        </h3>
-        <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-            Tareas de Revisión
-        </p>
-        <nav class="space-y-2">
-            {{-- Enlace a la acción principal --}}
-            <a href="{{ route('revision.index') }}" 
-               class="flex items-center p-3 text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out border border-transparent hover:border-blue-300">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.047m17.236 0c-.39.358-.87.674-1.4 1.157l-1.42 1.42a1 1 0 01-1.414 0L12 11.586l-4.787-4.787a1 1 0 01-1.414 0l-1.42-1.42c-.53-.483-1.01-.8-1.4-1.157m17.236 0L12 17.586l-4.787-4.787a1 1 0 00-1.414 0L4 14.586V19a2 2 0 002 2h12a2 2 0 002-2v-4.414l-.793-.793a1 1 0 00-1.414 0L12 11.586l-4.787-4.787a1 1 0 00-1.414 0L4 7.586V19a2 2 0 002 2h12a2 2 0 002-2v-4.414l-.793-.793a1 1 0 00-1.414 0L12 11.586l-4.787-4.787a1 1 0 00-1.414 0L4 7.586V19a2 2 0 002 2h12a2 2 0 002-2v-4.414l-.793-.793a1 1 0 00-1.414 0L12 11.586l-4.787-4.787a1 1 0 00-1.414 0L4 7.586V19a2 2 0 002 2h12a2 2 0 002-2v-4.414l-.793-.793a1 1 0 00-1.414 0L12 11.586z"></path></svg>
-                <span>**Ver Alineaciones**</span>
-            </a>
-        </nav>
-        {{-- Área de usuario al final del menú --}}
-        <div class="mt-8 pt-4 border-t border-gray-200">
-             <p class="text-sm text-gray-500">Sesión iniciada como:</p>
-             <p class="font-semibold text-gray-700">{{ Auth::user()->name }}</p>
-        </div>
-    </aside>
+    <x-revisor-sidebar/>
     {{-- Contenido principal --}}
     <main class="flex-1 p-8">
         <header class="mb-8 border-b pb-4">
@@ -31,15 +11,257 @@
                 Bienvenido de vuelta, <span class="font-bold text-orange-600">{{ Auth::user()->name }}</span>
             </h1>
             <p class="text-gray-500 mt-1">
-                Utiliza el menú lateral para gestionar las tareas de revisión.
+                Revisa, evalúa y gestiona los planes asignados desde este panel centralizado.
             </p>
         </header>
-            <div class="mt-8 p-6 bg-white rounded-xl shadow-lg border-t-2 border-gray-100">
-                <h3 class="text-xl font-semibold mb-4 text-gray-700">Flujo de Trabajo</h3>
-                    <p class="text-gray-600">
-                    Para comenzar, haz clic en **"Ver Alineaciones"** en el menú lateral.
-                </p>
+       {{-- ESTADÍSTICAS DE PLANES --}}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+    {{-- PLANES PENDIENTES --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-yellow-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Planes Pendientes</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['planes']['pendientes'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Esperando revisión</p>
             </div>
+            <div class="p-3 bg-yellow-50 rounded-full">
+                <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- PLANES APROBADOS --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-green-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Planes Aprobados</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['planes']['aprobados'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Revisión completada</p>
+            </div>
+            <div class="p-3 bg-green-50 rounded-full">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- PLANES DEVUELTOS --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-red-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Planes Devueltos</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['planes']['devueltos'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Requieren modificaciones</p>
+            </div>
+            <div class="p-3 bg-red-50 rounded-full">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+        {{-- ESTADISTICA DE PROGRAMAS --}}
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+    {{-- PROGRAMAS PENDIENTES --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-yellow-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Programas Pendientes</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['programas']['pendientes'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Esperando revisión</p>
+            </div>
+            <div class="p-3 bg-yellow-50 rounded-full">
+                <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- PROGRAMAS APROBADOS --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-green-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Programas Aprobados</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['programas']['aprobados'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Revisión completada</p>
+            </div>
+            <div class="p-3 bg-green-50 rounded-full">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- PROGRAMAS DEVUELTOS --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-red-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Programas Devueltos</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['programas']['devueltos'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Requieren modificaciones</p>
+            </div>
+            <div class="p-3 bg-red-50 rounded-full">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- ESTADISTICA DE PROYECTOS --}}
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+    {{-- PROYECTOS PENDIENTES --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-yellow-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Proyectos Pendientes</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['proyectos']['pendientes'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Esperando revisión</p>
+            </div>
+            <div class="p-3 bg-yellow-50 rounded-full">
+                <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- PROYECTOS APROBADOS --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-green-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Proyectos Aprobados</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['proyectos']['aprobados'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Revisión completada</p>
+            </div>
+            <div class="p-3 bg-green-50 rounded-full">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- PROYECTOS DEVUELTOS --}}
+    <div class="bg-white rounded-xl shadow-lg border-t-4 border-red-500 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Proyectos Devueltos</p>
+                <p class="text-3xl font-bold text-gray-800 mt-2">{{ $totales['proyectos']['devueltos'] }}</p>
+                <p class="text-xs text-gray-400 mt-1">Requieren modificaciones</p>
+            </div>
+            <div class="p-3 bg-red-50 rounded-full">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+        {{-- RESUMEN DE ACTIVIDAD RECIENTE --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            {{-- INFORMACIÓN DEL REVISOR --}}
+            <div class="p-6 bg-white rounded-xl shadow-lg border-t-2 border-gray-100">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    Información del Revisor
+                </h3>
+
+                <div class="space-y-4">
+                    {{-- Último acceso --}}
+                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-gray-500">Último acceso</p>
+                            <p class="font-medium text-gray-700">Hoy, {{ date('H:i') }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Rol --}}
+                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-gray-500">Rol del usuario</p>
+                            <p class="font-medium text-orange-600">Revisor Institucional</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ACCIONES RÁPIDAS --}}
+            <div class="p-6 bg-white rounded-xl shadow-lg border-t-2 border-blue-100">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Acciones Rápidas
+                </h3>
+                <p class="text-gray-600 mb-4">
+                    Gestiona eficientemente las tareas de revisión con estas acciones directas.
+                </p>
+{{-- Botón de Gestión de Revisión --}}
+        <a href="{{ route('revision.index') }}" {{-- Ajusta la ruta según tu aplicación --}}
+           class="inline-flex flex-col items-center justify-center w-28 h-28 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition duration-150 ease-in-out">
+            <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="text-sm text-center">Gestión de Revisión</span>
+        </a>
+           </div>
+        </div>
+
+        {{-- ALERTA IMPORTANTE --}}
+        <div class="p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" 
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" 
+                        clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        <span class="font-medium">Recordatorio:</span>
+                        Como revisor, tu labor es fundamental para garantizar la calidad y el cumplimiento de los planes. 
+                        Revisa cada plan con atención y proporciona retroalimentación constructiva cuando sea necesario.
+                    </p>
+                </div>
+            </div>
+        </div>
+
     </main>
 </div>
 @endsection
