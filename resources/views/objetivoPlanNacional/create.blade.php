@@ -8,17 +8,19 @@
     use App\Enums\EjePndEnum;
 @endphp 
 
-@if ($errors->any())
-<div>
-    <ul>
-        @foreach($errors->all() as $error )
-        <li>-{{$error}}
-@endforeach
-        </li>
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-tecnico-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-xl font-bold mb-4">Registrar nuevo Objetivo del Plan Nacional</h2>
+    {{-- VALIDACION --}}
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
     <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
         {{--FORMULARIO PARA LA CREACION DE OBJETIVO PLAN NACIONAL--}}
             <form action="{{ route ('objetivoPlanNacional.store')}} "method="POST" class="space-y-4">
@@ -49,5 +51,8 @@
                     <button type="submit" class="btn btn-success font-bold">GUARDAR</button>
                         <a href="{{route('objetivoPlanNacional.index')}}" class="btn btn-secondary text-white font-bold">VOLVER</a>
             </form>
+</div>
+    </div>
+</div>
 
 @endsection

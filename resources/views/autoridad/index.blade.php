@@ -3,10 +3,13 @@
 @php
     use App\Enums\EstadoAutoridadEnum;
 @endphp
-<div class="container mx-auto p-4">
-    <h1 class="text-3xl font-extrabold mb-6 text-gray-800 border-b pb-2">
-        Panel de Autorización 
-    </h1>
+    <div class="flex h-screen">
+        {{-- Menú Lateral --}}
+         <x-autoridad-sidebar />
+        {{-- Contenido principal --}}
+        <div class="flex-1 overflow-auto">
+            <div class="container mx-auto p-4">
+                <h1 class="text-3xl font-extrabold mb-6 text-gray-800 border-b pb-2">Panel de Autoridad Validante</h1>
     {{-- Mensaje de éxito --}}
     @if (session('success'))
         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg shadow-sm" role="alert">

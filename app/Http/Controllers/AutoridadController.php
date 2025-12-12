@@ -176,26 +176,24 @@ class AutoridadController extends Controller
     }
    public function dashboard()
 {
-    // Conteo total de planes por estado usando GROUP BY (más eficiente)
-    $conteoEstados = Plan::selectRaw('estado_autoridad, COUNT(*) as total')
-        ->groupBy('estado_autoridad')
-        ->pluck('total', 'estado_autoridad')
-        ->toArray();
-    
-    // Conteo total de planes
-    $totalPlanes = Plan::count();
-    
-    // Obtener valores individuales (con valores por defecto)
-    $pendientes = $conteoEstados['pendiente'] ?? 0;
-    $aprobados = $conteoEstados['Aprobado'] ?? 0;
-    $devueltos = $conteoEstados['Devuelto'] ?? 0;
-    
-    return view('dashboard.autoridad', [
-        'total_planes' => $totalPlanes,
-        'pendientes_count' => $pendientes,
-        'aprobados_count' => $aprobados,
-        'devueltos_count' => $devueltos,
-        'conteo_estados' => $conteoEstados, // Array completo por si necesitas más datos
-            ]);
+    $totales = [
+        'planes' => [
+            'pendientes' => \App\Models\Plan::where('estado_autoridad', 'pendiente')->count(),
+            'aprobados'  => \App\Models\Plan::where('estado_autoridad', 'aprobado')->count(),
+            'devueltos'  => \App\Models\Plan::where('estado_autoridad', 'devuelto')->count(),
+        ],
+        'programas' => [
+            'pendientes' => \App\Models\Programa::where('estado_autoridad', 'pendiente')->count(),
+            'aprobados'  => \App\Models\Programa::where('estado_autoridad', 'aprobado')->count(),
+            'devueltos'  => \App\Models\Programa::where('estado_autoridad', 'devuelto')->count(),
+        ],
+        'proyectos' => [
+            'pendientes' => \App\Models\Proyecto::where('estado_autoridad', 'pendiente')->count(),
+            'aprobados'  => \App\Models\Proyecto::where('estado_autoridad', 'aprobado')->count(),
+            'devueltos'  => \App\Models\Proyecto::where('estado_autoridad', 'devuelto')->count(),
+        ],
+    ];
+
+    return view('dashboard.autoridad', compact('totales'));
 }
 }

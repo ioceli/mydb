@@ -2,79 +2,8 @@
 @section('title', 'Panel del Técnico')
 @section('content')
 <div class="flex min-h-screen bg-gray-50">
-    {{-- Menú Lateral Mejorado --}}
-    <aside class="w-64 bg-blue-100 p-6 shadow-xl border-r border-gray-200">
-        <h3 class="text-xl font-extrabold text-blue-800 mb-6 border-b pb-2">
-            Panel Técnico
-        </h3>
-        
-        {{-- Sección: Gestión de Objetivos --}}
-        <div class="mb-8">
-            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                Gestión de Objetivos
-            </p>
-            <nav class="space-y-2">
-                <a href="{{ route('objetivoDesarrolloSostenible.index') }}" 
-                   class="flex items-center p-3 text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out border border-transparent hover:border-blue-300 group">
-                    <i class="fas fa-globe-americas w-5 h-5 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span>Objetivos ODS</span>
-                </a>
-                
-                <a href="{{ route('objetivoPlanNacional.index') }}" 
-                   class="flex items-center p-3 text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out border border-transparent hover:border-blue-300 group">
-                    <i class="fas fa-flag w-5 h-5 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span>Objetivos PND</span>
-                </a>
-                
-                <a href="{{ route('objetivoEstrategico.index') }}" 
-                   class="flex items-center p-3 text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out border border-transparent hover:border-blue-300 group">
-                    <i class="fas fa-bullseye w-5 h-5 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span>Objetivos Estratégicos</span>
-                </a>
-            </nav>
-        </div>
-        
-        {{-- Sección: Gestión de Metas --}}
-        <div class="mb-8">
-            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                Gestión de Metas
-            </p>
-            <nav class="space-y-2">
-                <a href="{{ route('metaEstrategica.index') }}" 
-                   class="flex items-center p-3 text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out border border-transparent hover:border-blue-300 group">
-                    <i class="fas fa-chart-line w-5 h-5 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span>Metas Estratégicas</span>
-                </a>
-                <a href="{{ route('metaPlanNacional.index') }}" 
-                   class="flex items-center p-3 text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out border border-transparent hover:border-blue-300 group">
-                    <i class="fas fa-chart-bar w-5 h-5 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span>Metas Plan Nacional</span>
-                </a>
-            </nav>
-        </div>
-        
-        {{-- Sección: Indicadores --}}
-        <div class="mb-8">
-            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                Indicadores
-            </p>
-            <nav class="space-y-2">
-                <a href="{{ route('indicador.index') }}" 
-                   class="flex items-center p-3 text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-150 ease-in-out border border-transparent hover:border-blue-300 group">
-                    <i class="fas fa-chart-pie w-5 h-5 mr-3 group-hover:scale-110 transition-transform"></i>
-                    <span>Gestión de Indicadores</span>
-                </a>
-            </nav>
-        </div>
-        
-        {{-- Área de usuario --}}
-        <div class="mt-8 pt-4 border-t border-gray-200">
-            <p class="text-sm text-gray-500">Sesión iniciada como:</p>
-            <p class="font-semibold text-gray-700">{{ Auth::user()->name }}</p>
-            <p class="text-xs text-blue-600 font-medium mt-1"> Técnico Institucional</p>
-        </div>
-    </aside>
-    
+    {{-- Menú Lateral --}}    
+<x-tecnico-sidebar />
     {{-- Contenido principal --}}
     <main class="flex-1 p-8">
         <header class="mb-8 border-b pb-4">

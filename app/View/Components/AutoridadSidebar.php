@@ -20,7 +20,7 @@ class AutoridadSidebar extends Component
         $menus = null
     ) {
         $this->title = $title ?? 'Panel de Autoridad';
-        $this->userRole = $userRole ?? 'Autoridad del Sistema';
+        $this->userRole = $userRole ?? 'Autoridad Validante';
         $this->showUserSection = $showUserSection;
         
         // 3. LÓGICA DEL COMPONENTE
