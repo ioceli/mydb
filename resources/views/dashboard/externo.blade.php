@@ -1,38 +1,10 @@
 @extends('layouts.master')
 @section('title', 'Panel del Externo')
 @section('content')
-{{-- Contenedor principal para la estructura de la página --}}
 <div class="flex min-h-screen bg-gray-50">
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden hidden transition-opacity duration-300"></div>
-    <nav id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-blue-50 shadow-xl transform -translate-x-full md:translate-x-0 transition-all duration-300 z-40 p-5 flex flex-col">
-        {{-- Encabezado del Menú --}}
-        <div class="pb-4 border-b border-green-200 mb-6">
-            <h3 class="text-xl font-extrabold text-blue-800">Panel de Acciones</h3>
-            <p class="text-sm text-gray-500 mt-1">Usuario Externo</p>
-        </div>
-        {{-- Acciones del Menú --}}
-        <ul class="text-gray-700 space-y-2 flex-grow">
-            <li>
-                <a href="{{ route('plan.index') }}" class="flex items-center p-3 rounded-lg hover:bg-blue-100 transition duration-150 group">
-                    <span class="font-bold text-blue-600 ">Plan Institucional</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('programa.index') }}" class="flex items-center p-3 rounded-lg hover:bg-blue-100 transition duration-150 group">
-                    <span class="font-bold text-blue-600">Programa Institucional</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('proyecto.index') }}" class="flex items-center p-3 rounded-lg hover:bg-blue-100 transition duration-150 group">
-                    <span class="font-bold text-blue-600">Proyecto Institucional</span>
-                </a>
-            </li>
-        </ul>
-        {{-- Botón de cerrar para móviles --}}
-        <button id="closeSidebar" class="absolute top-3 right-3 p-2 text-gray-500 hover:text-gray-900 md:hidden">
-            <span class="font-bold text-2xl leading-none">&times;</span>
-        </button>
-    </nav>
+    {{-- Menú Lateral --}}
+<x-externo-sidebar />
+
     {{-- Contenido principal (Main Content) --}}
     <div id="main-content" class="flex-1 transition-all duration-300 md:pl-64 p-6 sm:p-8">
         {{-- Barra Superior (para botón de menú y saludo) --}}
@@ -94,6 +66,85 @@
         </div>
     </div>
 </section>
+{{-- Sección de Instrucciones Técnicas para Usuario Externo --}}
+<div class="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-600 rounded-r-lg shadow-md mb-8">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <i class="fas fa-user-check text-blue-600 text-2xl mt-1"></i>
+        </div>
+        <div class="ml-4">
+            <h4 class="text-xl font-bold text-blue-800 mb-2">Guía del Usuario Externo</h4>
+            <p class="text-sm text-gray-700 mb-4">
+                Como usuario externo, tienes acceso para ingresar datos de planes, programas y proyectos institucionales. 
+                A continuación, las funciones disponibles para tu perfil:
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- Funciones Disponibles --}}
+                <div class="bg-white p-4 rounded-lg border border-blue-100">
+                    <h5 class="font-semibold text-blue-700 mb-2 flex items-center">
+                        <i class="fas fa-eye text-blue-500 mr-2"></i>
+                        Funciones Disponibles
+                    </h5>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2 text-xs"></i>
+                            <span>Ingreso de Planes, Programas y Proyectos</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2 text-xs"></i>
+                            <span>Seguimiento del estado de revisión</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2 text-xs"></i>
+                            <span>Visualización de documentos aprobados</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                {{-- Restricciones --}}
+                <div class="bg-white p-4 rounded-lg border border-blue-100">
+                    <h5 class="font-semibold text-red-600 mb-2 flex items-center">
+                        <i class="fas fa-ban text-red-500 mr-2"></i>
+                        Restricciones del Perfil
+                    </h5>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-start">
+                            <i class="fas fa-times-circle text-red-500 mt-1 mr-2 text-xs"></i>
+                            <span>No puedes aprobar o rechazar documentos</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-times-circle text-red-500 mt-1 mr-2 text-xs"></i>
+                            <span>Acceso limitado a datos sensibles</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            {{-- Flujo de Trabajo --}}
+            <div class="mt-4 bg-blue-100 p-4 rounded-lg">
+                <h5 class="font-semibold text-blue-800 mb-2">
+                    <i class="fas fa-project-diagram text-blue-600 mr-2"></i>
+                    Flujo de Trabajo Sugerido
+                </h5>
+                <ol class="text-sm text-blue-900 space-y-2 ml-4">
+                    <li class="flex items-center">
+                        <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 text-xs">1</span>
+                        Revisa el resumen de actividades en el panel principal
+                    </li>
+                    <li class="flex items-center">
+                        <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 text-xs">2</span>
+                        Navega por el menú lateral para acceder a documentos específicos
+                    </li>
+                    <li class="flex items-center">
+                        <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 text-xs">3</span>
+                        Consulta documentos pendientes de tu revisión
+                    </li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div>
     </div>
 </div>
 {{-- Script para mejorar la interactividad --}}

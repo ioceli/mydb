@@ -3,16 +3,22 @@
 @section('content')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-@if ($errors->any())
-<div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-    <ul class="list-disc pl-5">
-        @foreach($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-externo-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-2xl font-extrabold text-gray-800 mb-6 border-b pb-2">Editar Programa</h2>
+@if ($errors->any())
+    <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+        <ul>
+            @foreach($errors->all() as $error )
+                <li>- {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
     <form action="{{ route('programa.update', $programa->idPrograma) }}" method="POST" class="space-y-8">
         @csrf
@@ -233,6 +239,8 @@
             <a href="{{ route('programa.index') }}" class="btn btn-secondary font-bold bg-gray-500 text-white p-2 rounded hover:bg-gray-600">Volver</a>
         </div>
     </form>
+</div>
+</div>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {

@@ -3,15 +3,18 @@
 @section('content')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-@if ($errors->any())
-<div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-    <ul class="list-disc pl-5">
-        @foreach($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-externo-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
+    {{--VALIDACION--}}
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
 <h2 class="text-2xl font-extrabold text-gray-800 mb-6 border-b pb-2">Registrar nuevo Programa</h2>
 <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
     <form action="{{ route('programa.store') }}" method="POST" class="space-y-8">
@@ -189,6 +192,9 @@
             <a href="{{ route('programa.index') }}" class="px-6 py-2 bg-gray-500 text-white font-bold rounded-lg shadow hover:bg-gray-600 transition duration-150 ease-in-out"> Cancelar</a>   
         </div>
     </form>
+</div>
+</div>
+</div>
 </div>
 <script>
    function validarMontoComponente(input) {

@@ -5,11 +5,22 @@
     use App\Enums\EstadoRevisionEnum;
     use App\Enums\EstadoAutoridadEnum;
 @endphp 
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-externo-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-2x1 font-bold mb-4"> Listado de programa   </h2>
 {{--VALIDACION--}}
-     @if (session ('success'))
+    @if (session ('success'))
         <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
             {{session('success')}}
+        </div>
+    @endif
+        @if(isset($message))
+        <div class="bg-yellow-100 text-yellow-700 p-4 rounded mb-4">
+            {{ $message }}
         </div>
     @endif
     {{--BOTON PARA LLAMAR AL FORMULARIO CREAR PROGRAMA--}}
@@ -60,27 +71,64 @@
                     <td class="border p-2">{{ $p->estado_revision }}</td>
                     <td class="border p-2">{{ $p->estado_autoridad }}</td>
                     <td class="p-2 flex gap-2">
-
-                        {{-- Enlace para Editar --}}
-                        <a href="{{ route('programa.edit', $p->idPrograma) }}" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
-
-                        {{-- Enlace para Eliminar --}}
-                        <form method="POST" action="{{ route('programa.destroy', $p->idPrograma) }}" onsubmit="return confirm('¿Está seguro de eliminar este programa?')">
+                         {{-- Enlace para Editar --}}
+                <a href="{{ route('programa.edit', $p->idPrograma) }}" 
+                class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white text-xs font-bold rounded hover:bg-yellow-600 transition duration-150 shadow-sm" title="Editar programa">
+                    <i class="fas fa-edit mr-2"></i>
+                    Editar
+                </a>
+                {{-- Formulario para Eliminar --}}
+                <form action="{{ route('programa.destroy', $p->idPrograma) }}" method="POST" 
+                class="inline" 
+                onsubmit="return confirmDelete(event, '{{addslashes($p->nombre)}}')">
                             @csrf
                             @method('DELETE')
-                            <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Eliminar</button>
+                            <button type="submit" 
+                            class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-150 shadow-sm" title="Eliminar programa">
+                            <i class="fas fa-trash-alt mr-2"></i>
+                                Eliminar
+                            </button>
                         </form>
-                    </td>
-                </tr>
-  @empty
+                       </td>
+        </tr>
+            @empty
                 <tr>
-                    <td colspan="6" class="text-center p-4 text-gray-500">No hay proyectos registrados.</td>
+                    <td colspan="6" class="text-center p-4 text-gray-500">No hay programa registrados.</td>
                 </tr>
-@endforelse
-</tbody>
-</table>
+            @endforelse
+        </tbody>
+    </table>
 </div>
 <div class="mt-4">
 <a href="{{ route('dashboard.externo') }}" class="font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">REGRESAR</a> 
 </div>
+        </div>
+    </div>
+    {{-- SweetAlert2 CDN --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- JavaScript para confirmación de eliminación --}}
+    <script>
+        function confirmDelete(event, nombre) {
+            event.preventDefault();
+            const form = event.target;
+            Swal.fire({
+                title: '¿Está seguro?',
+                html: `Esta acción eliminará permanentemente el programa:<br><strong>"${nombre}"</strong><br>y no podrá revertirse`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
+    </script>
+    {{-- Íconos Font Awesome --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 @endsection

@@ -1,19 +1,22 @@
 @extends('layouts.master')
 @section('title','Editar Plan')
 @section('content')
-{{-- Manejo de Errores --}}
-@if ($errors->any())
-<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert">
-    <strong class="font-bold">¡Atención!</strong>
-    <span class="block sm:inline">Hay problemas con su formulario:</span>
-    <ul class="mt-2 list-disc list-inside">
-        @foreach($errors->all() as $error )
-        <li>{{$error}}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-externo-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-2">EDITAR PLAN ESTRATÉGICO</h2>
+@if ($errors->any())
+    <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+        <ul>
+            @foreach($errors->all() as $error )
+                <li>- {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
     <form action="{{route ('plan.update', $plan->idPlan )}}"method="POST" class="space-y-6">
         @csrf
@@ -81,5 +84,8 @@
             </a>
         </div>
     </form>
+</div>
+        </div>
+    </div>
 </div>
 @endsection

@@ -83,9 +83,9 @@ Route::middleware(['auth', 'two_factor_verified'])->group(function () {
         Route::get('/dashboard/externo', [App\Http\Controllers\ExternoController::class, 'index'])->name('dashboard.externo');
         
         // Módulos de consulta externa
-        Route::resource('plan', PlanController::class)->only(['index', 'show']);
-        Route::resource('programa', ProgramaController::class)->only(['index', 'show']);
-        Route::resource('proyecto', ProyectoController::class)->only(['index', 'show']);
+        Route::resource('plan', PlanController::class);
+        Route::resource('programa', ProgramaController::class);
+        Route::resource('proyecto', ProyectoController::class);
     });
 
     //  AUDITOR

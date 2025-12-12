@@ -5,15 +5,18 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-@if ($errors->any())
-<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-    <ul class="list-disc pl-5">
-        @foreach($errors->all() as $error )
-            <li>-{{$error}}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-externo-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
+    {{--VALIDACION--}}
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
 <h2 class="text-2xl font-extrabold text-gray-800 mb-6 border-b pb-2">Registrar nuevo Proyecto </h2>
     <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
 {{--FORMULARIO PARA LA CREACION DE PROYECTOS--}}
@@ -195,6 +198,9 @@
             <a href="{{route('proyecto.index')}}" class="font-bold btn btn-secondary text-white">VOLVER</a>
         </div>
 </form>
+</div>
+</div>
+</div>
 </div>
 <script>
  function validarMontoComponente(input) {

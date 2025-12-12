@@ -4,18 +4,18 @@
 @php
     use App\Enums\EstadoRevisionEnum;
 @endphp
-{{-- Manejo de Errores --}}
-@if ($errors->any())
-<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-    <strong class="font-bold">¡Atención!</strong>
-    <span class="block sm:inline">Hay problemas con tu formulario:</span>
-    <ul class="mt-2 list-disc list-inside">
-        @foreach($errors->all() as $error )
-        <li>{{$error}}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-externo-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
+    {{--VALIDACION--}}
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
 <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-2">Registrar Nuevo Plan Estratégico</h2>
 <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
     {{-- FORMULARIO PARA LA CREACION DE PLANES --}}
@@ -79,4 +79,8 @@
                         <a href="{{ route('plan.index') }}" class="inline-flex justify-center py-3 px-6 font-bold bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">CANCELAR</a>
         </div>
     </form>
+</div>
+        </div>
+    </div>
+</div>
 @endsection
