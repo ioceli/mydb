@@ -3,23 +3,9 @@
 @section('title','Panel del Auditor')
 
 @section('content')
-<div class="flex">
-    {{-- Menú lateral --}}
-    <aside class="w-64 bg-blue-100 h-auto p-4 shadow-md">
-        <h3 class="text-lg font-bold mb-4">Menú Auditor</h3>
-        <ul class="space-y-2">
-            <li>
-                <a href="{{ route('dashboard.auditor') }}" class="block p-2 rounded hover:bg-gray-200">
-                    Volver al Panel
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('auditoria.index') }}" class="block p-2 rounded hover:bg-gray-200">
-                    Actualizar Vista
-                </a>
-            </li>
-        </ul>
-    </aside>
+<div class="flex min-h-screen bg-gray-50">
+    {{-- Menú Lateral --}}
+    <x-auditor-sidebar/>
     {{-- Contenido principal --}}
     <div class="flex-1 p-6">
         {{-- Validación --}}
@@ -171,6 +157,16 @@
                 {{ $bitacoras->appends(['per_page' => $perPage])->links() }}
             </div>
         @endif
+                    {{-- MENU PRINCIPAL --}}
+                <div class="mt-8 pt-4 border-t">
+                    <a href="{{ route('dashboard.auditor') }}" 
+                       class="inline-flex items-center px-4 py-3 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-800 transition duration-150 shadow-md">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        PANEL AUDITOR
+                    </a>
+                </div>
     </div>
+
 </div>
+
 @endsection
