@@ -1,21 +1,21 @@
 @extends('layouts.master')
-
 @section('title','Editar Entidad')
 @php
     use App\Enums\EstadoEnum;
 @endphp
-
 @section('content')
-@if ($errors->any())
-    <div>
-        <ul>
-            @foreach($errors->all() as $error )
-                <li>- {{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-admin-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
+            {{--VALIDACION--}}
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
 <h2 class="text-2x1 font-bold mb-4"> EDITAR ENTIDADES   </h2>
     <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
         <form action="{{route ('entidad.update', $entidad->idEntidad )}}"method="POST" class="space-y-4">

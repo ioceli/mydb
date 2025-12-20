@@ -1,23 +1,21 @@
 @extends('layouts.master')
-
 @section('title','Nueva Entidad')
-
 @section('content')
-
 @php
     use App\Enums\EstadoEnum;
 @endphp
-
-@if ($errors->any())
-<div>
-    <ul>
-        @foreach($errors->all() as $error )
-        <li>-{{$error}}
-@endforeach
-        </li>
-    </ul>
-</div>
-@endif
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-admin-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
+{{--VALIDACION--}}
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
 <h2 class="text-xl font-bold mb-4">Registrar nueva entidad</h2>
 <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
 {{--FORMULARIO PARA LA CREACION DE ENTIDADES--}}

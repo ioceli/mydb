@@ -304,9 +304,9 @@
                     <div class="mt-4 flex flex-wrap gap-2">
                         <a href="{{ route('persona.index') }}?estado=Activo&buscar=true" 
                            class="px-3 py-2 bg-blue-100 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-200 transition flex items-center">
-                            <i class="fas fa-check-circle mr-2"></i> Ver usuarios activos
+                            <i class="fas fa-check-circle mr-2"></i> Ver usuarios en estado Activo
                         </a>
-                        <a href="{{ route('persona.index') }}?rol=admin&buscar=true" 
+                        <a href="{{ route('persona.index') }}?rol=Administrador del Sistema&buscar=true" 
                            class="px-3 py-2 bg-purple-100 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-200 transition flex items-center">
                             <i class="fas fa-user-shield mr-2"></i> Ver administradores
                         </a>

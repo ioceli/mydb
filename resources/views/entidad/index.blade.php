@@ -1,13 +1,17 @@
 @extends('layouts.master')
 @section('title', 'Gestión de Entidades')
 @section('content')
-<div class="container mx-auto p-4">
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-admin-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
     {{-- Header --}}
     <div class="mb-8">
         <h1 class="text-3xl font-extrabold text-gray-800 border-b pb-2">Gestión de Entidades Institucionales</h1>
         <p class="text-gray-500 mt-2">Administra todas las entidades del sistema desde este panel</p>
     </div>
-
     {{-- Mensaje de éxito --}}
 @if (session('success'))
     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg shadow-sm" role="alert">

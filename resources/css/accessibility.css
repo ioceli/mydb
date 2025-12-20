@@ -1,0 +1,65 @@
+/* Barra y estilos mínimos */
+.a11y-bar {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(0,0,0,0.72);
+  color: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  z-index: 9999;
+  font-size: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+/* Skip link: escondido pero visible al enfocar */
+.a11y-skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.a11y-skip-link:focus {
+  left: 8px;
+  top: 8px;
+  background: #fff;
+  color: #000;
+  padding: 8px;
+  z-index: 10000;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+/* Botones */
+.a11y-controls button {
+  background: transparent;
+  color: inherit;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.a11y-controls button[aria-pressed="true"] {
+  outline: 2px solid #ffd54f;
+}
+
+/* Clases globales aplicadas en <html> */
+html.a11y-contrast {
+  filter: contrast(1.2) saturate(1.05);
+  background: #000;
+  color: #fff;
+}
+
+/* Para dislexia: se recomienda servir OpenDyslexic desde CDN (ver instrucciones) */
+html.a11y-dyslexia, html.a11y-dyslexia * {
+  font-family: "OpenDyslexic", "Arial", sans-serif !important;
+}
+
+/* Reduce motion */
+html.a11y-reduce-motion *, html.a11y-reduce-motion {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Ajuste de tamaño de fuente mediante style en <html> (JS aplica) */

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,8 +18,10 @@
     <!-- Estilo personalizado -->
     <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/accessibility.css', 'resources/js/accessibility.js'])
 </head>
-<body class="bg-gray-50 font-sans text-gray-900">
+<body class="bg-gray-50 font-sans text-gray-900 d-flex flex-column min-vh-100">
+     @include('components.accessibility')
     {{-- Encabezado institucional --}}
     <header class="bg-blue-900 text-white shadow">
         <div class="container mx-auto px-4 py-4 text-center">
@@ -27,15 +29,16 @@
         </div>
     </header>
     {{-- Barra de navegación --}}
-    <nav class="bg-blue-600 text-white border-b border-blue-800 px-4 py-2 shadow">
+    <nav class="bg-blue-600 text-white border-b border-blue-800 px-4 py-2 shadow
+            rounded-b-2xl">
         <div class="container mx-auto flex items-center justify-between">
             <a href="{{ url('/') }}" class="text-xl font-semibold">
             </a>          
             {{-- Sesión del usuario --}}
             <div class="d-flex align-items-center">
                 @guest
-                    <a class="btn btn-light text-2xl font-bold me-4" href="{{ route('login') }}">Iniciar sesión</a>
-                    <a class="btn btn-light text-2xl font-bold" href="{{ route('register') }}">Registrarse</a>
+                    <a class="btn btn-light font-bold me-2" href="{{ route('login') }}">Iniciar sesión</a>
+                    <a class="btn btn-light font-bold me-2" href="{{ route('register') }}">Registrarse</a>
                 @else
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -55,11 +58,11 @@
         </div>
     </nav>
     {{-- Contenido principal --}}
-    <main class="container py-4">
+<main class="container flex-grow-1 d-flex align-items-center justify-content-center py-0">
         @yield('content')
     </main>
     {{-- Pie de página --}}
-    <footer class="text-center mt-4 py-3 bg-gray-200">
+<footer class="text-center py-3 bg-gray-200">
         <small>&copy; {{ date('Y') }} Secretaría Nacional de Planificación. Todos los derechos reservados.</small>
     </footer>
     <!-- Bootstrap JS Bundle -->
