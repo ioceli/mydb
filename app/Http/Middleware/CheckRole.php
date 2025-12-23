@@ -3,6 +3,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\RolEnum;
 use Symfony\Component\HttpFoundation\Response;
 class CheckRole
 {
@@ -11,6 +12,10 @@ class CheckRole
         $user = Auth::user();
         if (!$user) {
             return redirect()->route('login');
+        }
+        //Permitir Administrador del Sistema el acceso a todas las rutas
+        if ($user->rol === RolEnum::admin->value) {
+            return $next($request);
         }
         // Verificar si el usuario tiene alguno de los roles requeridos
         foreach ($roles as $role) {

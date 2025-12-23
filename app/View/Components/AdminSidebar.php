@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
+use Illuminate\Support\Facades\Auth;
 
 class AdminSidebar extends Component
 {
@@ -15,14 +16,13 @@ class AdminSidebar extends Component
     // 2. CONSTRUCTOR - Recibe parámetros
     public function __construct(
         $title = null, 
-        $userRole = null, 
         $showUserSection = true,
         $menus = null
     ) {
         $this->title = $title ?? 'Panel de Administración';
-        $this->userRole = $userRole ?? 'Administrador del Sistema';
+        $this->userRole = Auth::check()
+            ? Auth::user()->rol:null;
         $this->showUserSection = $showUserSection;
-        
         // 3. LÓGICA DEL COMPONENTE
         $this->menus = $menus ?? $this->defaultMenus();
     }
@@ -43,9 +43,60 @@ class AdminSidebar extends Component
                 'icon' => 'building',
                 'active' => request()->routeIs('entidad.*'),
             ],
+                        // Gestión de Planificación (submenu que muestra las opciones del Técnico de Planificación)
+            [
+                'label' => 'Gestión de Planificación',
+                'route' => '',
+                'icon' => 'layers',
+                'active' => 
+                    request()->routeIs('objetivoDesarrolloSostenible.*') ||
+                    request()->routeIs('objetivoPlanNacional.*') ||
+                    request()->routeIs('objetivoEstrategico.*') ||
+                    request()->routeIs('metaEstrategica.*') ||
+                    request()->routeIs('metaPlanNacional.*') ||
+                    request()->routeIs('indicador.*'),
+                'children' => [
+                    [
+                        'label' => 'Gestión de ODS',
+                        'route' => 'objetivoDesarrolloSostenible.index',
+                        'icon' => 'earth-americas',
+                        'active' => request()->routeIs('objetivoDesarrolloSostenible.*'),
+                    ],
+                    [
+                        'label' => 'Gestión de OPND',
+                        'route' => 'objetivoPlanNacional.index',
+                        'icon' => 'flag',
+                        'active' => request()->routeIs('objetivoPlanNacional.*'),
+                    ],
+                    [
+                        'label' => 'Gestión de Objetivos Estratégicos',
+                        'route' => 'objetivoEstrategico.index',
+                        'icon' => 'bullseye',
+                        'active' => request()->routeIs('objetivoEstrategico.*'),
+                    ],
+                    [
+                        'label' => 'Gestión de Metas Estratégicas',
+                        'route' => 'metaEstrategica.index',
+                        'icon' => 'chart-line',
+                        'active' => request()->routeIs('metaEstrategica.*'),
+                    ],
+                    [
+                        'label' => 'Gestión de Metas PND',
+                        'route' => 'metaPlanNacional.index',
+                        'icon' => 'chart-bar',
+                        'active' => request()->routeIs('metaPlanNacional.*'),
+                    ],
+                    [
+                        'label' => 'Gestión de Indicadores',
+                        'route' => 'indicador.index',
+                        'icon' => 'chart-pie',
+                        'active' => request()->routeIs('indicador.*'),
+                    ],
+                ],
+            ],
         ];
     }
-    
+
     // 5. MÉTODO RENDER (obligatorio)
     public function render()
     {

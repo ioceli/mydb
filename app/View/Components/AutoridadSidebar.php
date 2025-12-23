@@ -3,7 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
-
+use Illuminate\Support\Facades\Auth;
 class AutoridadSidebar extends Component
 {
     // 1. PROPIEDADES PÚBLICAS
@@ -15,12 +15,11 @@ class AutoridadSidebar extends Component
     // 2. CONSTRUCTOR - Recibe parámetros
     public function __construct(
         $title = null, 
-        $userRole = null, 
         $showUserSection = true,
         $menus = null
     ) {
         $this->title = $title ?? 'Panel de Autoridad';
-        $this->userRole = $userRole ?? 'Autoridad Validante';
+        $this->userRole = Auth::check() ? Auth::user()->rol : null;
         $this->showUserSection = $showUserSection;
         
         // 3. LÓGICA DEL COMPONENTE

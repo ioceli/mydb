@@ -70,7 +70,7 @@
                         </svg>
                         <div>
                             <p class="text-sm text-gray-500">Rol del usuario</p>
-                            <p class="font-medium text-blue-600">Administrador del Sistema</p>
+                            <p class="font-medium text-blue-600">{{ Auth::user()->rol }}</p>
                         </div>
                     </div>
                 </div>
