@@ -1,11 +1,13 @@
 @extends('layouts.master')
-
 @section('title','Panel del Auditor')
-
 @section('content')
+@php
+    use App\Enums\RolEnum;
+    $role = Auth::check() ? Auth::user()->rol : null;
+@endphp
 <div class="flex min-h-screen bg-gray-50">
     {{-- Menú Lateral --}}
-    <x-auditor-sidebar/>
+    <x-dynamic-sidebar />
     {{-- Contenido principal --}}
     <div class="flex-1 p-6">
         {{-- Validación --}}
@@ -157,14 +159,20 @@
                 {{ $bitacoras->appends(['per_page' => $perPage])->links() }}
             </div>
         @endif
-                    {{-- MENU PRINCIPAL --}}
-                <div class="mt-8 pt-4 border-t">
-                    <a href="{{ route('dashboard.auditor') }}" 
-                       class="inline-flex items-center px-4 py-3 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-800 transition duration-150 shadow-md">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        PANEL AUDITOR
-                    </a>
-                </div>
+                {{-- BOTÓN VOLVER --}}
+<div class="mt-6">
+    @if ($role === RolEnum::admin->value)
+        <a href="{{ route('dashboard.admin') }}" 
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-150">
+            REGRESAR
+        </a>
+    @elseif ($role === RolEnum::revisor->value)
+        <a href="{{ route('dashboard.revisor') }}" 
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-150">
+            REGRESAR
+        </a>
+    @endif
+</div>
     </div>
 
 </div>

@@ -4,16 +4,19 @@
 @php
     use App\Enums\EstadoEnum;
 @endphp
+<div class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        {{-- Menú Lateral --}}
+        <x-dynamic-sidebar />
+        {{-- Contenido Principal --}}
+        <div class="flex-1 p-6">
 <h2 class="text-xl font-bold mb-4">Editar Objetivo Estrategico</h2>
-@if ($errors->any())
-    <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>- {{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+            {{-- VALIDACION --}}
+            @if (session('success'))
+                <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
 <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
     <form action="{{ route('objetivoEstrategico.update', $objetivoEstrategico->idObjetivoEstrategico) }}" method="POST" class="space-y-4">
         @csrf
@@ -72,5 +75,7 @@
             <a href="{{ route('objetivoEstrategico.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700 font-bold">Cancelar</a>
         </div>
     </form>
+</div>
+</div>
 </div>
 @endsection

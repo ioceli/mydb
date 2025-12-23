@@ -11,7 +11,7 @@
 <div class="bg-gray-50 min-h-screen">
     <div class="flex">
         {{-- Menú Lateral --}}
-        <x-tecnico-sidebar />
+        <x-dynamic-sidebar />
         {{-- Contenido Principal --}}
         <div class="flex-1 p-6">
 <h2 class="text-xl font-bold mb-4">Registrar nuevo Objetivo del Plan Nacional</h2>

@@ -1,12 +1,14 @@
 @extends('layouts.master')
-
 @section('title', 'Inicio')
-
 @section('content')
+@php
+    use App\Enums\RolEnum;
+    $role = Auth::check() ? Auth::user()->rol : null;
+@endphp
 <div class="bg-gray-50 min-h-screen">
     <div class="flex">
         {{-- Menú Lateral --}}
-        <x-tecnico-sidebar />
+         <x-dynamic-sidebar />
         {{-- Contenido Principal --}}
         <div class="flex-1 p-6">
             <h2 class="text-2xl font-bold mb-4">Listado de Objetivos Desarrollo Sostenible</h2>
@@ -76,12 +78,19 @@
             </div>
 
             {{-- Botón para regresar --}}
-            <div class="mt-6">
-                <a href="{{ route('dashboard.tecnico') }}" 
-                   class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-150">
-                    REGRESAR
-                </a>
-            </div>
+<div class="mt-6">
+    @if ($role === RolEnum::admin->value)
+        <a href="{{ route('dashboard.admin') }}" 
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-150">
+            REGRESAR
+        </a>
+    @elseif ($role === RolEnum::tecnico->value)
+        <a href="{{ route('dashboard.tecnico') }}" 
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-150">
+            REGRESAR
+        </a>
+    @endif
+</div>
         </div>
     </div>
 </div>

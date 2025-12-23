@@ -94,6 +94,53 @@ class AdminSidebar extends Component
                     ],
                 ],
             ],
+               [
+                'label' => 'Gestión de Planes, Programas y Proyectos',
+                'route' => '',
+                'icon' => 'layers',
+                'active' => 
+                    request()->routeIs('plan.*') ||
+                    request()->routeIs('programa.*') ||
+                    request()->routeIs('proyecto.*'),
+                'children' => [
+                    [
+                        'label' => 'Gestión de Planes',
+                        'route' => 'plan.index',
+                        'icon' => 'file-alt',
+                        'active' => request()->routeIs('plan.*'),
+                    ],
+                    [
+                        'label' => 'Gestión de Programas',
+                        'route' => 'programa.index',
+                        'icon' => 'folder-open',
+                        'active' => request()->routeIs('programa.*'),
+                    ],
+                    [
+                        'label' => 'Gestión de Proyectos',
+                        'route' => 'proyecto.index',
+                        'icon' => 'project-diagram',
+                        'active' => request()->routeIs('proyecto.*'),
+                    ],
+                ],
+            ],
+            [
+                'label' => 'Revisión – Primer Instancia',
+                'route' => 'revision.index',
+                'icon' => 'userss',
+                'active' => request()->routeIs('revision.*'),
+            ],
+            [
+                'label' => 'Aprobación – Última Instancia',
+                'route' => 'autoridad.index',
+                'icon' => 'usersss',
+                'active' => request()->routeIs('autoridad.*'),
+            ],
+            [
+                'label' => 'Auditoria',
+                'route' => 'auditoria.index',
+                'icon' => 'audit',
+                'active' => request()->routeIs('auditoria.*'),
+            ]
         ];
     }
 

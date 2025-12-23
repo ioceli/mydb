@@ -2,10 +2,12 @@
 @section('content')
 @php
     use App\Enums\EstadoRevisionEnum;
+    use App\Enums\RolEnum;
+    $role = Auth::check() ? Auth::user()->rol : null;
 @endphp
     <div class="flex h-screen">
         {{-- Menú Lateral --}}
-         <x-revisor-sidebar />
+         <x-dynamic-sidebar />
         {{-- Contenido principal --}}
         <div class="flex-1 overflow-auto">
             <div class="container mx-auto p-4">
@@ -204,11 +206,19 @@
                 </div>
                 
                 {{-- BOTÓN VOLVER --}}
-                <div class="p-4 bg-gray-100 mt-4 border-t">
-                    <a href="{{ route('dashboard.revisor') }}" class="font-bold bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 inline-flex items-center">
-                        <i class="fas fa-arrow-left mr-2"></i> VOLVER AL PRINCIPAL
-                    </a>
-                </div>
+<div class="mt-6">
+    @if ($role === RolEnum::admin->value)
+        <a href="{{ route('dashboard.admin') }}" 
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-150">
+            REGRESAR
+        </a>
+    @elseif ($role === RolEnum::revisor->value)
+        <a href="{{ route('dashboard.revisor') }}" 
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-150">
+            REGRESAR
+        </a>
+    @endif
+</div>
             </div>
         </div>
     </div>

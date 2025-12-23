@@ -4,7 +4,7 @@
 <div class="bg-gray-50 min-h-screen">
     <div class="flex">
         {{-- Menú Lateral --}}
-        <x-externo-sidebar />
+        <x-dynamic-sidebar />
         {{-- Contenido Principal --}}
         <div class="flex-1 p-6">
 <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-2">EDITAR PLAN ESTRATÉGICO</h2>
