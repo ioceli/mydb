@@ -20,13 +20,18 @@ class PlanController extends Controller
     {
         // 1. Obtener el ID de la Entidad del usuario logueado
         $idEntidad = Auth::user()->idEntidad; 
+        // Obtener el rol del usuario necesario para lógica futura
+        $role = Auth::user()->rol ?? null;
         // 2. Definir la consulta base filtrada por idEntidad
-        $planesQuery = Plan::with(['entidad', 'objetivosEstrategicos', 'metasEstrategicas'])
-                           ->where('idEntidad', $idEntidad);
+        $planesQuery = Plan::with(['entidad', 'objetivosEstrategicos', 'metasEstrategicas']);
+        // Si NO es administrador, aplicar filtro por entidad
+    if ($role !== 'Administrador del Sistema') {
+        $planesQuery->where('idEntidad', $idEntidad);
+    }
         // 3. Obtener los resultados
         $plan = $planesQuery->get();
         // 4. Manejo de resultados (si no hay planes para esa entidad)
-        if ($plan->isEmpty()) {
+        if ($plan->isEmpty() && $role !== 'Administrador del Sistema') {
             return view('plan.index', ['plan' => $plan, 'message' => 'No hay planes registrados para su Entidad.']);
         }
         // 5. Retornar la vista con los planes filtrados

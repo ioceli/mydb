@@ -20,13 +20,18 @@ class ProyectoController extends Controller
     {
 // 1. Obtener el ID de la Entidad del usuario logueado
         $idEntidad = Auth::user()->idEntidad; 
+          // Obtener el rol del usuario necesario para lógica futura
+        $role = Auth::user()->rol ?? null;
         // 2. Definir la consulta base filtrada por idEntidad
-        $proyectosQuery = Proyecto::with(['entidad', 'objetivosEstrategicos', 'metasEstrategicas'])
-                           ->where('idEntidad', $idEntidad);
+        $proyectosQuery = Proyecto::with(['entidad', 'objetivosEstrategicos', 'metasEstrategicas']);
+        // Si NO es administrador, aplicar filtro por entidad
+    if ($role !== 'Administrador del Sistema') {
+        $proyectosQuery->where('idEntidad', $idEntidad);
+    }
         // 3. Obtener los resultados
         $proyecto = $proyectosQuery->get();
         // 4. Manejo de resultados (si no hay proyectos para esa entidad)
-        if ($proyecto->isEmpty()) {
+        if ($proyecto->isEmpty() && $role !== 'Administrador del Sistema') {
             return view('proyecto.index', ['proyecto' => $proyecto, 'message' => 'No hay proyectos registrados para su Entidad.']);
         }
         // 5. Retornar la vista con los proyectos filtrados
