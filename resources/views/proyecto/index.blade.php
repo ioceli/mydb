@@ -47,7 +47,7 @@
         <tr>
             <td class="border p-2 text-center">{{ $loop->iteration }}</td>
             <td class="border p-2">{{ $p->entidad->subSector ?? 'Sin entidad' }}</td>
-            <td class="border p-2">{{ $p->nombre }}</td>
+            <td class="border p-2">{{ $p->cup }}:{{ $p->nombre }}</td>
             <td class="border p-2">
                 @if ($p->objetivosEstrategicos->count())
                     <ul class="list-disc list-inside">

@@ -158,8 +158,9 @@ class ProgramaController extends Controller
     public function update(Request $request, $id)
     {
         $idEntidad = Auth::user()->idEntidad; 
+        $role = Auth::user()->rol ?? null;
         $programa = Programa::findOrFail($id);
-        if ($programa->idEntidad !== $idEntidad) {
+        if ($programa->idEntidad !== $idEntidad && $role !== 'Administrador del Sistema') {
              abort(403, 'Acceso no autorizado para actualizar este programa.');
         }
         BitacoraHelper::registrar('Programa', 'Actualizó el programa con ID ' . $programa->idPrograma);

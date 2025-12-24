@@ -90,12 +90,8 @@ class PlanController extends Controller
      */
     public function edit($id)
     {
-        $plan = plan::findOrFail($id);
-        $idEntidadUsuario = Auth::user()->idEntidad;
-        if ($plan->idEntidad !== $idEntidadUsuario) {
-             abort(403, 'Acceso no autorizado para editar este plan.');
-        }
-        $entidad = entidad::findOrFail($idEntidadUsuario); 
+        $plan = plan::with(['objetivosEstrategicos', 'metasEstrategicas'])->findOrFail($id);
+        $entidad = Auth::user()->entidad;
         $objetivoEstrategico = objetivoEstrategico::all();
         $metasEstrategicas = metaEstrategica::all();
         return view('plan.edit',compact('plan','entidad','objetivoEstrategico','metasEstrategicas'));
@@ -106,8 +102,9 @@ class PlanController extends Controller
     public function update(Request $request, $id)
     {
         $idEntidad = Auth::user()->idEntidad; 
+        $role = Auth::user()->rol ?? null;
         $plan = plan::findOrFail($id);
-        if ($plan->idEntidad !== $idEntidad) {
+        if ($plan->idEntidad !== $idEntidad && $role !== 'Administrador del Sistema') {
              abort(403, 'Acceso no autorizado para actualizar este plan.');
         }
         $request->validate([
@@ -140,12 +137,8 @@ class PlanController extends Controller
      */
     public function destroy( $id)
     {
-        $plan = plan::findOrFail($id);
-        $idEntidadUsuario = Auth::user()->idEntidad;
-        if ($plan->idEntidad !== $idEntidadUsuario) {
-             abort(403, 'Acceso no autorizado para eliminar este plan.');
-        }
         BitacoraHelper::registrar('Plan', 'Eliminó el plan con ID ' . $id);
+        $plan = plan::findOrFail($id);
         $plan->delete();
         return redirect()->route('plan.index')->with('success','Plan Eliminado satisfactoriamente');
     }

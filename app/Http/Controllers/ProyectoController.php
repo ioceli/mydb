@@ -89,7 +89,7 @@ class ProyectoController extends Controller
         'tipo_dictamen' => $request->tipo_dictamen,
         'accion' => $request->accion,
         'objeto' => $request->objeto,
-        'nombre' => ucfirst($request->accion) . ' de ' . $request->objeto,
+        'nombre' => $request->nombre,
         'plazo_ejecucion' => $request->plazo_ejecucion,
         'monto_total' => $request->monto_total,
         'diagnostico' => $request->diagnostico,
@@ -158,8 +158,9 @@ class ProyectoController extends Controller
     public function update(Request $request, $id)
     {
         $idEntidad = Auth::user()->idEntidad;
+        $role = Auth::user()->rol ?? null;
         $proyecto = proyecto::findOrfail($id);
-        if ($proyecto->idEntidad !== $idEntidad) {
+        if ($proyecto->idEntidad !== $idEntidad && $role !== 'Administrador del Sistema') {
             abort(403, 'Acceso no autorizado para actualizar este proyecto.');
         }
         BitacoraHelper::registrar('Proyecto', 'Actualizó el proyecto con ID ' . $id);
